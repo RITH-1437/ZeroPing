@@ -1,11 +1,24 @@
-# 🚀 ZeroPing Framework
+# ZeroPing Framework
 
-> A lightweight PHP MVC Framework built from scratch with Composer PSR-4 autoloading.
+Current Version
 
-![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?logo=php)
-![Composer](https://img.shields.io/badge/Composer-2.x-885630?logo=composer)
-![License](https://img.shields.io/badge/License-MIT-blue)
+v0.3.0
 
+## Features
+
+- MVC Architecture
+- PSR-4 Autoloading
+- Dependency Injection
+- Service Layer
+- Middleware
+- Authentication
+- Route Groups
+- Route Prefixes
+- Dynamic Route Parameters
+- Flash Messages
+- Validation
+- Base Model
+- Environment Configuration
 ---
 
 # 📖 About

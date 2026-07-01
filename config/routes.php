@@ -1,44 +1,74 @@
 <?php
 
 use App\Core\Router;
+
 use App\Controllers\AuthController;
 use App\Controllers\HomeController;
+use App\Controllers\UserController;
+use App\Controllers\ProfileController;
+use App\Controllers\DashboardController;
+
 /*
 |--------------------------------------------------------------------------
-| Home Routes
+| Public Routes
 |--------------------------------------------------------------------------
 */
-
-Router::get('/', [HomeController::class, 'index'], ['auth']);
 
 Router::get('/about', [HomeController::class, 'about']);
-
-Router::get('/request-test', [HomeController::class, 'requestTest']);
-
 Router::get('/session', [HomeController::class, 'session']);
 
-Router::get('/dashboard', [HomeController::class, 'dashboard'], ['auth']);
-
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
+| Guest Routes
 |--------------------------------------------------------------------------
 */
 
-Router::get('/login', [AuthController::class, 'login'], ['guest']);
+Router::middleware(['guest'], function () {
 
-Router::post('/login', [AuthController::class, 'authenticate'], ['guest']);
+    Router::get('/login', [AuthController::class, 'login']);
+    Router::post('/login', [AuthController::class, 'authenticate']);
 
-Router::get('/register', [AuthController::class, 'register'], ['guest']);
+    Router::get('/register', [AuthController::class, 'register']);
+    Router::post('/register', [AuthController::class, 'store']);
 
-Router::post('/register', [AuthController::class, 'store'], ['guest']);
-
-Router::get('/logout', [AuthController::class, 'logout'], ['auth']);
+});
 
 /*
 |--------------------------------------------------------------------------
-| User Routes
+| Authenticated Routes
 |--------------------------------------------------------------------------
 */
 
-Router::get('/users', [AuthController::class, 'users'], ['auth']);
+Router::middleware(['auth'], function () {
+
+    Router::get('/', [HomeController::class, 'index']);
+
+    Router::get('/dashboard', [HomeController::class, 'dashboard']);
+
+    Router::get('/logout', [AuthController::class, 'logout']);
+
+    Router::get('/users', [UserController::class, 'index']);
+
+    Router::get('/users/{id}', [UserController::class, 'show']);
+
+    Router::get('/profile', [ProfileController::class, 'index']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Router::prefix('/admin', function () {
+
+    Router::middleware(['auth'], function () {
+
+        Router::get('/dashboard', [DashboardController::class, 'index']);
+
+        Router::get('/users', [UserController::class, 'index']);
+
+    });
+
+});
