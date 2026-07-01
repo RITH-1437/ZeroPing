@@ -10,11 +10,9 @@ use App\Support\Flash;
 
 class AuthController extends Controller
 {
-    private AuthenticationService $auth;
-
-    public function __construct()
-    {
-        $this->auth = new AuthenticationService();
+    public function __construct(
+        private AuthenticationService $auth
+    ) {
     }
 
     /**

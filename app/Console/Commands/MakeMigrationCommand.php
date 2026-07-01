@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Console\Commands;
+
+class MakeMigrationCommand
+{
+    public function handle(string $name): void
+    {
+        if (empty($name)) {
+
+            echo "Usage: php zero make:migration MigrationName\n";
+
+            return;
+        }
+
+        $directory = BASE_PATH . '/database/migrations';
+
+        if (!is_dir($directory)) {
+
+            mkdir($directory, 0777, true);
+        }
+
+        $timestamp = date('Y_m_d_His');
+
+        $filename = "{$timestamp}_{$this->snake($name)}.php";
+
+        $file = $directory . '/' . $filename;
+
+        if (file_exists($file)) {
+
+            echo "❌ Migration already exists.\n";
+
+            return;
+        }
+
+        $table = $this->guessTable($name);
+
+        $content = <<<PHP
+<?php
+
+use App\Core\Database\Migration;
+use App\Core\Database\Schema;
+use App\Core\Database\Blueprint;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('{$table}', function (Blueprint \$table) {
+
+            \$table->id();
+
+            \$table->timestamps();
+
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::drop('{$table}');
+    }
+};
+
+PHP;
+
+        file_put_contents($file, $content);
+
+        echo "✅ Migration created:\n";
+        echo "database/migrations/{$filename}\n";
+    }
+
+    private function snake(string $value): string
+    {
+        return strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '_$0', $value)
+        );
+    }
+
+    private function guessTable(string $name): string
+    {
+        if (preg_match('/Create(.+)Table/i', $name, $matches)) {
+
+            return strtolower($matches[1]);
+        }
+
+        return strtolower($name);
+    }
+}

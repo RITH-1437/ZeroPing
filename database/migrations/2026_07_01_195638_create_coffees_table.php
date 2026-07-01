@@ -1,0 +1,24 @@
+<?php
+
+use App\Core\Database\Migration;
+use App\Core\Database\Schema;
+use App\Core\Database\Blueprint;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('coffees', function (Blueprint $table) {
+
+            $table->id();
+
+            $table->timestamps();
+
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::drop('coffees');
+    }
+};

@@ -17,4 +17,5 @@ class User extends Model
     {
         return $this->findBy('username', $username);
     }
+
 }

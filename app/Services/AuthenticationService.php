@@ -4,16 +4,14 @@ namespace App\Services;
 
 use App\Auth\AuthManager;
 use App\Auth\PasswordHasher;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Support\Validator;
 
 class AuthenticationService
 {
-    private User $userModel;
-
-    public function __construct()
-    {
-        $this->userModel = new User();
+    public function __construct(
+        private UserRepository $users
+    ) {
     }
 
     public function register(array $data): bool
@@ -30,41 +28,31 @@ class AuthenticationService
             ->min('password', $data['password'], 6);
 
         if (!$validator->passes()) {
-            print_r($validator->errors());
             return false;
         }
 
-        if ($this->userModel->findByEmail($data['email'])) {
-
+        if ($this->users->findByEmail($data['email'])) {
             return false;
         }
 
-        if ($this->userModel->findByUsername($data['username'])) {
-
+        if ($this->users->findByUsername($data['username'])) {
             return false;
         }
 
-        return $this->userModel->create([
-
+        return $this->users->create([
             'first_name' => $data['first_name'],
-
-            'last_name' => $data['last_name'],
-
-            'username' => $data['username'],
-
-            'email' => $data['email'],
-
-            'password' => PasswordHasher::make($data['password']),
-
-            'role' => 'customer',
-
-            'phone' => $data['phone'] ?? null
+            'last_name'  => $data['last_name'],
+            'username'   => $data['username'],
+            'email'      => $data['email'],
+            'password'   => PasswordHasher::make($data['password']),
+            'role'       => 'customer',
+            'phone'      => $data['phone'] ?? null,
         ]);
     }
 
     public function login(string $email, string $password): bool
     {
-        $user = $this->userModel->findByEmail($email);
+        $user = $this->users->findByEmail($email);
 
         if (!$user) {
             return false;
@@ -78,5 +66,4 @@ class AuthenticationService
 
         return true;
     }
-
 }

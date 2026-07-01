@@ -12,7 +12,7 @@ class View
 
         extract($data);
 
-        $viewFile = __DIR__ . "/../../views/{$view}.php";
+        $viewFile = __DIR__ . "/../../../views/{$view}.php";
 
         if (!file_exists($viewFile)) {
             die("View {$view} not found.");
@@ -24,7 +24,7 @@ class View
 
         $content = ob_get_clean();
 
-        $layoutFile = __DIR__ . "/../../views/layouts/{$layout}.php";
+        $layoutFile = __DIR__ . "/../../../views/layouts/{$layout}.php";
 
         if (!file_exists($layoutFile)) {
             die("Layout {$layout} not found.");
