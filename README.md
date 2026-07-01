@@ -1,24 +1,30 @@
-# ZeroPing Framework
+## Framework Roadmap
 
-Current Version
+### v0.1.0
+- Basic MVC
+- Routing
+- Database
 
-v0.3.0
-
-## Features
-
-- MVC Architecture
-- PSR-4 Autoloading
-- Dependency Injection
-- Service Layer
-- Middleware
+### v0.2.0
 - Authentication
-- Route Groups
-- Route Prefixes
-- Dynamic Route Parameters
+- Middleware
+- Sessions
 - Flash Messages
-- Validation
-- Base Model
-- Environment Configuration
+
+### v0.3.0
+- Dependency Injection Container
+- Service Providers
+- Route Groups
+- Dynamic Route Parameters
+
+### v0.4.0
+- Framework Architecture Refactor
+- PSR-4 Namespaces
+- Core Module Separation
+- Auth Module
+- HTTP Module
+- Support Module
+- Repository Layer (prepared)
 ---
 
 # 📖 About
