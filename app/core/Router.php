@@ -1,15 +1,15 @@
 <?php
 
+namespace App\Core;
 class Router
 {
     private static array $routes = [];
 
     public static function get(
         string $uri,
-        string $action,
+        array $action,
         array $middleware = []
     ): void {
-
         self::$routes['GET'][$uri] = [
             'action' => $action,
             'middleware' => $middleware
@@ -18,10 +18,9 @@ class Router
 
     public static function post(
         string $uri,
-        string $action,
+        array $action,
         array $middleware = []
     ): void {
-
         self::$routes['POST'][$uri] = [
             'action' => $action,
             'middleware' => $middleware
@@ -34,21 +33,14 @@ class Router
 
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        // Remove project folder when using PHP built-in server
-        $uri = str_replace('/zero-ping/public', '', $uri);
+        $uri = rtrim($uri, '/');
 
         if ($uri === '') {
             $uri = '/';
         }
 
-        // Load application routes
         require_once __DIR__ . '/../../config/routes.php';
 
-//        echo '<pre>';
-//        print_r(self::$routes);
-//        die();
-
-        // Route not found
         if (!isset(self::$routes[$method][$uri])) {
 
             http_response_code(404);
@@ -60,42 +52,39 @@ class Router
 
         $route = self::$routes[$method][$uri];
 
-        $action = $route['action'];
-        $middlewares = $route['middleware'];
+        [$controllerName, $methodName] = $route['action'];
 
-        [$controllerName, $methodName] = explode('@', $action);
+        $middlewares = $route['middleware'];
 
         foreach ($middlewares as $middleware) {
 
-            $class = ucfirst($middleware) . 'Middleware';
+            $class = "App\\Middleware\\" . ucfirst($middleware) . "Middleware";
 
             if (!class_exists($class)) {
+
                 die("Middleware {$class} not found.");
             }
 
-            $instance = new $class();
-
-            $instance->handle();
+            (new $class())->handle();
         }
 
-        // Controller not found
         if (!class_exists($controllerName)) {
 
             http_response_code(500);
 
-            die("Controller <b>{$controllerName}</b> does not exist.");
+            die("Controller {$controllerName} not found.");
         }
 
         $controller = new $controllerName();
 
-        // Method not found
         if (!method_exists($controller, $methodName)) {
 
             http_response_code(500);
 
-            die("Method <b>{$methodName}</b> does not exist.");
+            die("Method {$methodName} not found.");
         }
 
+//
         call_user_func([$controller, $methodName]);
     }
 }

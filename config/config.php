@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../app/core/Env.php';
+use App\Core\Env;
 
 Env::load(__DIR__ . '/../.env');
 

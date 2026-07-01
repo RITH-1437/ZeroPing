@@ -1,188 +1,135 @@
-# 🎮 ZeroPing
+# 🚀 ZeroPing Framework
 
-> A modern Gaming Café Reservation System built with a custom PHP MVC Framework.
+> A lightweight PHP MVC Framework built from scratch with Composer PSR-4 autoloading.
 
-![PHP](https://img.shields.io/badge/PHP-8.0+-777BB4?style=for-the-badge&logo=php)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql)
-![AJAX](https://img.shields.io/badge/AJAX-JavaScript-yellow?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?logo=php)
+![Composer](https://img.shields.io/badge/Composer-2.x-885630?logo=composer)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
 
 # 📖 About
 
-ZeroPing is a web application that allows users to discover nearby gaming cafés, reserve gaming PCs, make online payments, and manage reservations.
+ZeroPing is a custom PHP MVC Framework developed for learning modern backend architecture while building the ZeroPing Gaming Cafe Reservation System.
 
-This project is developed using a **custom PHP MVC framework** without Laravel or other PHP frameworks to demonstrate backend architecture and software engineering concepts.
+The goal is to understand how frameworks like Laravel work internally instead of relying on them.
 
 ---
 
 # ✨ Features
 
-## 👤 Authentication
+## Core
+
+- MVC Architecture
+- Composer PSR-4 Autoloading
+- Routing System
+- Middleware
+- Controllers
+- Views with Layouts
+- Request Class
+- Response Class
+- Session Management
+- Flash Messages
+- Environment Loader (.env)
+- Database Connection (PDO)
+- Base Model
+- Hash Helper
+- Validator
+- Authentication
+
+---
+
+## Authentication
 
 - User Registration
 - User Login
-- Secure Password Hashing
-- Session Authentication
-- Role-based Access Control
+- Logout
+- Auth Middleware
+- Guest Middleware
 
 ---
 
-## 🏢 Gaming Café
+## Database
 
-- Browse Gaming Cafés
-- View Café Details
-- Search Cafés
-- Nearby Cafés
-- Favorite Cafés
-
----
-
-## 💻 Gaming PCs
-
-- PC Availability
-- PC Specifications
-- PC Status
-- Real-time Reservation
+- PDO
+- Base Model
+- CRUD Methods
+- Migrations
 
 ---
 
-## 📅 Reservation
+# 📁 Project Structure
 
-- Reserve Gaming PCs
-- Select Date & Time
-- Reservation History
-- Cancel Reservation
-
----
-
-## 💳 Payment
-
-- ABA KHQR
-- Wing
-- ACLEDA
-- Cash Payment
-
----
-
-## 🗺️ Google Maps
-
-- Nearby Gaming Cafés
-- GPS Location
-- Distance Calculation
-- Navigation
-
----
-
-## 🔔 Notifications
-
-- Reservation Reminder
-- Booking Confirmation
-- Payment Status
-
----
-
-# 🏗️ Tech Stack
-
-| Technology | Usage |
-|------------|-------|
-| PHP | Backend |
-| MySQL | Database |
-| AJAX | Async Requests |
-| JavaScript | Frontend |
-| HTML5 | Structure |
-| CSS3 | Styling |
-| Composer | Dependency Management |
-
----
-
-# 📂 Project Structure
-
-```text
+```
 zero-ping/
-
+│
 ├── app/
-│   ├── controllers/
-│   ├── core/
-│   ├── helpers/
-│   ├── middleware/
-│   ├── models/
-│   └── services/
+│   ├── Controllers/
+│   ├── Core/
+│   ├── Middleware/
+│   ├── Models/
+│   └── Services/
 │
 ├── config/
-│
 ├── database/
-│   ├── migrations/
-│   ├── seeders/
-│   └── backups/
-│
 ├── public/
-│   ├── assets/
-│   └── index.php
-│
-├── storage/
-│
+├── resources/
+├── routes/
 ├── vendor/
-│
-├── views/
-│
-├── .env
-├── composer.json
-└── README.md
+└── views/
 ```
+
+---
+
+# ⚙️ Requirements
+
+- PHP 8.3+
+- Composer
+- MySQL
 
 ---
 
 # 🚀 Installation
 
-## Clone Project
+Clone the project
 
 ```bash
-git clone https://github.com/yourusername/zero-ping.git
+git clone https://github.com/YOUR_USERNAME/ZeroPing.git
 ```
 
----
-
-## Install Dependencies
+Install dependencies
 
 ```bash
 composer install
 ```
 
----
+Generate Composer autoload
 
-## Configure Environment
+```bash
+composer dump-autoload
+```
 
-Create a `.env` file.
+Create a `.env` file
 
 ```env
+APP_NAME=ZeroPing
+APP_ENV=development
+APP_DEBUG=true
+
 DB_HOST=localhost
 DB_NAME=zero_ping
 DB_USER=root
-DB_PASS=
+DB_PASS=password
 DB_CHARSET=utf8mb4
 ```
 
----
-
-## Run Migrations
-
-```bash
-php cli/migrate.php
-```
-
----
-
-## Start Development Server
+Run the application
 
 ```bash
 php -S localhost:1437 -t public
 ```
 
----
-
-Open your browser.
+Visit
 
 ```
 http://localhost:1437
@@ -190,37 +137,47 @@ http://localhost:1437
 
 ---
 
-# 🏛️ Framework Features
+# ✅ Current Progress
 
-- MVC Architecture
-- Custom Router
-- Middleware
-- Session Management
-- Authentication
-- Migration System
-- Base Model (CRUD)
-- Service Layer
-- Environment Configuration
+- [x] Composer PSR-4
+- [x] Router
+- [x] Middleware
+- [x] MVC
+- [x] Views
+- [x] Layouts
+- [x] Authentication
+- [x] Flash Messages
+- [x] Sessions
+- [x] Database
+- [x] Base Model
+- [x] Validator
+- [x] Password Hashing
 
 ---
 
-# 📌 Development Progress
+# 🛣️ Roadmap
 
-- [x] MVC Architecture
-- [x] Router
-- [x] Autoloader
-- [x] Database Connection
-- [x] Migration System
-- [x] Authentication
-- [x] User Registration
-- [x] User Login
-- [ ] Layout System
-- [ ] Flash Messages
-- [ ] Validation
-- [ ] Gaming Café Module
-- [ ] Reservation Module
-- [ ] Payment Module
-- [ ] Google Maps Integration
+## Framework
+
+- [ ] Dependency Injection Container
+- [ ] Route Groups
+- [ ] Service Providers
+- [ ] Query Builder
+- [ ] ORM
+- [ ] CSRF Protection
+- [ ] Exception Handler
+- [ ] CLI Commands
+- [ ] Cache
+- [ ] Events
+- [ ] Queue
+
+## ZeroPing Application
+
+- [ ] Gaming PC Management
+- [ ] Reservations
+- [ ] Membership
+- [ ] Payments
+- [ ] QR Code Check-in
 - [ ] Admin Dashboard
 
 ---
@@ -229,10 +186,4 @@ http://localhost:1437
 
 **Rin Nairith**
 
-Full Stack Developer Student
-
----
-
-# 📄 License
-
-This project is licensed under the MIT License.
+Built for learning backend development and framework architecture.

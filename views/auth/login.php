@@ -1,39 +1,58 @@
-<!DOCTYPE html>
-<html>
+<?php
 
-<head>
-    <title>Login</title>
-</head>
+use App\Core\Flash;
 
-<body>
+?>
 
-<h1>Login</h1>
+<div class="container">
+    <div class="card">
 
-<form action="/login" method="POST">
+        <h1>Login</h1>
 
-    <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        required
-    >
+        <?php if (Flash::has()):
+            $flash = Flash::get();
+            ?>
 
-    <br><br>
+            <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>">
+                <?= htmlspecialchars($flash['message']) ?>
+            </div>
 
-    <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-    >
+        <?php endif; ?>
 
-    <br><br>
+        <form method="POST" action="/login">
 
-    <button type="submit">
-        Login
-    </button>
+            <div class="form-group">
+                <label>Email</label>
 
-</form>
+                <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                >
+            </div>
 
-</body>
-</html>
+            <div class="form-group">
+                <label>Password</label>
+
+                <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                >
+            </div>
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <p class="text-center" style="margin-top:20px">
+            Don't have an account?
+            <a href="/register">Register</a>
+        </p>
+
+    </div>
+</div>

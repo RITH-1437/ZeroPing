@@ -1,16 +1,23 @@
 <?php
 
+use App\Core\Router;
+use App\Controllers\AuthController;
+use App\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Home Routes
 |--------------------------------------------------------------------------
 */
 
-Router::get('/', 'HomeController@index', ['auth']);
-Router::get('/about', 'HomeController@about');
-Router::get('/request-test', 'HomeController@requestTest');
-Router::get('/session', 'HomeController@session');
-Router::get('/dashboard', 'HomeController@dashboard', ['auth']);
+Router::get('/', [HomeController::class, 'index'], ['auth']);
+
+Router::get('/about', [HomeController::class, 'about']);
+
+Router::get('/request-test', [HomeController::class, 'requestTest']);
+
+Router::get('/session', [HomeController::class, 'session']);
+
+Router::get('/dashboard', [HomeController::class, 'dashboard'], ['auth']);
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +25,15 @@ Router::get('/dashboard', 'HomeController@dashboard', ['auth']);
 |--------------------------------------------------------------------------
 */
 
-Router::get('/login', 'AuthController@login', ['guest']);
-Router::post('/login', 'AuthController@authenticate', ['guest']);
+Router::get('/login', [AuthController::class, 'login'], ['guest']);
 
-Router::get('/register', 'AuthController@register', ['guest']);
-Router::post('/register', 'AuthController@store', ['guest']);
+Router::post('/login', [AuthController::class, 'authenticate'], ['guest']);
+
+Router::get('/register', [AuthController::class, 'register'], ['guest']);
+
+Router::post('/register', [AuthController::class, 'store'], ['guest']);
+
+Router::get('/logout', [AuthController::class, 'logout'], ['auth']);
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +41,4 @@ Router::post('/register', 'AuthController@store', ['guest']);
 |--------------------------------------------------------------------------
 */
 
-Router::get('/users', 'AuthController@users', ['auth']);
+Router::get('/users', [AuthController::class, 'users'], ['auth']);

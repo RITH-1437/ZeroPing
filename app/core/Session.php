@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Core;
+
 class Session
 {
     public static function start(): void
@@ -9,14 +11,14 @@ class Session
         }
     }
 
-    public static function set(string $key, $value): void
+    public static function set(string $key, mixed $value): void
     {
         self::start();
 
         $_SESSION[$key] = $value;
     }
 
-    public static function get(string $key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
         self::start();
 
@@ -41,8 +43,8 @@ class Session
     {
         self::start();
 
-        session_destroy();
-
         $_SESSION = [];
+
+        session_destroy();
     }
 }

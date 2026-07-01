@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Services;
+
+use App\Core\Auth;
+use App\Core\Hash;
+use App\Core\Validator;
+use App\Models\User;
 class AuthService
 {
     private User $userModel;
@@ -11,6 +17,22 @@ class AuthService
 
     public function register(array $data): bool
     {
+        $validator = new Validator();
+
+        $validator
+            ->required('first_name', $data['first_name'])
+            ->required('last_name', $data['last_name'])
+            ->required('username', $data['username'])
+            ->required('email', $data['email'])
+            ->required('password', $data['password'])
+            ->email('email', $data['email'])
+            ->min('password', $data['password'], 6);
+
+        if (!$validator->passes()) {
+            print_r($validator->errors());
+            return false;
+        }
+
         if ($this->userModel->findByEmail($data['email'])) {
 
             return false;

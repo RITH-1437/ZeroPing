@@ -1,0 +1,14 @@
+{
+  "name": "rin/zero-ping",
+  "description": "ZeroPing Gaming Cafe Reservation System",
+  "type": "project",
+
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Config\\": "config/"
+    }
+  },
+
+  "require": {}
+}

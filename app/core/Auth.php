@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Core;
+
 class Auth
 {
     public static function login(array $user): void
@@ -9,7 +11,7 @@ class Auth
 
     public static function logout(): void
     {
-        Session::remove('user');
+        Session::destroy();
     }
 
     public static function user(): ?array
