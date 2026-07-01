@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Auth;
 
-class Hash
+class PasswordHasher
 {
     public static function make(string $password): string
     {

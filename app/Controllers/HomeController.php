@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
-use App\Core\Request;
-use App\Core\Session;
+use App\Auth\SessionGuard;
+use App\Core\View\Controller;
+use App\Http\Request;
 
 class HomeController extends Controller
 {
@@ -25,9 +25,9 @@ class HomeController extends Controller
 
     public function session(): void
     {
-        Session::set('project', 'ZeroPing');
+        SessionGuard::set('project', 'ZeroPing');
 
-        echo Session::get('project');
+        echo SessionGuard::get('project');
     }
 
     public function dashboard(): void

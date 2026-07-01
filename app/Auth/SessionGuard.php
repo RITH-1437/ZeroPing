@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Auth;
 
-class Session
+class SessionGuard
 {
     public static function start(): void
     {

@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Core;
+namespace App\Support;
+use App\Auth\SessionGuard;
+
 class Flash
 {
     public static function set(string $type, string $message): void
     {
-        Session::set('flash', [
+        SessionGuard::set('flash', [
             'type' => $type,
             'message' => $message
         ]);
@@ -13,16 +15,16 @@ class Flash
 
     public static function get(): ?array
     {
-        $flash = Session::get('flash');
+        $flash = SessionGuard::get('flash');
 
-        Session::remove('flash');
+        SessionGuard::remove('flash');
 
         return $flash;
     }
 
     public static function has(): bool
     {
-        return Session::has('flash');
+        return SessionGuard::has('flash');
     }
 
     public static function success(string $message): void

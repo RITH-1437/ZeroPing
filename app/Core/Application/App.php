@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Application;
+
+use App\Core\Container\Container;
+use App\Core\Routing\Router;
 
 class App
 {

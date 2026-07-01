@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
-use App\Core\Auth;
-use App\Core\Hash;
-use App\Core\Validator;
+use App\Auth\AuthManager;
+use App\Auth\PasswordHasher;
 use App\Models\User;
-class AuthService
+use App\Support\Validator;
+
+class AuthenticationService
 {
     private User $userModel;
 
@@ -53,7 +54,7 @@ class AuthService
 
             'email' => $data['email'],
 
-            'password' => Hash::make($data['password']),
+            'password' => PasswordHasher::make($data['password']),
 
             'role' => 'customer',
 
@@ -69,11 +70,11 @@ class AuthService
             return false;
         }
 
-        if (!Hash::check($password, $user['password'])) {
+        if (!PasswordHasher::check($password, $user['password'])) {
             return false;
         }
 
-        Auth::login($user);
+        AuthManager::login($user);
 
         return true;
     }

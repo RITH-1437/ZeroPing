@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Http\Middleware;
 
-use App\Core\Auth;
-use App\Core\Middleware;
-use App\Core\Response;
+use App\Auth\AuthManager;
+use App\Http\Response;
 
 class GuestMiddleware extends Middleware
 {
     public function handle(): void
     {
-        if (Auth::check()) {
+        if (AuthManager::check()) {
             Response::redirect('/');
         }
     }

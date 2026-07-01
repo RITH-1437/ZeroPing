@@ -2,19 +2,19 @@
 
 namespace App\Controllers;
 
-use App\Core\Auth;
-use App\Core\Controller;
-use App\Core\Flash;
-use App\Core\Response;
-use App\Services\AuthService;
+use App\Auth\AuthManager;
+use App\Core\View\Controller;
+use App\Http\Response;
+use App\Services\AuthenticationService;
+use App\Support\Flash;
 
 class AuthController extends Controller
 {
-    private AuthService $auth;
+    private AuthenticationService $auth;
 
     public function __construct()
     {
-        $this->auth = new AuthService();
+        $this->auth = new AuthenticationService();
     }
 
     /**
@@ -75,7 +75,7 @@ class AuthController extends Controller
      */
     public function logout(): void
     {
-        Auth::logout();
+        AuthManager::logout();
 
         Flash::success('You have logged out successfully.');
 
@@ -87,7 +87,7 @@ class AuthController extends Controller
      */
     public function dashboard(): void
     {
-        $user = Auth::user();
+        $user = AuthManager::user();
 
         if (!$user) {
             Response::redirect('/login');

@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Env;
+use App\Support\Env;
 
 Env::load(__DIR__ . '/../.env');
 

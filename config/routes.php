@@ -1,12 +1,11 @@
 <?php
 
-use App\Core\Router;
-
 use App\Controllers\AuthController;
-use App\Controllers\HomeController;
-use App\Controllers\UserController;
-use App\Controllers\ProfileController;
 use App\Controllers\DashboardController;
+use App\Controllers\HomeController;
+use App\Controllers\ProfileController;
+use App\Controllers\UserController;
+use App\Core\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------

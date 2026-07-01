@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Core\Database;
+use App\Core\Database\Database;
 
 class DatabaseServiceProvider extends ServiceProvider
 {

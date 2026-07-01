@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Routing;
+
+use App\Core\Application\App;
 
 class Router
 {
@@ -139,7 +141,7 @@ class Router
         // Execute middleware
         foreach ($route['middleware'] as $middleware) {
 
-            $class = "App\\Middleware\\" . ucfirst($middleware) . "Middleware";
+            $class = "App\\Http\\Middleware\\" . ucfirst($middleware) . "Middleware";
 
             if (!class_exists($class)) {
                 die("Middleware {$class} not found.");

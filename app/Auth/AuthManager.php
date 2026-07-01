@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Core;
+namespace App\Auth;
 
-class Auth
+class AuthManager
 {
     public static function login(array $user): void
     {
-        Session::set('user', $user);
+        SessionGuard::set('user', $user);
     }
 
     public static function logout(): void
     {
-        Session::destroy();
+        SessionGuard::destroy();
     }
 
     public static function user(): ?array
     {
-        return Session::get('user');
+        return SessionGuard::get('user');
     }
 
     public static function check(): bool
     {
-        return Session::has('user');
+        return SessionGuard::has('user');
     }
 
     public static function id(): ?int
