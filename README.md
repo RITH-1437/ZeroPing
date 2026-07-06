@@ -17,15 +17,19 @@
 - Route Groups
 - Dynamic Route Parameters
 
-### v0.4.0
-- Framework Architecture Refactor
-- PSR-4 Namespaces
-- Core Module Separation
-- Auth Module
-- HTTP Module
-- Support Module
-- Repository Layer (prepared)
----
+### v0.5.0
+- Event System
+- Event Dispatcher
+- Logging System
+- Console Tooling
+- Configuration Manager
+
+### v0.7.0
+- Validation Engine
+- Rule Registry
+- Rule Parser
+- Database Presence Verifier
+- Validation Rules
 
 # 📖 About
 
@@ -74,6 +78,25 @@ The goal is to understand how frameworks like Laravel work internally instead of
 - Base Model
 - CRUD Methods
 - Migrations
+- Query Builder
+
+---
+
+## Validation
+
+- Required
+- Nullable
+- String
+- Numeric
+- Integer
+- Email
+- Min
+- Max
+- Between
+- Same
+- Confirmed
+- Unique
+- Exists
 
 ---
 
@@ -171,6 +194,11 @@ http://localhost:1437
 - [x] Base Model
 - [x] Validator
 - [x] Password Hashing
+- [x] Event System
+- [x] Logging
+- [x] Console Commands
+- [x] Configuration Manager
+- [x] Validation Engine
 
 ---
 
@@ -185,7 +213,6 @@ http://localhost:1437
 - [ ] ORM
 - [ ] CSRF Protection
 - [ ] Exception Handler
-- [ ] CLI Commands
 - [ ] Cache
 - [ ] Events
 - [ ] Queue

@@ -1,6 +1,6 @@
 # ZeroPing Framework Scope
 
-> **Version:** v0.3.0
+> **Version:** v0.7.0
 >
 > **Status:** Active Development
 >
@@ -224,20 +224,25 @@ Features
 
 ---
 
-# Phase 7 (Next)
+# Phase 7 (Completed)
 
 Validation
 
 Features
 
-- Validation Rules
-- Custom Rules
-- Form Request
-- Error Messages
+- Validation Engine
+- Rule Registry
+- Rule Parser
+- Database Presence Verifier
+- Validation Rules: Required, Nullable, String, Numeric, Integer, Email, Min, Max, Between, Same, Confirmed, Unique, Exists
+
+Status:
+
+Completed ✅
 
 ---
 
-# Phase 8
+# Phase 8 (Next)
 
 ORM
 
@@ -417,11 +422,11 @@ ZeroPing follows these design principles:
 
 # Current Version
 
-v0.3.0
+v0.7.0
 
 Current Focus:
 
-Phase 7 — Validation Engine
+Phase 8 — ORM
 
 Target:
 

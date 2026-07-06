@@ -599,6 +599,8 @@ Abstract base for all commands.
 - View rendering with layouts and partials
 - Console commands for code generation and database management
 - Dependency injection container with auto-wiring
+- Configuration Manager with config cache and environment integration
+- Validation Engine with rule registry, parser, and database presence verifier
 
 ## Completed Phases
 
@@ -608,14 +610,14 @@ Abstract base for all commands.
 4. **Phase 4** — Service layer and Repository pattern
 5. **Phase 5** — Event system (EventDispatcher, Listener contract)
 6. **Phase 6** — Configuration Manager (Config Repository, Config Cache, Environment Integration)
-7. **Phase 7** — Console commands (make:model, make:controller, etc.)
-8. **Phase 8** — Architecture refactoring (PSR-4 alignment, Core/Application separation)
+7. **Phase 7** — Validation Engine (Rule Registry, Rule Parser, Database Presence Verifier, Validation Rules)
+8. **Phase 8** — Console commands (make:model, make:controller, etc.)
 
 ## Remaining Roadmap
 
 - Query Builder: joins, aggregates, having, groupBy
 - Migration: down/rollback support
-- Validation: integrate Validator into request flow
+- ORM: Active Record, Static Model API, CRUD, Relationships, Query Scopes
 - API layer: JSON response helpers, API routing
 - Template engine: replace raw PHP views
 - CSRF protection middleware
