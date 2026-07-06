@@ -2,6 +2,7 @@
 
 namespace App\Core\Console\Commands;
 
+use Closure;
 use App\Core\Routing\Router;
 
 class RouteListCommand
@@ -28,20 +29,30 @@ class RouteListCommand
 
             foreach ($items as $uri => $route) {
 
-                [$controller, $action] = $route['action'];
+                $action = $route['action'];
 
-                $controller = class_basename($controller);
+                if ($action instanceof Closure) {
 
-                $middleware = implode(
-                    ', ',
-                    $route['middleware']
-                );
+                    $actionName = 'Closure';
+
+                } else {
+
+                    [$controller, $methodName] = $action;
+
+                    $controller = class_basename($controller);
+
+                    $actionName = "{$controller}@{$methodName}";
+                }
+
+                $middleware = empty($route['middleware'])
+                    ? '-'
+                    : implode(', ', $route['middleware']);
 
                 printf(
                     "%-8s %-30s %-40s %-20s\n",
                     $method,
                     $uri,
-                    "{$controller}@{$action}",
+                    $actionName,
                     $middleware
                 );
             }

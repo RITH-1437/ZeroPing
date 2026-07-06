@@ -14,15 +14,15 @@ class Database
 
             $dsn = sprintf(
                 "mysql:host=%s;dbname=%s;charset=%s",
-                DB_HOST,
-                DB_NAME,
-                DB_CHARSET
+                config('database.host'),
+                config('database.database'),
+                config('database.charset'),
             );
 
             self::$connection = new PDO(
                 $dsn,
-                DB_USER,
-                DB_PASS,
+                config('database.username'),
+                config('database.password'),
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

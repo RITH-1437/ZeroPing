@@ -8,7 +8,10 @@ class FileLogger implements Logger
 
     public function __construct()
     {
-        $this->path = BASE_PATH . '/storage/logs/app.log';
+        $this->path = config(
+            'logging.path',
+            BASE_PATH . '/storage/logs/app.log'
+        );
     }
 
     public function log(string $level, string $message): void

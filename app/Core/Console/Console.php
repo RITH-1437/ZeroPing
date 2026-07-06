@@ -9,6 +9,7 @@ use App\Core\Console\Commands\MakeRepositoryCommand;
 use App\Core\Console\Commands\MakeServiceCommand;
 use App\Core\Console\Commands\MigrateCommand;
 use App\Core\Console\Commands\RouteListCommand;
+use App\Core\Console\Commands\ConfigTestCommand;
 
 class Console
 {
@@ -56,18 +57,23 @@ class Console
                     ->handle();
                 break;
 
+            case 'config:test':
+                (new ConfigTestCommand())->handle();
+                break;
+
             default:
 
                 echo "ZeroPing Framework\n\n";
                 echo "Available commands:\n";
                 echo "-  migrate\n";
-                echo "- make:model\n";
+                echo "-  make:model\n";
                 echo "-  make:controller\n";
                 echo "-  make:service\n";
                 echo "-  make:repository\n";
                 echo "-  make:migration\n";
                 echo "-  route:list\n";
                 echo "-  log:test\n";
+                echo "-  config:test\n";
         }
     }
 }

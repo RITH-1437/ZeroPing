@@ -25,7 +25,9 @@ class MigrationRunner
         $files = $this->migrationFiles();
 
         if (empty($files)) {
+
             echo "No migration files found.\n";
+
             return;
         }
 
@@ -35,39 +37,51 @@ class MigrationRunner
 
         foreach ($files as $file) {
 
-            $migration = basename($file);
+            $migrationName = basename($file);
 
-            if (in_array($migration, $executed)) {
+            if (in_array($migrationName, $executed)) {
 
-                echo "⏩ {$migration}\n";
+                echo "⏩ {$migrationName}\n";
 
                 continue;
             }
 
-            echo "🚀 {$migration} ... ";
+            echo "🚀 {$migrationName} ... ";
 
-            $sql = require $file;
+            /** @var Migration $migration */
+            $migration = require $file;
 
             try {
 
-                $this->db->exec($sql);
+                $this->db->beginTransaction();
+
+                $migration->up();
 
                 $stmt = $this->db->prepare("
-                    INSERT INTO migrations (migration,batch)
-                    VALUES (?,?)
-                ");
+                INSERT INTO migrations (migration, batch)
+                VALUES (?, ?)
+            ");
 
-                $stmt->execute([$migration, $batch]);
+                $stmt->execute([
+                    $migrationName,
+                    $batch
+                ]);
 
-                echo "Done\n";
+                $this->db->commit();
 
-            } catch (PDOException $e) {
+                echo "Done ✅\n";
 
-                echo "Failed\n";
+            } catch (\Throwable $e) {
+
+                $this->db->rollBack();
+
+                echo "Failed ❌\n";
 
                 throw $e;
             }
         }
+
+        echo PHP_EOL . "🎉 Migration completed successfully." . PHP_EOL;
     }
 
     private function createMigrationTable(): void

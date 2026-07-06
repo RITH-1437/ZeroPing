@@ -207,7 +207,7 @@ Completed
 
 ---
 
-# Phase 6 (Next)
+# Phase 6 (Completed)
 
 Configuration Manager
 
@@ -224,7 +224,7 @@ Features
 
 ---
 
-# Phase 7
+# Phase 7 (Next)
 
 Validation
 
@@ -421,7 +421,7 @@ v0.3.0
 
 Current Focus:
 
-Phase 6 — Configuration Manager
+Phase 7 — Validation Engine
 
 Target:
 

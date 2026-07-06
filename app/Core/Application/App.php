@@ -44,6 +44,8 @@ class App
     {
         $providers = [
 
+            \App\Providers\ConfigServiceProvider::class,
+
             \App\Providers\AppServiceProvider::class,
 
             \App\Providers\DatabaseServiceProvider::class,
@@ -54,13 +56,22 @@ class App
 
         ];
 
+        $instances = [];
+
+        // Register every provider first
         foreach ($providers as $provider) {
 
             $instance = new $provider(self::$container);
 
             $instance->register();
 
-            $instance->boot();
+            $instances[] = $instance;
+        }
+
+        // Boot every provider afterwards
+        foreach ($instances as $provider) {
+
+            $provider->boot();
         }
     }
 }

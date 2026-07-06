@@ -1,7 +1,17 @@
 <?php
 
-define('DB_HOST', $_ENV['DB_HOST']);
-define('DB_NAME', $_ENV['DB_NAME']);
-define('DB_USER', $_ENV['DB_USER']);
-define('DB_PASS', $_ENV['DB_PASS']);
-define('DB_CHARSET', $_ENV['DB_CHARSET']);
+return [
+
+    'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
+
+    'port' => $_ENV['DB_PORT'] ?? 3306,
+
+    'database' => $_ENV['DB_NAME'] ?? '',
+
+    'username' => $_ENV['DB_USER'] ?? '',
+
+    'password' => $_ENV['DB_PASS'] ?? '',
+
+    'charset' => $_ENV['DB_CHARSET'] ?? 'utf8mb4',
+
+];

@@ -28,6 +28,9 @@ Router::get('/log-test', function () {
     echo "Log created successfully.";
 
 });
+Router::get('/test', function(){
+    return "Hello";
+});
 /*
 |--------------------------------------------------------------------------
 | Guest Routes

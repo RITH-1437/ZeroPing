@@ -14,7 +14,7 @@ class Router
 
     public static function get(
         string $uri,
-        array $action,
+        array|\Closure $action,
         array $middleware = []
     ): void {
 
@@ -31,7 +31,7 @@ class Router
 
     public static function post(
         string $uri,
-        array $action,
+        array|\Closure $action,
         array $middleware = []
     ): void {
 
@@ -141,7 +141,14 @@ class Router
             return;
         }
 
-        [$controllerName, $methodName] = $route['action'];
+        $action = $route['action'];
+
+        if ($action instanceof \Closure) {
+            $action(...$params);
+            return;
+        }
+
+        [$controllerName, $methodName] = $action;
 
         // Execute middleware
         foreach ($route['middleware'] as $middleware) {
