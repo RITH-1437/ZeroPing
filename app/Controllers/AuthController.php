@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Auth\AuthManager;
 use App\Core\View\Controller;
+use App\Http\Request;
 use App\Http\Response;
 use App\Services\AuthenticationService;
 use App\Core\Session\Flash;
@@ -41,10 +42,10 @@ class AuthController extends Controller
         if (!$result) {
             Flash::error('Registration failed. Please check your information and try again.');
             Response::redirect('/register');
+            return;
         }
 
         Flash::success('Registration completed successfully.');
-
         Response::redirect('/login');
     }
 
@@ -61,10 +62,10 @@ class AuthController extends Controller
         if (!$success) {
             Flash::error('Invalid email or password.');
             Response::redirect('/login');
+            return;
         }
 
         Flash::success('Welcome back!');
-
         Response::redirect('/dashboard');
     }
 
@@ -89,10 +90,11 @@ class AuthController extends Controller
 
         if (!$user) {
             Response::redirect('/login');
+            return;
         }
 
-        echo "<h1>Welcome {$user['first_name']}!</h1>";
-        echo "<p>Email : {$user['email']}</p>";
-        echo "<p>Role : {$user['role']}</p>";
+        echo "<h1>Welcome " . htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8') . "!</h1>";
+        echo "<p>Email : " . htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8') . "</p>";
+        echo "<p>Role : " . htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8') . "</p>";
     }
 }

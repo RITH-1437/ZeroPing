@@ -10,6 +10,8 @@ use App\Core\Console\Commands\MakeServiceCommand;
 use App\Core\Console\Commands\MigrateCommand;
 use App\Core\Console\Commands\RouteListCommand;
 use App\Core\Console\Commands\ConfigTestCommand;
+use App\Core\Console\Commands\LogTestCommand;
+use App\Core\Console\Commands\ValidateTestCommand;
 
 class Console
 {
@@ -53,12 +55,15 @@ class Console
                 break;
 
             case 'log:test':
-                (new \App\Core\Console\Commands\LogTestCommand())
-                    ->handle();
+                (new LogTestCommand())->handle();
                 break;
 
             case 'config:test':
                 (new ConfigTestCommand())->handle();
+                break;
+
+            case 'validate:test':
+                (new ValidateTestCommand())->handle();
                 break;
 
             default:
@@ -74,6 +79,7 @@ class Console
                 echo "-  route:list\n";
                 echo "-  log:test\n";
                 echo "-  config:test\n";
+                echo "-  validate:test\n";
         }
     }
 }

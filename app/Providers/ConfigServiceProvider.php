@@ -25,9 +25,4 @@ class ConfigServiceProvider extends ServiceProvider
 
         Config::setRepository($repository);
     }
-
-    public function boot(): void
-    {
-        // Nothing to boot yet.
-    }
 }

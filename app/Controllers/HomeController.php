@@ -2,8 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Core\Application\App;
 use App\Core\Auth\SessionGuard;
 use App\Core\View\Controller;
+use App\Core\Logging\Logger;
 use App\Http\Request;
 
 class HomeController extends Controller
@@ -40,9 +42,7 @@ class HomeController extends Controller
         $logger = App::container()->make(Logger::class);
 
         $logger->info('ZeroPing Logger Test');
-
         $logger->warning('Warning Test');
-
         $logger->error('Error Test');
 
         echo "Logger works!";

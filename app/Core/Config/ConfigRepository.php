@@ -36,7 +36,19 @@ class ConfigRepository
 
     public function has(string $key): bool
     {
-        return $this->get($key) !== null;
+        $segments = explode('.', $key);
+
+        $config = $this->items;
+
+        foreach ($segments as $segment) {
+            if (!array_key_exists($segment, $config)) {
+                return false;
+            }
+
+            $config = $config[$segment];
+        }
+
+        return true;
     }
 
     public function setValue(string $key, mixed $value): void

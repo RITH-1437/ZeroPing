@@ -45,6 +45,7 @@ class App
         $providers = [
 
             \App\Providers\ConfigServiceProvider::class,
+            \App\Providers\ValidationServiceProvider::class,
 
             \App\Providers\AppServiceProvider::class,
 

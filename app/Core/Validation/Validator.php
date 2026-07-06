@@ -1,53 +1,135 @@
 <?php
 
 namespace App\Core\Validation;
+
+use App\Core\Application\App;
+
 class Validator
 {
-    private array $errors = [];
+    protected ValidationResult $result;
 
-    public function required(string $field, $value): self
-    {
-        if (trim($value) === '') {
-            $this->errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
-        }
+    protected bool $validated = false;
 
-        return $this;
+    public function __construct(
+        protected array $data,
+        protected array $rules
+    ) {
+        $this->result = new ValidationResult();
     }
 
-    public function email(string $field, $value): self
-    {
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[$field] = 'Invalid email address.';
-        }
-
-        return $this;
+    public static function make(
+        array $data,
+        array $rules
+    ): static {
+        return new static($data, $rules);
     }
 
-    public function min(string $field, $value, int $length): self
+    public function validate(): ValidationResult
     {
-        if (strlen($value) < $length) {
-            $this->errors[$field] = ucfirst($field) . " must be at least {$length} characters.";
+        if ($this->validated) {
+            return $this->result;
         }
 
-        return $this;
-    }
+        $this->validated = true;
 
-    public function max(string $field, $value, int $length): self
-    {
-        if (strlen($value) > $length) {
-            $this->errors[$field] = ucfirst($field) . " may not exceed {$length} characters.";
+        $registry = App::container()->make(
+            RuleRegistry::class
+        );
+
+        $parser = new RuleParser();
+
+        foreach ($this->rules as $field => $ruleString) {
+
+            $value = $this->data[$field] ?? null;
+
+            $rulesArray = explode('|', $ruleString);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Nullable
+            |--------------------------------------------------------------------------
+            |
+            | Skip validation when the field is nullable
+            | and the value is empty.
+            |
+            */
+
+            if (
+                in_array('nullable', $rulesArray, true) &&
+                ($value === null || $value === '')
+            ) {
+                continue;
+            }
+
+            foreach ($rulesArray as $rule) {
+
+                $parsed = $parser->parse($rule);
+
+                $validator = $registry->get(
+                    $parsed['name']
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Unknown Rule
+                |--------------------------------------------------------------------------
+                */
+
+                if ($validator === null) {
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Validate Rule
+                |--------------------------------------------------------------------------
+                */
+
+                if (!$validator->validate(
+                    $field,
+                    $value,
+                    $this->data,
+                    $parsed['parameters']
+                )) {
+
+                    $this->result->add(
+                        $field,
+                        $validator->message(
+                            $field,
+                            $parsed['parameters']
+                        )
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Bail
+                    |--------------------------------------------------------------------------
+                    |
+                    | Stop validating this field after the
+                    | first failed rule.
+                    |
+                    */
+
+                    break;
+                }
+            }
         }
 
-        return $this;
-    }
-
-    public function errors(): array
-    {
-        return $this->errors;
+        return $this->result;
     }
 
     public function passes(): bool
     {
-        return empty($this->errors);
+        return $this->validate()->passes();
+    }
+
+    public function fails(): bool
+    {
+        return $this->validate()->fails();
+    }
+
+    public function errors(): array
+    {
+        return $this->validate()->errors();
     }
 }

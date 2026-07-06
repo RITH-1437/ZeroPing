@@ -22,7 +22,7 @@ class ConfigLoader
                 continue;
             }
 
-            $configs[basename($file, '.php')] = require $file;
+            $configs[pathinfo($name, PATHINFO_FILENAME)] = require $file;
         }
 
         return $configs;

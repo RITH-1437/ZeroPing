@@ -5,6 +5,8 @@ use App\Controllers\DashboardController;
 use App\Controllers\HomeController;
 use App\Controllers\ProfileController;
 use App\Controllers\UserController;
+use App\Core\Application\App;
+use App\Core\Logging\Logger;
 use App\Core\Routing\Router;
 
 /*
@@ -16,20 +18,13 @@ use App\Core\Routing\Router;
 Router::get('/about', [HomeController::class, 'about']);
 Router::get('/session', [HomeController::class, 'session']);
 Router::get('/log-test', function () {
-
     $logger = App::container()->make(Logger::class);
 
     $logger->info('Logger is working.');
-
     $logger->warning('Testing warning.');
-
     $logger->error('Testing error.');
 
     echo "Log created successfully.";
-
-});
-Router::get('/test', function(){
-    return "Hello";
 });
 /*
 |--------------------------------------------------------------------------

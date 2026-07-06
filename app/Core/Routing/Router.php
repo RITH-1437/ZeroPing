@@ -170,7 +170,7 @@ class Router
             die("Controller {$controllerName} not found.");
         }
 
-        $container = App::Container();
+        $container = App::container();
 
         $controller = $container->make($controllerName);
 

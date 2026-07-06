@@ -18,7 +18,7 @@ class Request
         return self::method() === 'POST';
     }
 
-    public static function input(string $key, $default = null)
+    public static function input(string $key, mixed $default = null): mixed
     {
         return $_POST[$key] ?? $_GET[$key] ?? $default;
     }
