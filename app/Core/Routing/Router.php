@@ -77,6 +77,11 @@ class Router
         self::$groupMiddleware = $previous;
     }
 
+    public static function routes(): array
+    {
+        return self::$routes;
+    }
+
     public static function dispatch(): void
     {
         $method = $_SERVER['REQUEST_METHOD'];

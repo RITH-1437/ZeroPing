@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Auth\AuthManager;
+use App\Core\Auth\AuthManager;
 use App\Core\View\Controller;
 use App\Http\Response;
 use App\Services\AuthenticationService;
-use App\Support\Flash;
+use App\Core\Session\Flash;
 
 class AuthController extends Controller
 {

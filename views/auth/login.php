@@ -1,6 +1,6 @@
 <?php
 
-use App\Support\Flash;
+use App\Core\Session\Flash;
 
 ?>
 

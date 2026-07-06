@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Support;
-use App\Auth\SessionGuard;
+namespace App\Core\Session;
+use App\Core\Auth\SessionGuard;
 
 class Flash
 {

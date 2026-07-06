@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Auth\AuthManager;
+use App\Core\Auth\AuthManager;
 use App\Http\Response;
 
 class AuthMiddleware extends Middleware

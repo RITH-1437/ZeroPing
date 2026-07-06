@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Auth\SessionGuard;
+use App\Core\Auth\SessionGuard;
 use App\Core\View\Controller;
 use App\Http\Request;
 
@@ -33,5 +33,18 @@ class HomeController extends Controller
     public function dashboard(): void
     {
         echo "<h1>Dashboard</h1>";
+    }
+
+    public function logTest(): void
+    {
+        $logger = App::container()->make(Logger::class);
+
+        $logger->info('ZeroPing Logger Test');
+
+        $logger->warning('Warning Test');
+
+        $logger->error('Error Test');
+
+        echo "Logger works!";
     }
 }

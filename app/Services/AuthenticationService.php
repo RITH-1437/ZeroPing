@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Auth\AuthManager;
-use App\Auth\PasswordHasher;
+use App\Core\Auth\AuthManager;
+use App\Core\Auth\PasswordHasher;
 use App\Repositories\UserRepository;
-use App\Support\Validator;
+use App\Core\Validation\Validator;
 
 class AuthenticationService
 {

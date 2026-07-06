@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Core\Validation;
 class Validator
 {
     private array $errors = [];

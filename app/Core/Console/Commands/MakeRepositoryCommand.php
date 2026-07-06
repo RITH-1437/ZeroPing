@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Core\Console\Commands;
 
-use App\Console\Command;
+use App\Core\Console\Command;
 
 class MakeRepositoryCommand extends Command
 {

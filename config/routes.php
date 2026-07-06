@@ -15,7 +15,19 @@ use App\Core\Routing\Router;
 
 Router::get('/about', [HomeController::class, 'about']);
 Router::get('/session', [HomeController::class, 'session']);
+Router::get('/log-test', function () {
 
+    $logger = App::container()->make(Logger::class);
+
+    $logger->info('Logger is working.');
+
+    $logger->warning('Testing warning.');
+
+    $logger->error('Testing error.');
+
+    echo "Log created successfully.";
+
+});
 /*
 |--------------------------------------------------------------------------
 | Guest Routes

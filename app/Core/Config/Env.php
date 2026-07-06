@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Core\Config;
 
 use Exception;
 

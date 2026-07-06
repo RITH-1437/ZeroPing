@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/config.php';
 
-use App\Console\Commands\MigrateCommand;
+use App\Core\Console\Commands\MigrateCommand;
 
 $command = new MigrateCommand();
 

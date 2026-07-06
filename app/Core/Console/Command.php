@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console;
+namespace App\Core\Console;
 
 abstract class Command
 {
