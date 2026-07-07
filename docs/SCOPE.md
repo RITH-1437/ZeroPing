@@ -107,7 +107,10 @@ The framework focuses on:
 - [x] make:repository
 - [x] make:migration
 - [x] route:list
+- [x] serve
 - [x] log:test
+- [x] config:test
+- [x] validate:test
 
 ---
 

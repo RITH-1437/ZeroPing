@@ -168,13 +168,19 @@ DB_CHARSET=utf8mb4
 Run the application
 
 ```bash
-php -S localhost:1437 -t public
+php zero serve
 ```
 
 Visit
 
 ```
-http://localhost:1437
+http://127.0.0.1:8000
+```
+
+You can also specify a custom host and port:
+
+```bash
+php zero serve --host=0.0.0.0 --port=8080
 ```
 
 ---

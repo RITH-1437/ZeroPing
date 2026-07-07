@@ -571,7 +571,10 @@ Abstract base for all commands.
 | `php zero make:repository` | `MakeRepositoryCommand` | Generate a new repository file |
 | `php zero make:migration` | `MakeMigrationCommand` | Generate a new migration file |
 | `php zero route:list` | `RouteListCommand` | Display all registered routes |
+| `php zero serve` | `ServeCommand` | Start PHP built-in development server |
 | `php zero log:test` | `LogTestCommand` | Test the logging system |
+| `php zero config:test` | `ConfigTestCommand` | Test configuration loading |
+| `php zero validate:test` | `ValidateTestCommand` | Test validation system |
 
 ## Framework Lifecycle
 

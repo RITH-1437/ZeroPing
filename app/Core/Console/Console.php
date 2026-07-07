@@ -11,6 +11,7 @@ use App\Core\Console\Commands\MigrateCommand;
 use App\Core\Console\Commands\RouteListCommand;
 use App\Core\Console\Commands\ConfigTestCommand;
 use App\Core\Console\Commands\LogTestCommand;
+use App\Core\Console\Commands\ServeCommand;
 use App\Core\Console\Commands\ValidateTestCommand;
 
 class Console
@@ -66,6 +67,11 @@ class Console
                 (new ValidateTestCommand())->handle();
                 break;
 
+            case 'serve':
+                $serveArgs = array_slice($argv, 2);
+                (new ServeCommand())->handle($serveArgs);
+                break;
+
             default:
 
                 echo "ZeroPing Framework\n\n";
@@ -77,6 +83,7 @@ class Console
                 echo "-  make:repository\n";
                 echo "-  make:migration\n";
                 echo "-  route:list\n";
+                echo "-  serve\n";
                 echo "-  log:test\n";
                 echo "-  config:test\n";
                 echo "-  validate:test\n";
