@@ -1,241 +1,40 @@
-## Framework Roadmap
+# ZeroPing Framework
 
-### v0.1.0
-- Basic MVC
-- Routing
-- Database
+<p align="center">
+  <a href="https://zeroping.dev">
+    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
+  </a>
+</p>
 
-### v0.2.0
-- Authentication
-- Middleware
-- Sessions
-- Flash Messages
+<p align="center">
+  <a href="https://packagist.org/packages/rin/zero-ping"><img src="https://img.shields.io/packagist/v/rin/zero-ping.svg?style=flat-square" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/rin/zero-ping"><img src="https://img.shields.io/packagist/dt/rin/zero-ping.svg?style=flat-square" alt="Total Downloads"></a>
+  <a href="https://github.com/RITH-1437/ZeroPing/actions"><img src="https://img.shields.io/github/workflow/status/RITH-1437/ZeroPing/CI?style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/RITH-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/ZeroPing?style=flat-square" alt="License"></a>
+</p>
 
-### v0.3.0
-- Dependency Injection Container
-- Service Providers
-- Route Groups
-- Dynamic Route Parameters
+## About ZeroPing
 
-### v0.5.0
-- Event System
-- Event Dispatcher
-- Logging System
-- Console Tooling
-- Configuration Manager
+ZeroPing is a PHP framework for web artisans. It is a free, open-source PHP web framework, created by RITH, intended for the development of web applications following the model–view–controller (MVC) architectural pattern.
 
-### v0.7.0
-- Validation Engine
-- Rule Registry
-- Rule Parser
-- Database Presence Verifier
-- Validation Rules
+## Learning ZeroPing
 
-# 📖 About
+ZeroPing has the most extensive and thorough [documentation](docs/project.md) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-ZeroPing is a custom PHP MVC Framework developed for learning modern backend architecture while building the ZeroPing Gaming Cafe Reservation System.
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including PHP, Laravel, and JavaScript. Check them out, see for yourself, and massively level up your development skills in the process.
 
-The goal is to understand how frameworks like Laravel work internally instead of relying on them.
+## Contributing
 
----
+Thank you for considering contributing to the ZeroPing framework! The contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md).
 
-# ✨ Features
+## Code of Conduct
 
-## Core
+In order to ensure that the ZeroPing community is welcoming to all, please review and abide by the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-- MVC Architecture
-- Composer PSR-4 Autoloading
-- Routing System
-- Middleware
-- Controllers
-- Views with Layouts
-- Request Class
-- Response Class
-- Session Management
-- Flash Messages
-- Environment Loader (.env)
-- Database Connection (PDO)
-- Base Model
-- Hash Helper
-- Validator
-- Authentication
+## Security Vulnerabilities
 
----
+If you discover a security vulnerability within ZeroPing, please send an e-mail to RITH at [your-email@example.com](mailto:your-email@example.com). All security vulnerabilities will be promptly addressed.
 
-## Authentication
+## License
 
-- User Registration
-- User Login
-- Logout
-- Auth Middleware
-- Guest Middleware
-
----
-
-## Database
-
-- PDO
-- Base Model
-- CRUD Methods
-- Migrations
-- Query Builder
-
----
-
-## Validation
-
-- Required
-- Nullable
-- String
-- Numeric
-- Integer
-- Email
-- Min
-- Max
-- Between
-- Same
-- Confirmed
-- Unique
-- Exists
-
----
-
-# 📁 Project Structure
-
-```
-zero-ping/
-│
-├── app/
-│   ├── Controllers/
-│   ├── Core/
-│   ├── Middleware/
-│   ├── Models/
-│   └── Services/
-│
-├── config/
-├── database/
-├── public/
-├── resources/
-├── routes/
-├── vendor/
-└── views/
-```
-
----
-
-# ⚙️ Requirements
-
-- PHP 8.3+
-- Composer
-- MySQL
-
----
-
-# 🚀 Installation
-
-Clone the project
-
-```bash
-git clone https://github.com/YOUR_USERNAME/ZeroPing.git
-```
-
-Install dependencies
-
-```bash
-composer install
-```
-
-Generate Composer autoload
-
-```bash
-composer dump-autoload
-```
-
-Create a `.env` file
-
-```env
-APP_NAME=ZeroPing
-APP_ENV=development
-APP_DEBUG=true
-
-DB_HOST=localhost
-DB_NAME=zero_ping
-DB_USER=root
-DB_PASS=password
-DB_CHARSET=utf8mb4
-```
-
-Run the application
-
-```bash
-php zero serve
-```
-
-Visit
-
-```
-http://127.0.0.1:8000
-```
-
-You can also specify a custom host and port:
-
-```bash
-php zero serve --host=0.0.0.0 --port=8080
-```
-
----
-
-# ✅ Current Progress
-
-- [x] Composer PSR-4
-- [x] Router
-- [x] Middleware
-- [x] MVC
-- [x] Views
-- [x] Layouts
-- [x] Authentication
-- [x] Flash Messages
-- [x] Sessions
-- [x] Database
-- [x] Base Model
-- [x] Validator
-- [x] Password Hashing
-- [x] Event System
-- [x] Logging
-- [x] Console Commands
-- [x] Configuration Manager
-- [x] Validation Engine
-
----
-
-# 🛣️ Roadmap
-
-## Framework
-
-- [ ] Dependency Injection Container
-- [ ] Route Groups
-- [ ] Service Providers
-- [ ] Query Builder
-- [ ] ORM
-- [ ] CSRF Protection
-- [ ] Exception Handler
-- [ ] Cache
-- [ ] Events
-- [ ] Queue
-
-## ZeroPing Application
-
-- [ ] Gaming PC Management
-- [ ] Reservations
-- [ ] Membership
-- [ ] Payments
-- [ ] QR Code Check-in
-- [ ] Admin Dashboard
-
----
-
-# 👨‍💻 Author
-
-**Rin Nairith**
-
-Built for learning backend development and framework architecture.
+The ZeroPing framework is open-source software licensed under the [MIT license](LICENSE).

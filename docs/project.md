@@ -1,630 +1,689 @@
 # ZeroPing Framework
 
-## Project Overview
+## Phase 8 — Complete ORM
 
-ZeroPing is a lightweight, custom PHP framework designed for the Gaming Cafe Reservation System. It follows a layered architecture that separates framework infrastructure from application logic, providing a clean and maintainable codebase.
+### Completed Features
 
-## Framework Goals
+- Mass Assignment
+- Automatic Timestamps
+- Attribute Casting
+- Relationships (HasOne, HasMany, BelongsTo, BelongsToMany)
+- Lazy Loading
+- Query Scopes
+- Soft Deletes
+- Model Events
+- Accessors & Mutators
+- Pagination
+- Collections
+- Query Builder Improvements
+- Model Utilities
+- Custom Exceptions
+- ORM Testing Command
 
-- Zero external dependencies (pure PHP)
-- PSR-4 namespace conventions
-- Clear separation between Core framework code and Application code
-- Dependency injection via a service container
-- Convention over configuration
-- Modular architecture with service providers
+### Architecture
 
-## Folder Structure
+The ORM is designed to be a modern Active Record implementation. It is built on top of the existing `QueryBuilder` and follows SOLID principles. The core components of the ORM are:
 
-```
-.
-├── app
-│   ├── Contracts/                        # Application-level interfaces
-│   ├── Controllers/
-│   │   ├── AuthController.php
-│   │   ├── CoffeeController.php
-│   │   ├── HomeController.php
-│   │   └── UserController.php
-│   ├── Core/
-│   │   ├── Application/
-│   │   │   └── App.php
-│   │   ├── Auth/
-│   │   │   ├── AuthManager.php
-│   │   │   ├── PasswordHasher.php
-│   │   │   └── SessionGuard.php
-│   │   ├── Config/
-│   │   │   └── Env.php
-│   │   ├── Console/
-│   │   │   ├── Commands/
-│   │   │   │   ├── LogTestCommand.php
-│   │   │   │   ├── MakeControllerCommand.php
-│   │   │   │   ├── MakeMigrationCommand.php
-│   │   │   │   ├── MakeModelCommand.php
-│   │   │   │   ├── MakeRepositoryCommand.php
-│   │   │   │   ├── MakeServiceCommand.php
-│   │   │   │   ├── MigrateCommand.php
-│   │   │   │   └── RouteListCommand.php
-│   │   │   ├── Stubs/
-│   │   │   │   ├── controller.stub
-│   │   │   │   ├── migration.stub
-│   │   │   │   ├── model.stub
-│   │   │   │   ├── repository.stub
-│   │   │   │   └── service.stub
-│   │   │   ├── Command.php
-│   │   │   └── Console.php
-│   │   ├── Container/
-│   │   │   └── Container.php
-│   │   ├── Database/
-│   │   │   ├── Blueprint.php
-│   │   │   ├── Database.php
-│   │   │   ├── Grammar.php
-│   │   │   ├── Migration.php
-│   │   │   ├── MigrationRunner.php
-│   │   │   ├── Model.php
-│   │   │   ├── QueryBuilder.php
-│   │   │   ├── Repository.php
-│   │   │   └── Schema.php
-│   │   ├── Events/
-│   │   │   ├── Event.php
-│   │   │   ├── EventDispatcher.php
-│   │   │   └── Listener.php
-│   │   ├── Logging/
-│   │   │   ├── FileLogger.php
-│   │   │   ├── Logger.php
-│   │   │   ├── LogLevel.php
-│   │   │   └── LogManager.php
-│   │   ├── Routing/
-│   │   │   └── Router.php
-│   │   ├── Session/
-│   │   │   └── Flash.php
-│   │   ├── Validation/
-│   │   │   └── Validator.php
-│   │   └── View/
-│   │       ├── Controller.php
-│   │       └── View.php
-│   ├── Events/
-│   │   └── UserRegistered.php
-│   ├── Exceptions/
-│   ├── Helpers/
-│   │   ├── Str.php
-│   │   └── helpers.php
-│   ├── Http/
-│   │   ├── Middleware/
-│   │   │   ├── AuthMiddleware.php
-│   │   │   ├── GuestMiddleware.php
-│   │   │   └── Middleware.php
-│   │   ├── Request.php
-│   │   └── Response.php
-│   ├── Listeners/
-│   │   └── LogUserRegistered.php
-│   ├── Models/
-│   │   ├── Coffee.php
-│   │   ├── Tea.php
-│   │   └── User.php
-│   ├── Providers/
-│   │   ├── AppServiceProvider.php
-│   │   ├── DatabaseServiceProvider.php
-│   │   ├── EventServiceProvider.php
-│   │   ├── LoggingServiceProvider.php
-│   │   └── ServiceProvider.php
-│   ├── Repositories/
-│   │   ├── CoffeeRepository.php
-│   │   └── UserRepository.php
-│   ├── Services/
-│   │   ├── AuthenticationService.php
-│   │   └── CoffeeService.php
-│   └── Support/
-├── cli/
-│   └── migrate.php
-├── config/
-│   ├── app.php
-│   ├── config.php
-│   ├── constants.php
-│   ├── database.php
-│   └── routes.php
-├── database/
-│   ├── backups/
-│   ├── factories/
-│   ├── migrations/
-│   │   ├── 001_create_users_table.php
-│   │   └── 2026_07_01_195638_create_coffees_table.php
-│   └── seeders/
-├── docs/
-│   ├── project.md
-│   └── SCOPE.md
-├── public/
-│   ├── assets/
-│   │   ├── css/
-│   │   │   └── style.css
-│   │   ├── fonts/
-│   │   ├── icons/
-│   │   ├── images/
-│   │   ├── js/
-│   │   └── uploads/
-│   ├── index.php
-│   └── test.php
-├── storage/
-│   ├── cache/
-│   ├── logs/
-│   ├── sessions/
-│   └── temp/
-├── views/
-│   ├── admin/
-│   ├── auth/
-│   │   ├── login.php
-│   │   └── register.php
-│   ├── cafes/
-│   ├── components/
-│   ├── customer/
-│   ├── errors/
-│   │   └── 404.php
-│   ├── home/
-│   │   ├── about.php
-│   │   └── index.php
-│   ├── layouts/
-│   │   ├── app.php
-│   │   └── guest.php
-│   ├── owner/
-│   ├── partials/
-│   └── reservation/
-├── .env
-├── .gitignore
-├── README.md
-├── composer.json
-├── composer.lock
-└── zero
-```
+- **Model:** The base class for all models. It provides the Active Record API.
+- **Builder:** The query builder for the ORM. It provides a fluent interface for building queries.
+- **Collection:** A custom collection class that provides a fluent interface for working with arrays of data.
+- **Hydrator:** Responsible for creating model instances from database results.
+- **Persister:** Responsible for saving and updating models in the database.
+- **Concerns:** A set of traits that provide additional functionality to models, such as mass assignment, timestamps, and soft deletes.
+- **Relations:** A set of classes that define the relationships between models.
+- **Exceptions:** A set of custom exceptions for the ORM.
 
-## Architecture Layers
-
-The framework uses a two-tier architecture:
-
-### Core Layer (`app/Core/`)
-
-Framework infrastructure that remains unchanged across projects:
-
-| Directory | Purpose |
-|-----------|---------|
-| `Application/` | Bootstrap and application lifecycle (`App`) |
-| `Auth/` | Session management, authentication, password hashing |
-| `Config/` | Environment variable loading (`Env`) |
-| `Console/` | CLI command system and stubs |
-| `Container/` | Dependency injection container |
-| `Database/` | PDO connection, QueryBuilder, Schema, Model, Migration, Repository |
-| `Events/` | Event dispatcher and listener contracts |
-| `Logging/` | PSR-3-inspired logging system |
-| `Routing/` | URL routing and dispatching |
-| `Session/` | Flash messages and session utilities |
-| `Validation/` | Input validation |
-| `View/` | View rendering engine |
-
-### Application Layer (`app/`)
-
-Project-specific logic that uses the Core:
-
-| Directory | Purpose |
-|-----------|---------|
-| `Controllers/` | HTTP request handlers |
-| `Events/` | Domain events (e.g., `UserRegistered`) |
-| `Exceptions/` | Application exceptions |
-| `Helpers/` | Utility functions |
-| `Http/` | Request, Response, Middleware |
-| `Listeners/` | Event listeners (e.g., `LogUserRegistered`) |
-| `Models/` | Eloquent-style models |
-| `Providers/` | Service providers |
-| `Repositories/` | Data access objects |
-| `Services/` | Business logic |
-
-## Bootstrap Flow
-
-### HTTP Request (`public/index.php`)
+### ORM Folder Structure
 
 ```
-index.php
-  → vendor/autoload.php (Composer PSR-4)
-  → config/config.php
-      → Env::load(.env)
-      → constants.php
-      → database.php (DB_* defines)
-      → app.php
-  → App::run()
-      → App::boot()
-          → new Container()
-          → App::register() — loops through providers
-              → AppServiceProvider::register() + boot()
-              → DatabaseServiceProvider::register() + boot()
-              → EventServiceProvider::register() + boot()
-              → LoggingServiceProvider::register() + boot()
-      → Router::dispatch()
-          → loads config/routes.php
-          → matches URI to route
-          → executes middleware stack
-          → resolves controller via Container
-          → calls controller method
+Core
+└── ORM
+    ├── Builder.php
+    ├── Collection.php
+    ├── Hydrator.php
+    ├── Model.php
+    ├── Persister.php
+    ├── Pagination
+    │   └── Paginator.php
+    ├── Relations
+    │   ├── Relation.php
+    │   ├── HasOne.php
+    │   ├── HasMany.php
+    │   ├── BelongsTo.php
+    │   └── BelongsToMany.php
+    ├── Concerns
+    │   ├── HasAttributes.php
+    │   ├── GuardsAttributes.php
+    │   ├── HasRelationships.php
+    │   └── HasTimestamps.php
+    └── Exceptions
+        ├── ModelNotFoundException.php
+        ├── MassAssignmentException.php
+        └── RelationNotFoundException.php
 ```
 
-### CLI Command (`zero`)
-
-```
-zero <command>
-  → vendor/autoload.php
-  → config/constants.php
-  → config/config.php
-  → App::boot()
-  → Console::run($argv)
-      → matches command to Command class
-      → calls handle()
-```
-
-## Dependency Injection
-
-The `App\Core\Container\Container` provides:
-
-- **`bind($abstract, $concrete)`** — Register a non-shared binding
-- **`singleton($abstract, $concrete)`** — Register a shared instance
-- **`instance($abstract, $object)`** — Register an existing object
-- **`make($abstract)`** — Resolve a class (auto-wires constructor dependencies via reflection)
-
-The container is created once in `App::boot()` and shared across the entire request lifecycle.
-
-## Service Providers
-
-Providers register and boot framework services. Each provider extends `App\Providers\ServiceProvider`:
+### Example Code
 
 ```php
-abstract class ServiceProvider
-{
-    protected Container $container;
+// Get all users
+User::all();
 
-    abstract public function register(): void;
+// Find a user by ID
+User::find(1);
 
-    public function boot(): void { /* optional */ }
-}
+// Find a user by email
+User::where('email', 'admin@example.com')->first();
+
+// Create a new user
+User::create([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com',
+    'password' => 'password',
+]);
+
+// Update a user
+$user = User::find(1);
+$user->update([
+    'name' => 'John Smith',
+]);
+
+// Delete a user
+$user = User::find(1);
+$user->delete();
+
+// Get a user's coffees
+$user = User::find(1);
+$user->coffees;
+
+// Paginate users
+User::latest()->paginate(10);
+
+// Get all users, including soft-deleted users
+User::withTrashed()->get();
+
+// Find a user by ID or throw an exception
+User::findOrFail(1);
 ```
 
-### Registered Providers
+## Phase 9 — Cache System
 
-| Provider | Registers | Boots |
-|----------|-----------|-------|
-| `AppServiceProvider` | `Container` singleton | — |
-| `DatabaseServiceProvider` | `Database` singleton (PDO) | — |
-| `EventServiceProvider` | `EventDispatcher` singleton | Binds `UserRegistered` → `LogUserRegistered` |
-| `LoggingServiceProvider` | `Logger` singleton (`FileLogger`) | Logs framework boot message |
+### Completed Features
 
-## Routing
+- Cache Driver Interface
+- File Cache Driver
+- Array Cache Driver
+- Null Cache Driver
+- Cache Repository
+- Cache Manager
+- Cache Facade
+- Helper
+- Service Provider
+- CLI Commands
+- Configuration
+- Logging
 
-Routes are defined in `config/routes.php` using `App\Core\Routing\Router`:
+### Architecture
+
+The Cache System is designed to be a modular and extensible system that supports multiple drivers. The core components of the Cache System are:
+
+- **CacheManager:** The main class for managing cache stores.
+- **CacheRepository:** The main API for interacting with the cache.
+- **CacheDriver:** The interface for all cache drivers.
+- **Drivers:** The cache drivers (File, Array, Null).
+- **Cache:** The facade for the cache system.
+- **cache():** The helper function for the cache system.
+- **CacheServiceProvider:** The service provider for the cache system.
+
+### Cache Folder Structure
+
+```
+app/Core/Cache
+├── Cache.php
+├── CacheManager.php
+├── CacheRepository.php
+├── Drivers
+│   ├── CacheDriver.php
+│   ├── FileCacheDriver.php
+│   ├── ArrayCacheDriver.php
+│   └── NullCacheDriver.php
+└── Exceptions
+    └── CacheException.php
+```
+
+### Example Code
 
 ```php
-// Basic routes
-Router::get('/path', [Controller::class, 'method']);
-Router::post('/path', [Controller::class, 'method']);
+// Put an item in the cache
+Cache::put('user', $user, 3600);
 
-// Route groups with prefix
-Router::prefix('/admin', function () {
-    Router::get('/dashboard', [...]);
+// Get an item from the cache
+$user = Cache::get('user');
+
+// Remember an item in the cache
+Cache::remember('users', 300, function () {
+    return User::all();
 });
 
-// Route groups with middleware
-Router::middleware(['auth'], function () {
-    Router::get('/dashboard', [...]);
+// Check if an item exists in the cache
+Cache::has('settings');
+
+// Remove an item from the cache
+Cache::forget('settings');
+
+// Remove all items from the cache
+Cache::flush();
+```
+
+## Phase 10 — Filesystem
+
+### Completed Features
+
+- Filesystem Driver Interface
+- Local Driver
+- Null Driver
+- Storage Facade
+- Helper
+- File Upload
+- HTTP Integration
+- Configuration
+- Service Provider
+- CLI
+
+### Architecture
+
+The Filesystem component is designed to be a modern filesystem abstraction layer. It is built to be extensible for cloud storage providers. The core components of the Filesystem are:
+
+- **FilesystemManager:** The main class for managing filesystem disks.
+- **FilesystemRepository:** The main API for interacting with the filesystem.
+- **FilesystemDriver:** The interface for all filesystem drivers.
+- **Drivers:** The filesystem drivers (Local, Null).
+- **Storage:** The facade for the filesystem.
+- **storage(), storage_path(), public_path():** The helper functions for the filesystem.
+- **UploadedFile:** A class to represent an uploaded file.
+- **File:** A class to represent a file.
+- **FilesystemServiceProvider:** The service provider for the filesystem.
+
+### Filesystem Folder Structure
+
+```
+app/Core/Filesystem
+├── Storage.php
+├── FilesystemManager.php
+├── FilesystemRepository.php
+├── Drivers
+│   ├── FilesystemDriver.php
+│   ├── LocalDriver.php
+│   └── NullDriver.php
+├── UploadedFile.php
+├── File.php
+└── Exceptions
+    └── FilesystemException.php
+```
+
+### Example Code
+
+```php
+// Put a file on the disk
+Storage::put('users/avatar.png', $content);
+
+// Get a file from the disk
+$contents = Storage::get('users/avatar.png');
+
+// Check if a file exists
+Storage::exists('users/avatar.png');
+
+// Copy a file
+Storage::copy('a.txt', 'backup/a.txt');
+
+// Move a file
+Storage::move('old.txt', 'new.txt');
+
+// Delete a file
+Storage::delete('users/avatar.png');
+
+// Get all files in a directory
+$files = Storage::files('users');
+
+// Get all directories in a directory
+$directories = Storage::directories();
+
+// Store an uploaded file
+$request->file('avatar')->store('avatars');
+```
+
+## Phase 11 — Mail System
+
+### Completed Features
+
+- Mail Driver Interface
+- SMTP Driver
+- Log Driver
+- Array Driver
+- Null Driver
+- Mail Manager
+- Mail Repository
+- Mail Facade
+- Mailable
+- Templates
+- Attachments
+- Configuration
+- Service Provider
+- Console Commands
+- Events
+- Logging
+
+### Architecture
+
+The Mail System is designed to be a modern mail system that is extensible for multiple mail drivers. The core components of the Mail System are:
+
+- **MailManager:** The main class for managing mailers.
+- **MailRepository:** The main API for interacting with the mail system.
+- **MailDriver:** The interface for all mail drivers.
+- **Drivers:** The mail drivers (SMTP, Log, Array, Null).
+- **Mail:** The facade for the mail system.
+- **Mailable:** The base class for all mailable classes.
+- **MailServiceProvider:** The service provider for the mail system.
+
+### Mail Folder Structure
+
+```
+app/Core/Mail
+├── Mail.php
+├── MailManager.php
+├── MailRepository.php
+├── MailMessage.php
+├── Mailable.php
+├── Mailer.php
+├── Address.php
+├── Attachment.php
+├── Drivers
+│   ├── MailDriver.php
+│   ├── SMTPDriver.php
+│   ├── LogDriver.php
+│   ├── ArrayDriver.php
+│   └── NullDriver.php
+├── Exceptions
+│   └── MailException.php
+└── Templates
+```
+
+### Example Code
+
+```php
+// Send a mailable
+Mail::to('user@example.com')->send(new WelcomeMail());
+
+// Send a raw text email
+Mail::raw('Hello World', function ($message) {
+    $message->to('user@example.com')->subject('Hello');
 });
 
-// Dynamic parameters
-Router::get('/users/{id}', [UserController::class, 'show']);
+// Send an email with an attachment
+Mail::to('user@example.com')
+    ->attach(storage_path('reports/report.pdf'))
+    ->send(new ReportMail());
 ```
 
-The router supports:
-- GET and POST methods
-- Dynamic route parameters (`{id}`)
-- Route prefixing
-- Middleware groups
-- 404 fallback
+## Phase 12 — Queue System
 
-## HTTP Layer
+### Completed Features
 
-### Request (`App\Http\Request`)
+- Queue Driver Interface
+- Database Driver
+- Sync Driver
+- Array Driver
+- Null Driver
+- Job
+- Dispatcher
+- Queue Worker
+- Database
+- Mail Integration
+- Events
+- Logging
+- Configuration
+- CLI
 
-Static utility for accessing request data:
+### Architecture
 
-```php
-Request::method();       // GET, POST, etc.
-Request::isGet();        // bool
-Request::isPost();       // bool
-Request::input('key');   // $_POST['key'] or $_GET['key']
-Request::all();          // array_merge($_GET, $_POST)
-Request::has('key');     // bool
+The Queue System is designed to be a modern queue system that is extensible for multiple queue drivers. The core components of the Queue System are:
+
+- **QueueManager:** The main class for managing queue connections.
+- **QueueRepository:** The main API for interacting with the queue.
+- **QueueDriver:** The interface for all queue drivers.
+- **Drivers:** The queue drivers (Database, Sync, Array, Null).
+- **Job:** The base class for all jobs.
+- **Dispatcher:** The class for dispatching jobs.
+- **Worker:** The class for processing jobs.
+- **QueueServiceProvider:** The service provider for the queue system.
+
+### Queue Folder Structure
+
+```
+app/Core/Queue
+├── Queue.php
+├── QueueManager.php
+├── QueueRepository.php
+├── Dispatcher.php
+├── Job.php
+├── Worker.php
+├── FailedJob.php
+├── Drivers
+│   ├── QueueDriver.php
+│   ├── DatabaseDriver.php
+│   ├── SyncDriver.php
+│   ├── ArrayDriver.php
+│   └── NullDriver.php
+└── Exceptions
+    └── QueueException.php
 ```
 
-### Response (`App\Http\Response`)
-
-Static utility for sending responses:
+### Example Code
 
 ```php
-Response::redirect('/login');   // header Location + exit
-Response::json($data);          // JSON + exit
+// Dispatch a job
+dispatch(new SendWelcomeEmail($user));
+
+// Dispatch a job with a delay
+dispatch(new GenerateInvoice())->delay(60);
+
+// Dispatch a job to a specific queue
+dispatch(new CleanupLogs())->onQueue('logs');
+
+// Queue a mailable
+Mail::to($user)->queue(new WelcomeMail());
 ```
 
-### Middleware
+## Phase 13 — Task Scheduler
 
-Middleware extends `App\Http\Middleware\Middleware` and implements `handle()`:
+### Completed Features
 
-- **`AuthMiddleware`** — Redirects to `/login` if user is not authenticated
-- **`GuestMiddleware`** — Redirects to `/` if user is already authenticated
+- Scheduling Frequencies
+- Task Types
+- Conditional Execution
+- Concurrency
+- CLI
+- Configuration
+- Queue Integration
+- Logging
+- Events
+- Mutex
 
-Middleware is resolved by name convention: `Router::middleware(['auth'], ...)` resolves to `App\Http\Middleware\AuthMiddleware`.
+### Architecture
 
-## Authentication
+The Task Scheduler is designed to be a modern task scheduler that is extensible for multiple scheduling drivers. The core components of the Task Scheduler are:
 
-The auth system consists of three components:
+- **ScheduleManager:** The main class for managing the schedule.
+- **Scheduler:** The class for running the scheduled events.
+- **Schedule:** The class for defining the scheduled events.
+- **Event:** The base class for all scheduled events.
+- **Frequency:** A trait for defining the frequency of scheduled events.
+- **Mutex:** An interface for preventing overlapping tasks.
+- **ScheduleServiceProvider:** The service provider for the task scheduler.
 
-### SessionGuard (`App\Core\Auth\SessionGuard`)
+### Scheduling Folder Structure
 
-Low-level session wrapper:
-
-```php
-SessionGuard::start();          // session_start() if needed
-SessionGuard::set('key', $val); // $_SESSION['key'] = $val
-SessionGuard::get('key');       // $_SESSION['key'] ?? $default
-SessionGuard::has('key');       // isset check
-SessionGuard::remove('key');    // unset
-SessionGuard::destroy();        // clear + session_destroy()
+```
+app/Core/Scheduling
+├── Schedule.php
+├── Scheduler.php
+├── Event.php
+├── CallbackEvent.php
+├── CommandEvent.php
+├── JobEvent.php
+├── ScheduleManager.php
+├── Frequency.php
+├── Mutex.php
+├── CronExpression.php
+└── Exceptions
+    └── ScheduleException.php
 ```
 
-### AuthManager (`App\Core\Auth\AuthManager`)
-
-High-level auth facade:
+### Example Code
 
 ```php
-AuthManager::login($user);  // stores user array in session
-AuthManager::logout();      // destroys session
-AuthManager::user();        // returns current user array
-AuthManager::check();       // bool — is authenticated?
-AuthManager::id();          // int|null — current user ID
+// Schedule a command
+Schedule::command('cache:clear')->daily();
+
+// Schedule a job
+Schedule::job(new CleanupLogsJob())->dailyAt('03:00');
+
+// Schedule a callback
+Schedule::call(function () {
+    Log::info('Maintenance');
+})->hourly();
 ```
 
-### PasswordHasher (`App\Core\Auth\PasswordHasher`)
+## Phase 14 — Security
 
-BCrypt password hashing:
+### Completed Features
 
-```php
-PasswordHasher::make($password);          // hash
-PasswordHasher::check($password, $hash);  // verify
+- CSRF Protection
+- Password Hashing
+- Encryption
+- Signed URLs
+- Rate Limiter
+- Random Generators
+- Secure Tokens
+- Middleware
+- Configuration
+- Console Commands
+- Logging
+
+### Architecture
+
+The Security component is designed to be a modern security layer that protects against common web vulnerabilities. The core components of the Security component are:
+
+- **CSRF:** A class for generating and validating CSRF tokens.
+- **Encryption:** A class for encrypting and decrypting data.
+- **Hash:** A class for hashing passwords.
+- **RateLimiter:** A class for rate limiting requests.
+- **Signature:** A class for signing and validating URLs.
+- **Middleware:** A set of middleware for protecting against common web vulnerabilities.
+- **SecurityServiceProvider:** The service provider for the security component.
+
+### Security Folder Structure
+
+```
+app/Core/Security
+├── CSRF.php
+├── CSRFToken.php
+├── Encryption.php
+├── Hash.php
+├── RateLimiter.php
+├── Signature.php
+├── URLSigner.php
+├── Random.php
+├── Password.php
+├── Token.php
+├── Middleware
+│   ├── VerifyCsrfToken.php
+│   ├── ThrottleRequests.php
+│   └── SignedUrlMiddleware.php
+└── Exceptions
+    └── SecurityException.php
 ```
 
-## Database Layer
-
-### Connection (`App\Core\Database\Database`)
-
-Singleton PDO wrapper using constants from `config/database.php`:
+### Example Code
 
 ```php
-$pdo = Database::connect(); // PDO instance
+// Generate a CSRF token
+$token = CSRF::generate();
+
+// Check a CSRF token
+CSRF::check($token);
+
+// Hash a password
+$hash = Hash::make('password');
+
+// Check a password
+Hash::check('password', $hash);
+
+// Encrypt a value
+$encrypted = Encryption::encrypt('hello world');
+
+// Decrypt a value
+$decrypted = Encryption::decrypt($encrypted);
+
+// Rate limit a request
+RateLimiter::attempt('test', 5);
+
+// Sign a URL
+$signedUrl = Signature::sign('http://localhost/test');
+
+// Validate a signed URL
+Signature::validate($signedUrl);
 ```
 
-### Model (`App\Core\Database\Model`)
+## Phase 15 — Testing Framework
 
-Abstract base model providing CRUD via QueryBuilder:
+### Completed Features
 
-```php
-abstract class Model
-{
-    protected PDO $db;      // auto-connected
-    protected string $table;
+- Assertions
+- HTTP Testing
+- Database Testing
+- ORM Testing
+- Console Testing
+- CLI
+- Test Discovery
 
-    public function query(): QueryBuilder;
-    public function all(): array;
-    public function find(int $id): ?array;
-    public function findBy(string $column, mixed $value): ?array;
-    public function create(array $data): bool;
-    public function update(int $id, array $data): bool;
-    public function delete(int $id): bool;
-}
+### Architecture
+
+The Testing Framework is designed to be a lightweight testing framework that is tightly integrated with ZeroPing. The core components of the Testing Framework are:
+
+- **TestCase:** The base class for all tests.
+- **TestRunner:** The class for running tests.
+- **TestSuite:** The class for defining a test suite.
+- **Assertion:** A trait for making assertions.
+- **Expect:** A class for making expectations.
+- **HTTP:** A set of classes for testing HTTP requests and responses.
+- **Database:** A set of classes for testing database interactions.
+- **ORM:** A set of classes for testing ORM interactions.
+- **Console:** A set of classes for testing console commands.
+- **Traits:** A set of traits for interacting with the database, making HTTP requests, and using factories.
+
+### Testing Folder Structure
+
+```
+app/Core/Testing
+├── TestCase.php
+├── TestRunner.php
+├── TestSuite.php
+├── Assertion.php
+├── Expect.php
+├── HTTP
+│   ├── TestRequest.php
+│   ├── TestResponse.php
+│   └── HTTPAssertions.php
+├── Database
+│   ├── RefreshDatabase.php
+│   ├── DatabaseAssertions.php
+│   └── Transaction.php
+├── ORM
+│   └── ORMAssertions.php
+├── Console
+│   └── ConsoleAssertions.php
+├── Traits
+│   ├── InteractsWithDatabase.php
+│   ├── MakesHTTPRequests.php
+│   └── UsesFactories.php
+└── Exceptions
 ```
 
-## Query Builder
-
-`App\Core\Database\QueryBuilder` provides a fluent interface for SQL queries:
+### Example Code
 
 ```php
-$results = $model->query()
-    ->where('status', 'active')
-    ->orWhere('role', 'admin')
-    ->orderBy('created_at', 'DESC')
-    ->limit(10)
-    ->offset(0)
-    ->get();
+// HTTP Test
+$response = $this->get('/');
+$response->assertStatus(200);
 
-$first = $model->query()->where('id', 1)->first();
-$count = $model->query()->count();
-$exists = $model->query()->where('email', $email)->exists();
+// Database Test
+$this->assertDatabaseHas('users', [
+    'email' => 'john.doe@example.com',
+]);
+
+// ORM Test
+$user = User::factory()->create();
+$this->assertModelExists($user);
 ```
 
-## Schema Builder
+## Phase 16 — Developer Experience (DX)
 
-### Blueprint (`App\Core\Database\Blueprint`)
+### Completed Features
 
-Fluent column definition:
+- Pretty Exception Page
+- Debug Toolbar
+- Performance
+- Optimize Commands
+- Environment
+- CLI Improvements
+- Generators
+- Code Quality
+- Debug Helpers
+
+### Architecture
+
+The Developer Experience (DX) features are designed to make ZeroPing enjoyable to use. The core components of the DX features are:
+
+- **DebugBar:** A debug toolbar that displays useful information about the current request.
+- **ExceptionHandler:** A class for handling exceptions and rendering pretty error pages.
+- **Performance:** A class for measuring performance.
+- **Optimize Commands:** A set of commands for optimizing the application.
+- **Debug Helpers:** A set of helper functions for debugging.
+
+### Debugging Folder Structure
+
+```
+app/Core/Debug
+├── DebugBar.php
+├── ExceptionHandler.php
+├── PrettyException.php
+├── Performance.php
+├── Stopwatch.php
+├── SQLCollector.php
+├── RouteCollector.php
+├── MemoryCollector.php
+├── RequestCollector.php
+├── ConfigCollector.php
+└── Exceptions
+```
+
+### Example Code
 
 ```php
-Schema::create('users', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('email');
-    $table->integer('age');
-    $table->boolean('active');
-    $table->text('bio');
-    $table->timestamps();
+// Dump and die
+dd($variable);
+
+// Dump a variable
+dump($variable);
+
+// Benchmark a function
+benchmark(function () {
+    // ...
 });
 ```
 
-### Schema (`App\Core\Database\Schema`)
+### Roadmap
 
-```php
-Schema::create('table', $callback);
-Schema::drop('table');
+- [x] Phase 1: Project Setup
+- [x] Phase 2: Routing
+- [x] Phase 3: Controllers
+- [x] Phase 4: Views
+- [x] Phase 5: Database
+- [x] Phase 6: Console
+- [x] Phase 7: Service Providers
+- [x] Phase 8: Complete ORM
+- [x] Phase 9: Cache System
+- [x] Phase 10: Filesystem
+- [x] Phase 11: Mail System
+- [x] Phase 12: Queue System
+- [x] Phase 13: Task Scheduler
+- [x] Phase 14: Security
+- [x] Phase 15: Testing Framework
+- [x] Phase 16: Developer Experience (DX)
+- [ ] Phase 17: Authentication
+- [ ] Phase 18: Authorization
+- [ ] Phase 19: Validation
+- [ ] Phase 20: Error Handling
+- [ ] Phase 21: Logging
+- [ ] Phase 22: Deployment
 ```
-
-## Migration System
-
-### Migration Base (`App\Core\Database\Migration`)
-
-```php
-abstract class Migration
-{
-    abstract public function up(): void;
-    abstract public function down(): void;
-}
-```
-
-### MigrationRunner (`App\Core\Database\MigrationRunner`)
-
-- Creates a `migrations` tracking table
-- Scans `database/migrations/*.php`
-- Tracks batch numbers
-- Skips already-executed migrations
-
-### Available Commands
-
-```bash
-php zero migrate           # Run pending migrations
-php zero make:migration    # Create a new migration file
-```
-
-## Event System
-
-### Core Contracts
-
-- **`App\Core\Events\Event`** — Abstract base class for all events
-- **`App\Core\Events\Listener`** — Interface with `handle(Event $event): void`
-- **`App\Core\Events\EventDispatcher`** — Registers listeners and dispatches events
-
-### Application Events
-
-| Event | Listeners |
-|-------|-----------|
-| `App\Events\UserRegistered` | `App\Listeners\LogUserRegistered` |
-
-### Usage
-
-```php
-$dispatcher = App::container()->make(EventDispatcher::class);
-$dispatcher->dispatch(new UserRegistered($user));
-```
-
-## Logging System
-
-PSR-3-inspired logging with a file-based implementation:
-
-### Logger Interface (`App\Core\Logging\Logger`)
-
-```php
-interface Logger
-{
-    public function emergency(string $message): void;
-    public function alert(string $message): void;
-    public function critical(string $message): void;
-    public function error(string $message): void;
-    public function warning(string $message): void;
-    public function notice(string $message): void;
-    public function info(string $message): void;
-    public function debug(string $message): void;
-    public function log(string $level, string $message): void;
-}
-```
-
-### Log Levels (`App\Core\Logging\LogLevel`)
-
-EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
-
-### FileLogger (`App\Core\Logging\FileLogger`)
-
-Writes to `storage/logs/app.log` with timestamps.
-
-### Usage
-
-```php
-$logger = App::container()->make(Logger::class);
-$logger->info('User logged in');
-$logger->error('Database connection failed');
-```
-
-## Console System
-
-The CLI entry point is the `zero` file, which boots the framework and runs `App\Core\Console\Console`.
-
-### Console Router (`App\Core\Console\Console`)
-
-Routes `$argv[1]` to the appropriate command class.
-
-### Command Base (`App\Core\Console\Command`)
-
-Abstract base for all commands.
-
-## Current CLI Commands
-
-| Command | Class | Description |
-|---------|-------|-------------|
-| `php zero migrate` | `MigrateCommand` | Run pending database migrations |
-| `php zero make:model` | `MakeModelCommand` | Generate a new model file |
-| `php zero make:controller` | `MakeControllerCommand` | Generate a new controller file |
-| `php zero make:service` | `MakeServiceCommand` | Generate a new service file |
-| `php zero make:repository` | `MakeRepositoryCommand` | Generate a new repository file |
-| `php zero make:migration` | `MakeMigrationCommand` | Generate a new migration file |
-| `php zero route:list` | `RouteListCommand` | Display all registered routes |
-| `php zero serve` | `ServeCommand` | Start PHP built-in development server |
-| `php zero log:test` | `LogTestCommand` | Test the logging system |
-| `php zero config:test` | `ConfigTestCommand` | Test configuration loading |
-| `php zero validate:test` | `ValidateTestCommand` | Test validation system |
-
-## Framework Lifecycle
-
-1. **Autoload** — Composer PSR-4 maps `App\` → `app/`, `Config\` → `config/`
-2. **Config** — `.env` loaded, constants defined, database config set
-3. **Boot** — `App::boot()` creates Container, registers all providers
-4. **Provider Register** — Each provider binds services to the container
-5. **Provider Boot** — Each provider performs post-registration setup (e.g., event wiring)
-6. **Dispatch** — Router matches the request URI, executes middleware, resolves controller
-7. **Response** — Controller method runs, returns HTML/JSON/redirect
-
-## Current Features
-
-- Authentication (login/register/logout) with session-based guards
-- Role-ready user model (customer, admin, etc.)
-- CRUD operations via Model + QueryBuilder
-- Database migrations with batch tracking
-- Schema builder with Blueprint
-- Base Repository pattern for data access
-- Service layer for business logic
-- Event system with dispatcher and listeners
-- File-based logging with PSR-3-style levels
-- Middleware stack (auth, guest)
-- Flash messages for session-based feedback
-- View rendering with layouts and partials
-- Console commands for code generation and database management
-- Dependency injection container with auto-wiring
-- Configuration Manager with config cache and environment integration
-- Validation Engine with rule registry, parser, and database presence verifier
-
-## Completed Phases
-
-1. **Phase 1** — Core framework (Container, Routing, View, Request/Response)
-2. **Phase 2** — Database layer (PDO, Model, QueryBuilder, Schema, Migrations)
-3. **Phase 3** — Authentication (SessionGuard, AuthManager, PasswordHasher, Middleware)
-4. **Phase 4** — Service layer and Repository pattern
-5. **Phase 5** — Event system (EventDispatcher, Listener contract)
-6. **Phase 6** — Configuration Manager (Config Repository, Config Cache, Environment Integration)
-7. **Phase 7** — Validation Engine (Rule Registry, Rule Parser, Database Presence Verifier, Validation Rules)
-8. **Phase 8** — Console commands (make:model, make:controller, etc.)
-
-## Remaining Roadmap
-
-- Query Builder: joins, aggregates, having, groupBy
-- Migration: down/rollback support
-- ORM: Active Record, Static Model API, CRUD, Relationships, Query Scopes
-- API layer: JSON response helpers, API routing
-- Template engine: replace raw PHP views
-- CSRF protection middleware
-- Rate limiting middleware
-- File upload handling
-- Queue/job system
-- Testing infrastructure (PHPUnit)

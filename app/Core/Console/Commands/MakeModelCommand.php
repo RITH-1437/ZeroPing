@@ -6,6 +6,13 @@ use App\Core\Console\Command;
 
 class MakeModelCommand extends Command
 {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $description = 'Create a new Eloquent model class';
+
     public function handle(string $name): void
     {
         if (empty($name)) {

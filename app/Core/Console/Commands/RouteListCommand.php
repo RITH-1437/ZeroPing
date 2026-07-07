@@ -7,6 +7,13 @@ use App\Core\Routing\Router;
 
 class RouteListCommand
 {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $description = 'List all registered routes';
+
     public function handle(): void
     {
         require BASE_PATH . '/config/routes.php';

@@ -4,6 +4,13 @@ namespace App\Core\Console;
 
 abstract class Command
 {
+    protected array $options = [];
+
+    public function __construct()
+    {
+        $this->parseOptions();
+    }
+
     protected function stub(string $name): string
     {
         $path = BASE_PATH . "/app/Core/Console/Stubs/{$name}";
@@ -58,5 +65,30 @@ abstract class Command
     protected function error(string $message): void
     {
         echo "\033[31m{$message}\033[0m\n";
+    }
+
+    protected function option(string $key)
+    {
+        return $this->options[$key] ?? null;
+    }
+
+    protected function parseOptions(): void
+    {
+        $argv = $_SERVER['argv'];
+        array_shift($argv);
+        array_shift($argv);
+
+        foreach ($argv as $arg) {
+            if (strpos($arg, '--') === 0) {
+                $parts = explode('=', substr($arg, 2));
+                $this->options[$parts[0]] = $parts[1] ?? true;
+            }
+        }
+    }
+
+    protected function call(string $command, array $arguments = []): void
+    {
+        $argv = array_merge(['zero', $command], $arguments);
+        (new \App\Core\Console())->run($argv);
     }
 }

@@ -2,30 +2,37 @@
 
 namespace App\Core\Database;
 
+use PDO;
+
 class Schema
 {
-    public static function create(
-        string $table,
-        callable $callback
-    ): void {
+    protected PDO $db;
 
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public static function create(string $table, \Closure $callback): void
+    {
         $blueprint = new Blueprint($table);
-
         $callback($blueprint);
-
-        $sql = "
-            CREATE TABLE IF NOT EXISTS {$table} (
-                {$blueprint->build()}
-            )
-        ";
-
-        Database::connect()->exec($sql);
+        $queries = $blueprint->toSql();
+        foreach ($queries as $query) {
+            Database::connect()->exec($query);
+        }
     }
 
     public static function drop(string $table): void
     {
-        Database::connect()->exec(
-            "DROP TABLE IF EXISTS {$table}"
-        );
+        $query = "DROP TABLE IF EXISTS {$table}";
+        Database::connect()->exec($query);
+    }
+
+    public function hasTable(string $table): bool
+    {
+        $query = "SHOW TABLES LIKE '{$table}'";
+        $stmt = $this->db->query($query);
+        return $stmt->rowCount() > 0;
     }
 }

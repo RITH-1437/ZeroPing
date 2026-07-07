@@ -4,6 +4,13 @@ namespace App\Core\Console\Commands;
 
 class MakeMigrationCommand
 {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $description = 'Create a new migration file';
+
     public function handle(string $name): void
     {
         if (empty($name)) {

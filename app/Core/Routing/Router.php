@@ -7,43 +7,36 @@ use App\Core\Application\App;
 class Router
 {
     private static array $routes = [];
-
+    private static ?Route $current = null;
     private static string $prefix = '';
-
     private static array $groupMiddleware = [];
 
     public static function get(
         string $uri,
         array|\Closure $action,
         array $middleware = []
-    ): void {
+    ): Route {
 
         $uri = self::$prefix . $uri;
 
-        self::$routes['GET'][$uri] = [
-            'action' => $action,
-            'middleware' => array_merge(
-                self::$groupMiddleware,
-                $middleware
-            ),
-        ];
+        return self::$routes['GET'][$uri] = new Route('GET', $uri, $action, array_merge(
+            self::$groupMiddleware,
+            $middleware
+        ));
     }
 
     public static function post(
         string $uri,
         array|\Closure $action,
         array $middleware = []
-    ): void {
+    ): Route {
 
         $uri = self::$prefix . $uri;
 
-        self::$routes['POST'][$uri] = [
-            'action' => $action,
-            'middleware' => array_merge(
-                self::$groupMiddleware,
-                $middleware
-            ),
-        ];
+        return self::$routes['POST'][$uri] = new Route('POST', $uri, $action, array_merge(
+            self::$groupMiddleware,
+            $middleware
+        ));
     }
 
     public static function prefix(
@@ -80,6 +73,28 @@ class Router
     public static function routes(): array
     {
         return self::$routes;
+    }
+
+    public static function current(): ?Route
+    {
+        return self::$current;
+    }
+
+    public static function route(string $name, array $parameters = []): string
+    {
+        foreach (self::$routes as $method => $routes) {
+            foreach ($routes as $uri => $route) {
+                if (isset($route['as']) && $route['as'] === $name) {
+                    $url = $uri;
+                    foreach ($parameters as $key => $value) {
+                        $url = str_replace("{{$key}}", $value, $url);
+                    }
+                    return $url;
+                }
+            }
+        }
+
+        return '';
     }
 
     public static function dispatch(): void
@@ -131,6 +146,8 @@ class Router
             }
         }
 
+        self::$current = $route;
+
         // Route not found
         if (!$route) {
 
@@ -141,7 +158,7 @@ class Router
             return;
         }
 
-        $action = $route['action'];
+        $action = $route->action;
 
         if ($action instanceof \Closure) {
             $action(...$params);
@@ -151,7 +168,7 @@ class Router
         [$controllerName, $methodName] = $action;
 
         // Execute middleware
-        foreach ($route['middleware'] as $middleware) {
+        foreach ($route->middleware as $middleware) {
 
             $class = "App\\Http\\Middleware\\" . ucfirst($middleware) . "Middleware";
 

@@ -1,11 +1,11 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+define('ZERO_PING_START', microtime(true));
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/config.php';
 
-use App\Core\Application\App;
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
-App::run();
+$app->handle(
+    $request = \App\Core\Http\Request::capture()
+);
