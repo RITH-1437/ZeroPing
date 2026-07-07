@@ -3,22 +3,23 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
+use App\Core\Database\MigrationRunner;
 
-class ServeCommand extends Command
+class MigrateFreshCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected string $signature = 'serve';
+    protected string $signature = 'migrate:fresh';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected string $description = 'Serve the application on the PHP development server';
+    protected string $description = 'Drop all tables and re-run all migrations';
 
     /**
      * Execute the console command.
@@ -27,11 +28,9 @@ class ServeCommand extends Command
      */
     public function handle(): void
     {
-        $host = 'localhost';
-        $port = 8000;
+        $migrationRunner = new MigrationRunner();
+        $migrationRunner->fresh();
 
-        $this->info("ZeroPing development server started on http://{$host}:{$port}");
-
-        passthru("php -S {$host}:{$port} -t public");
+        $this->info('All tables dropped and migrations re-ran successfully.');
     }
 }

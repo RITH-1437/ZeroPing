@@ -18,6 +18,8 @@ abstract class Model
 
     protected string $primaryKey = 'id';
 
+    protected bool $exists = false;
+
     public bool $timestamps = true;
 
     protected array $fillable = [];
@@ -49,13 +51,88 @@ abstract class Model
 
     /*
     |--------------------------------------------------------------------------
-    | Builder
+    | Query Builder
     |--------------------------------------------------------------------------
     */
 
     public static function query(): Builder
     {
         return new Builder(new static());
+    }
+
+    public static function all(): Collection
+    {
+        return static::query()->all();
+    }
+
+    public static function find(mixed $id): ?static
+    {
+        return static::query()->find($id);
+    }
+
+    public static function where(
+        string $column,
+        string $operator,
+        mixed $value = null
+    ): Builder {
+
+        return static::query()->where(
+            $column,
+            $operator,
+            $value
+        );
+    }
+
+    public static function create(array $attributes): static
+    {
+        $model = new static($attributes);
+
+        $model->save();
+
+        return $model;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Persistence
+    |--------------------------------------------------------------------------
+    */
+
+    public function save(): bool
+    {
+        return (new Persister())
+            ->save($this);
+    }
+
+    public function update(array $attributes): bool
+    {
+        $this->fill($attributes);
+
+        return $this->save();
+    }
+
+    public function delete(): bool
+    {
+        return (new Persister())
+            ->delete($this);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model State
+    |--------------------------------------------------------------------------
+    */
+
+    public function exists(): bool
+    {
+        return $this->exists;
+    }
+
+    public function setExists(bool $exists): static
+    {
+        $this->exists = $exists;
+
+        return $this;
     }
 
     /*

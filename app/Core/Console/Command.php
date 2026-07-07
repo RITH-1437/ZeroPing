@@ -6,7 +6,7 @@ abstract class Command
 {
     protected function stub(string $name): string
     {
-        $path = BASE_PATH . "/app/Console/Stubs/{$name}";
+        $path = BASE_PATH . "/app/Core/Console/Stubs/{$name}";
 
         if (!file_exists($path)) {
             throw new \RuntimeException("Stub {$name} not found.");
@@ -48,5 +48,15 @@ abstract class Command
             $file,
             $content
         );
+    }
+
+    protected function info(string $message): void
+    {
+        echo "\033[32m{$message}\033[0m\n";
+    }
+
+    protected function error(string $message): void
+    {
+        echo "\033[31m{$message}\033[0m\n";
     }
 }

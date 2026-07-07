@@ -3,47 +3,65 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
-use App\Core\Validation\Validator;
+use App\Core\Support\Validator;
 
 class ValidateTestCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected string $signature = 'validate:test';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $description = 'Test the validator';
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
     public function handle(): void
     {
+        $this->info('Testing validator...');
+
+        $validator = new Validator();
+
         $data = [
-
-            'name' => 123,
-
-            'username' => 'ab',
-
-            'email' => 'invalid-email',
-
-            'age' => 'abc',
-
-            'password' => 'secret123',
-
-            'password_confirmation' => 'secret',
-
-            'nickname' => '',
-
+            'name' => 'John Doe',
+            'email' => 'john.doe@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'age' => 25,
+            'website' => 'https://example.com',
         ];
 
-        $validator = Validator::make([
+        $rules = [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+            'age' => 'required|numeric|min:18',
+            'website' => 'nullable|url',
+        ];
 
-            'email' => 'admin@gmail.com'
+        $validator->validate($data, $rules);
 
-        ], [
+        $this->assert($validator->passes(), 'validator passes');
 
-            'email' => 'unique:users,email'
+        $this->info('Validator test completed successfully!');
+    }
 
-        ]);
-
-        if ($validator->fails()) {
-
-            print_r($validator->errors());
-
-            return;
+    protected function assert(bool $condition, string $test): void
+    {
+        if ($condition) {
+            $this->info("✔ {$test}");
+        } else {
+            $this->error("✗ {$test}");
         }
-
-        echo "Validation passed." . PHP_EOL;
     }
 }

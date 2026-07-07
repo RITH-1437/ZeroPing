@@ -3,22 +3,23 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
+use App\Core\Database\MigrationRunner;
 
-class ServeCommand extends Command
+class MigrateRollbackCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected string $signature = 'serve';
+    protected string $signature = 'migrate:rollback';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected string $description = 'Serve the application on the PHP development server';
+    protected string $description = 'Rollback the last database migration';
 
     /**
      * Execute the console command.
@@ -27,11 +28,9 @@ class ServeCommand extends Command
      */
     public function handle(): void
     {
-        $host = 'localhost';
-        $port = 8000;
+        $migrationRunner = new MigrationRunner();
+        $migrationRunner->rollback();
 
-        $this->info("ZeroPing development server started on http://{$host}:{$port}");
-
-        passthru("php -S {$host}:{$port} -t public");
+        $this->info('Migration rolled back successfully.');
     }
 }
