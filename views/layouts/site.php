@@ -10,6 +10,7 @@ $activePage = $active ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="ZeroPing Framework official website and documentation.">
+    <link rel="icon" type="image/png" href="/assets/images/logo.png">
     <script>
         window.tailwind = window.tailwind || {};
         window.tailwind.config = { darkMode: 'class' };

@@ -14,7 +14,7 @@ $links = [
 <header class="fixed inset-x-0 top-0 z-50 border-b border-slate-200/85 bg-white/75 backdrop-blur-xl dark:border-slate-800/85 dark:bg-slate-950/75">
     <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3" aria-label="Primary">
         <a href="/" class="inline-flex items-center gap-3 font-semibold text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-emerald-500 text-white text-sm shadow-sm">ZP</span>
+            <img src="/assets/images/logo.png" alt="ZeroPing" class="h-8 w-8 rounded-lg object-contain">
             <span class="hidden sm:inline">ZeroPing Framework</span>
             <span class="sm:hidden">ZeroPing</span>
         </a>
@@ -39,7 +39,7 @@ $links = [
                 aria-label="Toggle theme"
                 title="Toggle theme"
             >
-                <svg data-theme-icon-sun xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4.5 w-4.5 dark:hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg data-theme-icon-sun xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="4"></circle>
                     <path d="M12 2v2"></path>
                     <path d="M12 20v2"></path>
@@ -50,7 +50,7 @@ $links = [
                     <path d="m6.34 17.66-1.41 1.41"></path>
                     <path d="m19.07 4.93-1.41 1.41"></path>
                 </svg>
-                <svg data-theme-icon-moon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden h-4.5 w-4.5 dark:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg data-theme-icon-moon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden h-5 w-5 dark:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"></path>
                 </svg>
             </button>
