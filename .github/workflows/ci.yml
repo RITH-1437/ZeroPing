@@ -1,33 +1,93 @@
-name: CI
+name: ZeroPing CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
-
+    name: Build & Verify Framework
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      # Checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      # PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      # Composer Validation
+      - name: Validate composer.json
+        run: composer validate --strict
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      # Cache Dependencies
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-
 
-    - name: Run tests
-      run: vendor/bin/phpunit
+      # Install
+      - name: Install Dependencies
+      run: |
+        composer install \
+        --prefer-dist \
+        --no-progress \
+        --no-interaction
+        
+        # PSR-4 Verification
+        - name: Verify Autoload
+          run: composer dump-autoload -o
+        
+        # Syntax Check
+        - name: PHP Syntax Check
+          run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
+        
+        # Framework Boot
+        - name: Framework Boot
+          run: php zero
+        
+        # Framework Health
+        - name: Health Check
+          run: php zero doctor
+        
+        # Core Commands
+        - name: Core Commands
+          run: |
+            php zero version
+            php zero about
+            php zero route:list
+            php zero config:test
+        
+        # Framework Components
+        - name: Framework Components
+          run: |
+            php zero validate:test
+            php zero orm:test
+            php zero cache:test
+            php zero storage:test
+            php zero security:test
+        
+        # Final Test
+        - name: Framework Test Suite
+          run: php zero test
+        
+        # Success
+        - name: Build Summary
+          run: |
+            echo "✅ ZeroPing Framework build completed successfully."
