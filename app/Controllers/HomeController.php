@@ -32,11 +32,6 @@ class HomeController extends Controller
         echo SessionGuard::get('project');
     }
 
-    public function dashboard(): void
-    {
-        echo "<h1>Dashboard</h1>";
-    }
-
     public function logTest(): void
     {
         $logger = App::container()->make(Logger::class);

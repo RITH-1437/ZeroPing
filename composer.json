@@ -1,7 +1,38 @@
 {
-  "name": "rin/zero-ping",
-  "description": "ZeroPing Gaming Cafe Reservation System",
-  "type": "project",
+  "name": "rith-1437/zeroping",
+  "description": "ZeroPing is a lightweight, modern PHP framework built from scratch with MVC architecture, dependency injection, ORM, validation, caching, queue, scheduler, and developer-friendly CLI tools.",
+  "type": "library",
+  "license": "MIT",
+
+  "keywords": [
+    "php",
+    "framework",
+    "mvc",
+    "orm",
+    "router",
+    "validation",
+    "dependency-injection",
+    "queue",
+    "scheduler",
+    "cache",
+    "cli",
+    "zeroping"
+  ],
+
+  "homepage": "https://github.com/RITH-1437/ZeroPing",
+
+  "authors": [
+    {
+      "name": "Rin Nairith",
+      "email": "nairithrin143@gmail.com",
+      "role": "Creator"
+    }
+  ],
+
+  "support": {
+    "issues": "https://github.com/RITH-1437/ZeroPing/issues",
+    "source": "https://github.com/RITH-1437/ZeroPing"
+  },
 
   "autoload": {
     "psr-4": {
@@ -10,5 +41,13 @@
     }
   },
 
-  "require": {}
+  "require": {},
+
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

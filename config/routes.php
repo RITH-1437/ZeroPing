@@ -1,10 +1,7 @@
 <?php
 
-use App\Controllers\AuthController;
-use App\Controllers\DashboardController;
 use App\Controllers\HomeController;
-use App\Controllers\ProfileController;
-use App\Controllers\UserController;
+use App\Controllers\WebsiteController;
 use App\Core\Application\App;
 use App\Core\Logging\Logger;
 use App\Core\Routing\Router;
@@ -14,6 +11,17 @@ use App\Core\Routing\Router;
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
+Router::get('/', [WebsiteController::class, 'home']);
+Router::get('/features', [WebsiteController::class, 'features']);
+Router::get('/documentation', [WebsiteController::class, 'documentation']);
+Router::get('/installation', [WebsiteController::class, 'installation']);
+Router::get('/getting-started', [WebsiteController::class, 'gettingStarted']);
+Router::get('/api', [WebsiteController::class, 'api']);
+Router::get('/roadmap', [WebsiteController::class, 'roadmap']);
+Router::get('/github', [WebsiteController::class, 'github']);
+Router::get('/docs/{slug}', [WebsiteController::class, 'docs']);
+Router::get('/docs', [WebsiteController::class, 'documentation']);
 
 Router::get('/about', [HomeController::class, 'about']);
 Router::get('/session', [HomeController::class, 'session']);
@@ -25,59 +33,4 @@ Router::get('/log-test', function () {
     $logger->error('Testing error.');
 
     echo "Log created successfully.";
-});
-/*
-|--------------------------------------------------------------------------
-| Guest Routes
-|--------------------------------------------------------------------------
-*/
-
-Router::middleware(['guest'], function () {
-
-    Router::get('/login', [AuthController::class, 'login']);
-    Router::post('/login', [AuthController::class, 'authenticate']);
-
-    Router::get('/register', [AuthController::class, 'register']);
-    Router::post('/register', [AuthController::class, 'store']);
-
-});
-
-/*
-|--------------------------------------------------------------------------
-| Authenticated Routes
-|--------------------------------------------------------------------------
-*/
-
-Router::middleware(['auth'], function () {
-
-    Router::get('/', [HomeController::class, 'index']);
-
-    Router::get('/dashboard', [HomeController::class, 'dashboard']);
-
-    Router::get('/logout', [AuthController::class, 'logout']);
-
-    Router::get('/users', [UserController::class, 'index']);
-
-    Router::get('/users/{id}', [UserController::class, 'show']);
-
-    Router::get('/profile', [ProfileController::class, 'index']);
-
-});
-
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
-
-Router::prefix('/admin', function () {
-
-    Router::middleware(['auth'], function () {
-
-        Router::get('/dashboard', [DashboardController::class, 'index']);
-
-        Router::get('/users', [UserController::class, 'index']);
-
-    });
-
 });
