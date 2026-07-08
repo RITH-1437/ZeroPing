@@ -74,8 +74,8 @@ class Console
                 $style->writeln("");
                 $style->writeln("<fg=yellow>About</>");
                 $style->writeln("<fg=gray>──────────────────────────────────────────────────────────────</>");
-                $style->writeln("  <fg=white>Author    </> <fg=cyan>RIN NAIRITH</>");
-                $style->writeln("  <fg=white>Email     </> <fg=cyan>nairithrin143@gmail.com</>");
+                $style->writeln("  <fg=white>Author    </> <fg=cyan>Nairith RIN</>");
+                $style->writeln("  <fg=white>Email     </> <fg=cyan>nairithrinn143@gmail.com</>");
                 $style->writeln("  <fg=white>GitHub    </> <fg=cyan>https://github.com/RITH-1437</>");
                 $style->writeln("  <fg=white>Repository</> <fg=cyan>https://github.com/RITH-1437/ZeroPing</>");
                 $style->writeln("  <fg=white>License   </> <fg=cyan>MIT</>");

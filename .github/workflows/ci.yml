@@ -40,9 +40,9 @@ jobs:
           cp .env.example .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=zeroping" >> .env
-          echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=root" >> .env
+          echo "DB_NAME=zeroping" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASS=root" >> .env
 
       # PHP
       - name: Setup PHP
