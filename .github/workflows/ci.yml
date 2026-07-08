@@ -86,6 +86,9 @@ jobs:
       - name: Framework Health
         run: php zero doctor
 
+      - name: Run Migrations
+        run: php zero migrate
+
       - name: Core Commands
         run: |
           php zero version
