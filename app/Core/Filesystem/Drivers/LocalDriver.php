@@ -107,7 +107,7 @@ class LocalDriver implements FilesystemDriver
         readfile($location);
     }
 
-    public function files(string $directory = null, bool $recursive = false): array
+    public function files(string $directory = '', bool $recursive = false): array
     {
         $path = $this->applyPathPrefix($directory);
 
@@ -120,16 +120,18 @@ class LocalDriver implements FilesystemDriver
 
         foreach ($items as $item) {
             if ($item->isFile()) {
-                $files[] = $item->getPathname();
+                $files[] = $item->getFilename();
             } elseif ($recursive && $item->isDir()) {
-                $files = array_merge($files, $this->files($item->getPathname(), true));
+                foreach ($this->files($item->getFilename(), true) as $sub) {
+                    $files[] = $item->getFilename() . '/' . $sub;
+                }
             }
         }
 
         return $files;
     }
 
-    public function directories(string $directory = null, bool $recursive = false): array
+    public function directories(string $directory = '', bool $recursive = false): array
     {
         $path = $this->applyPathPrefix($directory);
 
@@ -142,9 +144,11 @@ class LocalDriver implements FilesystemDriver
 
         foreach ($items as $item) {
             if ($item->isDir()) {
-                $directories[] = $item->getPathname();
+                $directories[] = $item->getFilename();
                 if ($recursive) {
-                    $directories = array_merge($directories, $this->directories($item->getPathname(), true));
+                    foreach ($this->directories($item->getFilename(), true) as $sub) {
+                        $directories[] = $item->getFilename() . '/' . $sub;
+                    }
                 }
             }
         }
@@ -178,7 +182,7 @@ class LocalDriver implements FilesystemDriver
 
     protected function applyPathPrefix(string $path): string
     {
-        return $this->root . '/' . ltrim($path, '/');
+        return rtrim($this->root, '/') . ($path !== '' ? '/' . ltrim($path, '/') : '');
     }
 
     protected function ensureDirectoryExists(string $path): void

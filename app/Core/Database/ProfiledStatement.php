@@ -19,7 +19,7 @@ class ProfiledStatement extends PDOStatement
         $result = parent::execute($bindings);
         $time = microtime(true) - $start;
 
-        Database::addLog($this->queryString, $bindings, $time);
+        Database::addLog($this->queryString, $bindings ?? [], $time);
 
         return $result;
     }

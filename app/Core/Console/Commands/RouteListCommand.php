@@ -36,7 +36,7 @@ class RouteListCommand
 
             foreach ($items as $uri => $route) {
 
-                $action = $route['action'];
+                $action = $route->action;
 
                 if ($action instanceof Closure) {
 
@@ -51,9 +51,9 @@ class RouteListCommand
                     $actionName = "{$controller}@{$methodName}";
                 }
 
-                $middleware = empty($route['middleware'])
+                $middleware = empty($route->middleware)
                     ? '-'
-                    : implode(', ', $route['middleware']);
+                    : implode(', ', $route->middleware);
 
                 printf(
                     "%-8s %-30s %-40s %-20s\n",

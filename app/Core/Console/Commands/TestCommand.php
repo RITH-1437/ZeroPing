@@ -50,13 +50,13 @@ class TestCommand extends Command
 
     protected function discover(string $path, TestSuite $suite): void
     {
-        $path = BASE_PATH . '/' . $path;
+        $absPath = BASE_PATH . '/' . $path;
 
-        if (!is_dir($path)) {
+        if (!is_dir($absPath)) {
             return;
         }
 
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($absPath));
 
         foreach ($files as $file) {
             if ($file->isDir()) {
@@ -65,8 +65,17 @@ class TestCommand extends Command
 
             if (substr($file->getFilename(), -8) === 'Test.php') {
                 require_once $file->getPathname();
-                $class = 'Tests\\' . str_replace('/', '\\', substr($file->getPathname(), strlen($path) + 1, -4));
-                $suite->add(new $class());
+
+                // Build class name from relative path under BASE_PATH/tests/
+                $testsBase = BASE_PATH . '/tests/';
+                $relative = substr($file->getPathname(), strlen($testsBase), -4);
+                $class = 'Tests\\' . str_replace(['/', '\\'], '\\', $relative);
+
+                if (class_exists($class)) {
+                    $suite->add(new $class());
+                } else {
+                    $this->error("Test class not found: {$class}");
+                }
             }
         }
     }

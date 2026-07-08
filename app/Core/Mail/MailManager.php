@@ -14,21 +14,7 @@ class MailManager
 
     public function __construct()
     {
-        $this->registerDriver('smtp', function ($config) {
-            return new Mailer(new SMTPDriver($config));
-        });
-
-        $this->registerDriver('log', function () {
-            return new Mailer(new LogDriver());
-        });
-
-        $this->registerDriver('array', function () {
-            return new Mailer(new ArrayDriver());
-        });
-
-        $this->registerDriver('null', function () {
-            return new Mailer(new NullDriver());
-        });
+        // Drivers are resolved lazily via resolve() → create*Driver() methods
     }
 
     public function mailer(string $name = null): Mailer

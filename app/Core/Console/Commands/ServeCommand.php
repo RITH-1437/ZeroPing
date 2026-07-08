@@ -28,7 +28,7 @@ class ServeCommand extends Command
     public function handle(): void
     {
         $host = 'localhost';
-        $port = 8000;
+        $port = 1437;
 
         $this->info("ZeroPing development server started on http://{$host}:{$port}");
 

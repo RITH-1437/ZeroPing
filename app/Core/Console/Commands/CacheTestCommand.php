@@ -55,7 +55,8 @@ class CacheTestCommand extends Command
 
     protected function testRemember(): void
     {
-        $value = Cache::remember('test', 60, function () {
+        Cache::forget('remember_test');
+        $value = Cache::remember('remember_test', 60, function () {
             return 'remembered';
         });
         $this->assert($value === 'remembered', 'remember');

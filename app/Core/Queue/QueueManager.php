@@ -14,21 +14,7 @@ class QueueManager
 
     public function __construct()
     {
-        $this->registerDriver('sync', function () {
-            return new QueueRepository(new SyncDriver());
-        });
-
-        $this->registerDriver('database', function ($config) {
-            return new QueueRepository(new DatabaseDriver($config));
-        });
-
-        $this->registerDriver('array', function () {
-            return new QueueRepository(new ArrayDriver());
-        });
-
-        $this->registerDriver('null', function () {
-            return new QueueRepository(new NullDriver());
-        });
+        // Drivers are resolved via create*Driver() methods in resolve()
     }
 
     public function connection(string $name = null): QueueRepository

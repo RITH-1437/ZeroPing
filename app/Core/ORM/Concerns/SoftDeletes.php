@@ -110,7 +110,7 @@ trait SoftDeletes
      *
      * @return \App\Core\Database\QueryBuilder
      */
-    public static function withTrashed(): QueryBuilder
+    public static function withTrashed(): \App\Core\Database\QueryBuilder
     {
         return (new static)->query()->withTrashed();
     }
@@ -120,7 +120,7 @@ trait SoftDeletes
      *
      * @return \App\Core\Database\QueryBuilder
      */
-    public static function onlyTrashed(): QueryBuilder
+    public static function onlyTrashed(): \App\Core\Database\QueryBuilder
     {
         return (new static)->query()->onlyTrashed();
     }

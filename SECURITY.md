@@ -13,5 +13,5 @@ currently being supported with security updates.
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability within ZeroPing, please send an e-mail
-to RITH at [your-email@example.com](mailto:your-email@example.com). All
+to RIN NAIRITH at [nairithrin143@gmail.com](mailto:nairithrin143@gmail.com). All
 security vulnerabilities will be promptly addressed.

@@ -3,6 +3,7 @@
 namespace App\Core\Database;
 
 use App\Core\Database\QueryBuilder;
+use App\Core\ORM\Collection;
 use App\Core\ORM\Concerns\GuardsAttributes;
 use App\Core\ORM\Concerns\HasAttributes;
 use App\Core\ORM\Concerns\HasEvents;
@@ -13,11 +14,17 @@ use PDO;
 
 abstract class Model
 {
-    use GuardsAttributes, HasTimestamps, HasAttributes, HasRelationships, SoftDeletes, HasEvents;
+    use GuardsAttributes, HasTimestamps, HasAttributes, HasRelationships, SoftDeletes, HasEvents {
+        HasRelationships::__get insteadof HasAttributes;
+        HasAttributes::__get as getAttributeMagic;
+    }
 
     protected PDO $db;
 
     protected string $table;
+
+    /** Set to false on models whose tables have no deleted_at column */
+    protected bool $hasSoftDeletes = true;
 
     public function __construct(array $attributes = [])
     {
@@ -30,16 +37,19 @@ abstract class Model
      */
     public function query(): QueryBuilder
     {
-        return new QueryBuilder(
-            $this->db,
-            $this->table
-        );
+        $qb = new QueryBuilder($this->db, $this->table);
+
+        if (!$this->hasSoftDeletes) {
+            $qb->withTrashed();
+        }
+
+        return $qb;
     }
 
     /**
      * Get all records.
      */
-    public static function all(): array
+    public static function all(): Collection
     {
         return (new static)->query()->get();
     }
@@ -47,13 +57,32 @@ abstract class Model
     /**
      * Find a record by primary key.
      */
-    public static function find(int $id): ?static
+    public static function find(int|string $id): ?static
     {
         $attributes = (new static)->query()
-            ->where('id', $id)
+            ->where('id', (int) $id)
             ->first();
 
-        return $attributes ? new static($attributes) : null;
+        if (!$attributes) return null;
+        $model = new static();
+        $model->forceFill((array) $attributes);
+        return $model;
+    }
+
+    /**
+     * Get the primary key value for this model instance.
+     */
+    public function getKey(): mixed
+    {
+        return $this->attributes['id'] ?? null;
+    }
+
+    /**
+     * Get the table name for this model.
+     */
+    public function getTable(): string
+    {
+        return $this->table;
     }
 
     /**
@@ -65,7 +94,10 @@ abstract class Model
             ->where($column, $value)
             ->first();
 
-        return $attributes ? new static($attributes) : null;
+        if (!$attributes) return null;
+        $model = new static();
+        $model->forceFill((array) $attributes);
+        return $model;
     }
 
     /**
@@ -92,7 +124,7 @@ abstract class Model
         }
 
         if (isset($this->attributes['id'])) {
-            $result = $this->update();
+            $result = $this->performUpdate();
         } else {
             $result = $this->insert();
         }
@@ -105,9 +137,18 @@ abstract class Model
     }
 
     /**
-     * Update a record.
+     * Update the model with the given attributes and save.
      */
-    protected function update(): bool
+    public function update(array $attributes = []): bool
+    {
+        $this->fill($attributes);
+        return $this->save();
+    }
+
+    /**
+     * Perform the actual UPDATE query.
+     */
+    protected function performUpdate(): bool
     {
         if ($this->fireModelEvent('updating') === false) {
             return false;

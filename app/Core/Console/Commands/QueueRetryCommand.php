@@ -29,7 +29,12 @@ class QueueRetryCommand extends Command
      */
     public function handle(string $id): void
     {
-        $job = FailedJob::find($id);
+        if (empty($id)) {
+            $this->error('Please provide a job ID. Usage: php zero queue:retry <id>');
+            return;
+        }
+
+        $job = FailedJob::find((int) $id);
 
         if (!$job) {
             $this->error('Failed job not found.');

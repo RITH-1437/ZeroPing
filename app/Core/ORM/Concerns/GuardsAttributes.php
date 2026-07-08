@@ -21,6 +21,17 @@ trait GuardsAttributes
     protected array $guarded = ['*'];
 
     /**
+     * Force fill — bypass fillable guards (used when hydrating from DB).
+     */
+    public function forceFill(array $attributes): self
+    {
+        foreach ($attributes as $key => $value) {
+            $this->setAttribute($key, $value);
+        }
+        return $this;
+    }
+
+    /**
      * Fill the model with an array of attributes.
      *
      * @param  array  $attributes

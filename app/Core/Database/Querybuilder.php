@@ -204,7 +204,7 @@ class QueryBuilder
 
     public function find($id, $columns = ['*'])
     {
-        return $this->where('id', '=', $id)->first($columns);
+        return $this->where('id', $id)->first($columns);
     }
 
     public function findOrFail($id, $columns = ['*'])
@@ -445,20 +445,18 @@ class QueryBuilder
         }
 
         if (!empty($this->where)) {
-
             $sql .= " WHERE ";
-
             $first = true;
 
             foreach ($this->where as $condition) {
-
                 if ($first) {
-
-                    $condition = preg_replace('/^OR /', '', $condition);
-
+                    $condition = preg_replace('/^(AND |OR )/i', '', $condition);
                     $first = false;
+                } else {
+                    if (!preg_match('/^(AND |OR )/i', $condition)) {
+                        $condition = "AND " . $condition;
+                    }
                 }
-
                 $sql .= $condition . " ";
             }
         }
@@ -472,19 +470,15 @@ class QueryBuilder
         }
 
         if (!empty($this->orderBy)) {
-
             $sql .= " ORDER BY ";
-
             $sql .= implode(', ', $this->orderBy);
         }
 
         if ($this->limit !== null) {
-
             $sql .= " LIMIT {$this->limit}";
         }
 
         if ($this->offset !== null) {
-
             $sql .= " OFFSET {$this->offset}";
         }
 

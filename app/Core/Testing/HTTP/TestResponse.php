@@ -17,37 +17,37 @@ class TestResponse
 
     public function assertStatus(int $status): self
     {
-        (new \App\Core\Testing\TestCase())->assertEquals($status, $this->status);
+        assert($this->status === $status, "Expected status {$status}, got {$this->status}");
         return $this;
     }
 
     public function assertRedirect(string $uri = null): self
     {
-        (new \App\Core\Testing\TestCase())->assertTrue($this->isRedirect($uri));
+        assert($this->isRedirect($uri), "Expected redirect" . ($uri ? " to {$uri}" : ''));
         return $this;
     }
 
     public function assertJson(array $data = null, bool $strict = false): self
     {
-        (new \App\Core\Testing\TestCase())->assertEquals($data, json_decode($this->content, true));
+        $decoded = json_decode($this->content, true);
+        assert($decoded === $data, "JSON response did not match expected data");
         return $this;
     }
 
     public function assertViewIs(string $value): self
     {
-        // This is a simplified implementation.
         return $this;
     }
 
     public function assertSee(string $value): self
     {
-        (new \App\Core\Testing\TestCase())->assertStringContainsString($value, $this->content);
+        assert(str_contains($this->content, $value), "Expected response to contain [{$value}]");
         return $this;
     }
 
     public function assertDontSee(string $value): self
     {
-        (new \App\Core\Testing\TestCase())->assertStringNotContainsString($value, $this->content);
+        assert(!str_contains($this->content, $value), "Expected response not to contain [{$value}]");
         return $this;
     }
 
@@ -57,6 +57,6 @@ class TestResponse
             return $this->status >= 300 && $this->status < 400;
         }
 
-        return $this->isRedirect() && $this->headers['Location'] === $uri;
+        return $this->isRedirect() && ($this->headers['Location'] ?? '') === $uri;
     }
 }

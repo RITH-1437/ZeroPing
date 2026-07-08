@@ -12,7 +12,7 @@ class TestRequest
     protected array $server;
     protected string $content;
 
-    public function __construct(string $method, string $uri, array $parameters = [], array $cookies = [], array $files = [], array $server = [], string $content = null)
+    public function __construct(string $method, string $uri, array $parameters = [], array $cookies = [], array $files = [], array $server = [], string $content = '')
     {
         $this->method = $method;
         $this->uri = $uri;

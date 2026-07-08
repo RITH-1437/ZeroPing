@@ -16,35 +16,36 @@ class AuthenticationService
 
     public function register(array $data): bool
     {
-        $validator = new Validator();
+        $validator = Validator::make($data, [
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'username' => 'required|string|max:100',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6|max:255',
+            'phone' => 'nullable|string|max:100',
+        ]);
 
-        $validator
-            ->required('first_name', $data['first_name'])
-            ->required('last_name', $data['last_name'])
-            ->required('username', $data['username'])
-            ->required('email', $data['email'])
-            ->required('password', $data['password'])
-            ->email('email', $data['email'])
-            ->min('password', $data['password'], 6);
-
-        if (!$validator->passes()) {
+        if ($validator->fails()) {
             return false;
         }
 
-        if ($this->users->findByEmail($data['email'])) {
+        $email = (string) ($data['email'] ?? '');
+        $username = (string) ($data['username'] ?? '');
+
+        if ($this->users->findByEmail($email)) {
             return false;
         }
 
-        if ($this->users->findByUsername($data['username'])) {
+        if ($this->users->findByUsername($username)) {
             return false;
         }
 
         return $this->users->create([
-            'first_name' => $data['first_name'],
-            'last_name'  => $data['last_name'],
-            'username'   => $data['username'],
-            'email'      => $data['email'],
-            'password'   => PasswordHasher::make($data['password']),
+            'first_name' => (string) ($data['first_name'] ?? ''),
+            'last_name'  => (string) ($data['last_name'] ?? ''),
+            'username'   => $username,
+            'email'      => $email,
+            'password'   => PasswordHasher::make((string) ($data['password'] ?? '')),
             'role'       => 'customer',
             'phone'      => $data['phone'] ?? null,
         ]);

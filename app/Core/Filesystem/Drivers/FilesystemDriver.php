@@ -26,9 +26,9 @@ interface FilesystemDriver
 
     public function download(string $path, string $name = null, array $headers = []);
 
-    public function files(string $directory = null, bool $recursive = false): array;
+    public function files(string $directory = '', bool $recursive = false): array;
 
-    public function directories(string $directory = null, bool $recursive = false): array;
+    public function directories(string $directory = '', bool $recursive = false): array;
 
     public function makeDirectory(string $path): bool;
 

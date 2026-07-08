@@ -4,6 +4,7 @@ namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
 use App\Core\Queue\Worker;
+use App\Core\Queue\QueueManager;
 
 class QueueWorkCommand extends Command
 {
@@ -28,13 +29,13 @@ class QueueWorkCommand extends Command
      */
     public function handle(): void
     {
-        $worker = new Worker();
+        $worker = new Worker(new QueueManager());
         $worker->run(
-            $this->option('connection'),
+            $this->option('connection') ?? 'sync',
             $this->option('queue'),
-            $this->option('delay'),
-            $this->option('sleep'),
-            $this->option('tries')
+            (int) ($this->option('delay') ?? 0),
+            (int) ($this->option('sleep') ?? 3),
+            (int) ($this->option('tries') ?? 1)
         );
     }
 }

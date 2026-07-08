@@ -15,7 +15,7 @@
 
 ## About ZeroPing
 
-ZeroPing is a PHP framework for web artisans. It is a free, open-source PHP web framework, created by RITH, intended for the development of web applications following the model–view–controller (MVC) architectural pattern.
+ZeroPing is a PHP framework for web artisans. It is a free, open-source PHP web framework, created by RIN NAIRITH, intended for the development of web applications following the model–view–controller (MVC) architectural pattern.
 
 ## Learning ZeroPing
 
@@ -33,7 +33,7 @@ In order to ensure that the ZeroPing community is welcoming to all, please revie
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within ZeroPing, please send an e-mail to RITH at [your-email@example.com](mailto:your-email@example.com). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within ZeroPing, please send an e-mail to RIN NAIRITH at [nairithrin143@gmail.com](mailto:nairithrin143@gmail.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 

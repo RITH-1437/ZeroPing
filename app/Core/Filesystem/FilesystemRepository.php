@@ -68,12 +68,12 @@ class FilesystemRepository
         return $this->driver->download($path, $name, $headers);
     }
 
-    public function files(string $directory = null, bool $recursive = false): array
+    public function files(string $directory = '', bool $recursive = false): array
     {
         return $this->driver->files($directory, $recursive);
     }
 
-    public function directories(string $directory = null, bool $recursive = false): array
+    public function directories(string $directory = '', bool $recursive = false): array
     {
         return $this->driver->directories($directory, $recursive);
     }

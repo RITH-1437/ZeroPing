@@ -9,7 +9,7 @@ trait DatabaseAssertions
     public function assertDatabaseHas(string $table, array $data): void
     {
         $this->assertTrue(
-            $this->getDatabase()->table($table)->where($data)->exists(),
+            $this->rowExists($table, $data),
             "Failed asserting that table [{$table}] has matching row."
         );
     }
@@ -17,21 +17,27 @@ trait DatabaseAssertions
     public function assertDatabaseMissing(string $table, array $data): void
     {
         $this->assertFalse(
-            $this->getDatabase()->table($table)->where($data)->exists(),
+            $this->rowExists($table, $data),
             "Failed asserting that table [{$table}] does not have matching row."
         );
     }
 
     public function assertTableExists(string $table): void
     {
+        $pdo = Database::connect();
+        $stmt = $pdo->query("SHOW TABLES LIKE " . $pdo->quote($table));
         $this->assertTrue(
-            $this->getDatabase()->getSchemaBuilder()->hasTable($table),
+            $stmt->fetchColumn() !== false,
             "Failed asserting that table [{$table}] exists."
         );
     }
 
-    protected function getDatabase()
+    protected function rowExists(string $table, array $data): bool
     {
-        return Database::connect();
+        $pdo = Database::connect();
+        $wheres = implode(' AND ', array_map(fn($k) => "{$k} = ?", array_keys($data)));
+        $stmt = $pdo->prepare("SELECT 1 FROM `{$table}` WHERE {$wheres} LIMIT 1");
+        $stmt->execute(array_values($data));
+        return $stmt->fetchColumn() !== false;
     }
 }

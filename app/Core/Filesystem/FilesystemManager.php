@@ -12,13 +12,7 @@ class FilesystemManager
 
     public function __construct()
     {
-        $this->registerDriver('local', function ($config) {
-            return new FilesystemRepository(new LocalDriver($config));
-        });
-
-        $this->registerDriver('null', function () {
-            return new FilesystemRepository(new NullDriver());
-        });
+        // Drivers are resolved lazily via resolve() → create*Driver() methods
     }
 
     public function disk(string $name = null): FilesystemRepository
@@ -39,14 +33,19 @@ class FilesystemManager
         return $this->disk($driver);
     }
 
-    protected function resolve(string $name, array $config): FilesystemRepository
+    protected function resolve(string $name, ?array $config): FilesystemRepository
     {
-        $driverMethod = 'create' . ucfirst($name) . 'Driver';
+        if (!$config) {
+            throw new \InvalidArgumentException("Disk [{$name}] is not configured.");
+        }
+
+        $driver = $config['driver'] ?? $name;
+        $driverMethod = 'create' . ucfirst($driver) . 'Driver';
 
         if (method_exists($this, $driverMethod)) {
             return $this->{$driverMethod}($config);
         } else {
-            throw new \InvalidArgumentException("Driver [{$name}] is not supported.");
+            throw new \InvalidArgumentException("Driver [{$driver}] is not supported.");
         }
     }
 

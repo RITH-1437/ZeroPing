@@ -10,9 +10,11 @@ class UserTest extends TestCase
     public function test_can_create_user()
     {
         $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
-            'password' => 'password',
+            'first_name' => 'John',
+            'last_name'  => 'Doe',
+            'username'   => 'johndoe_user',
+            'email'      => 'john.user@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $this->assertModelExists($user);

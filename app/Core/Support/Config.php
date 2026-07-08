@@ -12,6 +12,19 @@ class Config
             static::load();
         }
 
+        // Support dot-notation: "cache.default" → $items['cache']['default']
+        if (str_contains($key, '.')) {
+            $parts = explode('.', $key);
+            $value = static::$items;
+            foreach ($parts as $part) {
+                if (!is_array($value) || !array_key_exists($part, $value)) {
+                    return $default;
+                }
+                $value = $value[$part];
+            }
+            return $value;
+        }
+
         return static::$items[$key] ?? $default;
     }
 

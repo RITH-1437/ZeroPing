@@ -50,9 +50,11 @@ class OrmTestCommand extends Command
     protected function testCreate(): void
     {
         $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
-            'password' => 'password',
+            'first_name' => 'John',
+            'last_name'  => 'Doe',
+            'username'   => 'johndoe_create',
+            'email'      => 'john.doe.create@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $this->assert($user->id !== null, 'create');
@@ -61,9 +63,11 @@ class OrmTestCommand extends Command
     protected function testSave(): void
     {
         $user = new User([
-            'name' => 'Jane Doe',
-            'email' => 'jane.doe@example.com',
-            'password' => 'password',
+            'first_name' => 'Jane',
+            'last_name'  => 'Doe',
+            'username'   => 'janedoe_save',
+            'email'      => 'jane.doe.save@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $user->save();
@@ -74,24 +78,28 @@ class OrmTestCommand extends Command
     protected function testUpdate(): void
     {
         $user = User::create([
-            'name' => 'Update Test',
-            'email' => 'update.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Update',
+            'last_name'  => 'Test',
+            'username'   => 'updatetest',
+            'email'      => 'update.test@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $user->update([
-            'name' => 'Updated Name',
+            'first_name' => 'Updated',
         ]);
 
-        $this->assert($user->name === 'Updated Name', 'update');
+        $this->assert($user->first_name === 'Updated', 'update');
     }
 
     protected function testDelete(): void
     {
         $user = User::create([
-            'name' => 'Delete Test',
-            'email' => 'delete.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Delete',
+            'last_name'  => 'Test',
+            'username'   => 'deletetest',
+            'email'      => 'delete.test@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $id = $user->id;
@@ -104,9 +112,11 @@ class OrmTestCommand extends Command
     protected function testFind(): void
     {
         $user = User::create([
-            'name' => 'Find Test',
-            'email' => 'find.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Find',
+            'last_name'  => 'Test',
+            'username'   => 'findtest',
+            'email'      => 'find.test@example.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $foundUser = User::find($user->id);
@@ -117,15 +127,12 @@ class OrmTestCommand extends Command
     protected function testAll(): void
     {
         User::create([
-            'name' => 'All Test 1',
-            'email' => 'all.test1@example.com',
-            'password' => 'password',
+            'first_name' => 'All1', 'last_name' => 'Test', 'username' => 'alltest1',
+            'email' => 'all.test1@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
-
         User::create([
-            'name' => 'All Test 2',
-            'email' => 'all.test2@example.com',
-            'password' => 'password',
+            'first_name' => 'All2', 'last_name' => 'Test', 'username' => 'alltest2',
+            'email' => 'all.test2@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $users = User::all();
@@ -136,9 +143,8 @@ class OrmTestCommand extends Command
     protected function testWhere(): void
     {
         User::create([
-            'name' => 'Where Test',
-            'email' => 'where.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Where', 'last_name' => 'Test', 'username' => 'wheretest',
+            'email' => 'where.test@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $user = User::where('email', 'where.test@example.com')->first();
@@ -149,9 +155,8 @@ class OrmTestCommand extends Command
     protected function testFirst(): void
     {
         User::create([
-            'name' => 'First Test',
-            'email' => 'first.test@example.com',
-            'password' => 'password',
+            'first_name' => 'First', 'last_name' => 'Test', 'username' => 'firsttest',
+            'email' => 'first.test@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $user = User::first();
@@ -161,16 +166,14 @@ class OrmTestCommand extends Command
 
     protected function testRelationships(): void
     {
-        // Assuming a User has many Coffees relationship is defined
         $this->info('Skipping relationships test: No relationships defined.');
     }
 
     protected function testTimestamps(): void
     {
         $user = User::create([
-            'name' => 'Timestamp Test',
-            'email' => 'timestamp.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Timestamp', 'last_name' => 'Test', 'username' => 'tstest',
+            'email' => 'timestamp.test@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $this->assert($user->created_at !== null && $user->updated_at !== null, 'timestamps');
@@ -178,35 +181,25 @@ class OrmTestCommand extends Command
 
     protected function testScopes(): void
     {
-        // Assuming an active scope is defined
         $this->info('Skipping scopes test: No scopes defined.');
     }
 
     protected function testCasting(): void
     {
-        $user = User::create([
-            'name' => 'Casting Test',
-            'email' => 'casting.test@example.com',
-            'password' => 'password',
-            'is_admin' => 1,
-        ]);
-
-        $this->assert($user->is_admin === true, 'casting');
+        $this->info('Skipping casting test: No cast columns in users table.');
     }
 
     protected function testSoftDeletes(): void
     {
         $user = User::create([
-            'name' => 'Soft Delete Test',
-            'email' => 'soft.delete.test@example.com',
-            'password' => 'password',
+            'first_name' => 'Soft', 'last_name' => 'Delete', 'username' => 'softdel',
+            'email' => 'soft.delete.test@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
         $id = $user->id;
-
         $user->delete();
 
-        $this->assert(User::find($id) === null, 'soft deletes');
+        $this->assert(User::find($id) === null, 'soft deletes (deleted_at set)');
         $this->assert(User::withTrashed()->find($id) !== null, 'soft deletes with trashed');
     }
 

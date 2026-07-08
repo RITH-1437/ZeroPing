@@ -24,4 +24,15 @@ class Mailer
     {
         return $this->driver->send($mailable);
     }
+
+    public function raw(string $text, \Closure $callback): bool
+    {
+        $message = new Message();
+        $callback($message);
+        // Raw send — log the message if driver supports it, otherwise no-op
+        if (method_exists($this->driver, 'sendRaw')) {
+            return $this->driver->sendRaw($message, $text);
+        }
+        return true;
+    }
 }

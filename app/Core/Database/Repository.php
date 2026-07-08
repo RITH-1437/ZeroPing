@@ -8,28 +8,44 @@ abstract class Repository
 {
     protected Model $model;
 
-    public function all(): array
+    public function all(): mixed
     {
         return $this->model->all();
     }
 
     public function find(int $id): ?array
     {
-        return $this->model->find($id);
+        return $this->model->query()
+            ->where('id', $id)
+            ->first();
     }
 
     public function create(array $data): bool
     {
-        return $this->model->create($data);
+        $this->model->create($data);
+
+        return true;
     }
 
     public function update(int $id, array $data): bool
     {
-        return $this->model->update($id, $data);
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return false;
+        }
+
+        return $record->update($data);
     }
 
     public function delete(int $id): bool
     {
-        return $this->model->delete($id);
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return false;
+        }
+
+        return $record->delete();
     }
 }

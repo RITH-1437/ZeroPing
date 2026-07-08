@@ -13,17 +13,7 @@ class CacheManager
 
     public function __construct()
     {
-        $this->registerDriver('file', function ($config) {
-            return new CacheRepository(new FileCacheDriver($config));
-        });
-
-        $this->registerDriver('array', function () {
-            return new CacheRepository(new ArrayCacheDriver());
-        });
-
-        $this->registerDriver('null', function () {
-            return new CacheRepository(new NullCacheDriver());
-        });
+        // Drivers are resolved via create*Driver() methods in resolve()
     }
 
     public function store(string $name = null): CacheRepository

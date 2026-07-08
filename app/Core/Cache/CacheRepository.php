@@ -48,6 +48,12 @@ class CacheRepository
         return $this->driver->flush();
     }
 
+    public function forever(string $key, mixed $value): bool
+    {
+        // Store with a very long TTL (10 years)
+        return $this->driver->put($key, $value, 315360000);
+    }
+
     public function increment(string $key, int $value = 1): int|bool
     {
         return $this->driver->increment($key, $value);

@@ -1,20 +1,30 @@
 <?php
 
-return "
+use App\Core\Database\Migration;
+use App\Core\Database\Schema;
+use App\Core\Database\Blueprint;
 
-create table users (
-  id int auto_increment primary key,
-  first_name varchar(100) not null,
-  last_name varchar(100) not null,
-  username varchar(100) unique not null ,
-  email varchar(255) unique  not null,
-  password varchar(255) not null,
-  role enum('admin', 'owner', 'customer') default 'customer',
-  phone varchar(100),
-  avatar varchar(255) default  null,
-  created_at timestamp default current_timestamp,
-  updated_at timestamp default  current_timestamp
-                   on update current_timestamp
-);
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
+            $table->string('username', 100);
+            $table->string('email', 255);
+            $table->string('password', 255);
+            $table->enum('role', ['admin', 'owner', 'customer'])->default('customer');
+            $table->string('phone', 100)->nullable();
+            $table->string('avatar', 255)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
 
-";
+    public function down(): void
+    {
+        Schema::drop('users');
+    }
+};
