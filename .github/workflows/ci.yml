@@ -44,50 +44,41 @@ jobs:
 
       # Install
       - name: Install Dependencies
-      run: |
-        composer install \
-        --prefer-dist \
-        --no-progress \
-        --no-interaction
-        
-        # PSR-4 Verification
-        - name: Verify Autoload
-          run: composer dump-autoload -o
-        
-        # Syntax Check
-        - name: PHP Syntax Check
-          run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
-        
-        # Framework Boot
-        - name: Framework Boot
-          run: php zero
-        
-        # Framework Health
-        - name: Health Check
-          run: php zero doctor
-        
-        # Core Commands
-        - name: Core Commands
-          run: |
-            php zero version
-            php zero about
-            php zero route:list
-            php zero config:test
-        
-        # Framework Components
-        - name: Framework Components
-          run: |
-            php zero validate:test
-            php zero orm:test
-            php zero cache:test
-            php zero storage:test
-            php zero security:test
-        
-        # Final Test
-        - name: Framework Test Suite
-          run: php zero test
-        
-        # Success
-        - name: Build Summary
-          run: |
-            echo "✅ ZeroPing Framework build completed successfully."
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
+
+      - name: Verify Autoload
+        run: composer dump-autoload -o
+
+      - name: PHP Syntax Check
+        run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Framework Boot
+        run: php zero
+
+      - name: Framework Health
+        run: php zero doctor
+
+      - name: Core Commands
+        run: |
+          php zero version
+          php zero about
+          php zero route:list
+          php zero config:test
+
+      - name: Framework Components
+        run: |
+          php zero validate:test
+          php zero orm:test
+          php zero cache:test
+          php zero storage:test
+          php zero security:test
+
+      - name: Framework Test Suite
+        run: php zero test
+
+      - name: Build Summary
+        run: echo "✅ ZeroPing Framework build completed successfully."
