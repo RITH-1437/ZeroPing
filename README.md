@@ -57,7 +57,7 @@ Thank you for considering contributing to the ZeroPing framework! The contributi
 
 ## Code of Conduct
 
-In order to ensure that the ZeroPing community is welcoming to all, please review and abide by the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+In order to ensure that the ZeroPing community is welcoming to all, please review and abide by the [CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md).
 
 ## Security Vulnerabilities
 
