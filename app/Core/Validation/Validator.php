@@ -12,16 +12,18 @@ class Validator
 
     public function __construct(
         protected array $data,
-        protected array $rules
+        protected array $rules,
+        protected array $messages = []
     ) {
         $this->result = new ValidationResult();
     }
 
     public static function make(
         array $data,
-        array $rules
+        array $rules,
+        array $messages = []
     ): static {
-        return new static($data, $rules);
+        return new static($data, $rules, $messages);
     }
 
     public function validate(): ValidationResult
@@ -92,12 +94,12 @@ class Validator
                     $parsed['parameters']
                 )) {
 
+                    $message = $this->messages["{$field}.{$parsed['name']}"]
+                        ?? $validator->message($field, $parsed['parameters']);
+
                     $this->result->add(
                         $field,
-                        $validator->message(
-                            $field,
-                            $parsed['parameters']
-                        )
+                        $message
                     );
 
                     /*

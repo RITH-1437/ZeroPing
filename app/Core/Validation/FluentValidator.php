@@ -74,7 +74,7 @@ class FluentValidator
 
     public function validate(): ValidationResult
     {
-        $validator = new Validator($this->data, $this->getRules());
+        $validator = new Validator($this->data, $this->getRules(), $this->messages);
         $result = $validator->validate();
         return $result;
     }

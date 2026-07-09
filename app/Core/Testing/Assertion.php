@@ -112,6 +112,20 @@ trait Assertion
         }
     }
 
+    public function assertArrayHasKey(string $key, array $array, string $message = ''): void
+    {
+        if (!array_key_exists($key, $array)) {
+            throw new TestingException($message ?: "Failed asserting that array has key '{$key}'.");
+        }
+    }
+
+    public function assertArrayNotHasKey(string $key, array $array, string $message = ''): void
+    {
+        if (array_key_exists($key, $array)) {
+            throw new TestingException($message ?: "Failed asserting that array does not have key '{$key}'.");
+        }
+    }
+
     public function assertModelExists(\App\Core\Database\Model $model): void
     {
         $this->assertDatabaseHas($model->getTable(), ['id' => $model->id]);

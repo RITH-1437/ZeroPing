@@ -60,5 +60,34 @@ class App
             define('APP_ENV',    $_ENV['APP_ENV']    ?? 'local');
             define('APP_DEBUG',  ($_ENV['APP_DEBUG'] ?? 'false') === 'true');
         }
+
+        $this->registerProviders();
+    }
+
+    protected function registerProviders(): void
+    {
+        $configPath = $this->basePath . '/config/app.php';
+        if (!file_exists($configPath)) {
+            return;
+        }
+
+        $config = require $configPath;
+        $providers = $config['providers'] ?? [];
+
+        $instances = [];
+        foreach ($providers as $providerClass) {
+            if (!class_exists($providerClass)) {
+                continue;
+            }
+            $provider = new $providerClass(static::$container);
+            $provider->register();
+            $instances[] = $provider;
+        }
+
+        foreach ($instances as $provider) {
+            if (method_exists($provider, 'boot')) {
+                $provider->boot();
+            }
+        }
     }
 }

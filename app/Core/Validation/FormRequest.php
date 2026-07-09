@@ -48,7 +48,7 @@ abstract class FormRequest
             return $this->validationResult;
         }
 
-        $this->validationResult = Validator::make($this->data, $this->rules())->validate();
+        $this->validationResult = Validator::make($this->data, $this->rules(), $this->messages())->validate();
 
         return $this->validationResult;
     }
