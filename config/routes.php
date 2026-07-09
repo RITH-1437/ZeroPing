@@ -25,6 +25,9 @@ Router::get('/docs', [WebsiteController::class, 'documentation']);
 
 Router::get('/about', [HomeController::class, 'about']);
 Router::get('/session', [HomeController::class, 'session']);
+Router::get('/search', [\App\Controllers\SearchController::class, 'search']);
+Router::get('/search/build', [\App\Controllers\SearchController::class, 'build']);
+
 Router::get('/log-test', function () {
     $logger = App::container()->make(Logger::class);
 

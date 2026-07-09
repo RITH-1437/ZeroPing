@@ -16,6 +16,15 @@ class ConsoleStyle
         'gray'    => '90',
     ];
 
+    /**
+     * Write a line to the console with optional styling.
+     *
+     * Supported inline tags:
+     *   <fg=color>text</>  — Set foreground color (black, red, green, yellow, blue, magenta, cyan, white, gray)
+     *   <bg=color>text</>  — Set background color (same palette)
+     *
+     * @param string $text The text to output, with optional <fg=color> / <bg=color> tags.
+     */
     public function writeln(string $text): void
     {
         echo $this->format($text) . PHP_EOL;

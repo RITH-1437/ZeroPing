@@ -2,9 +2,20 @@
 
 namespace App\Core\Security;
 
+use App\Core\Session\Session;
+
 class CSRFToken
 {
     public static function get(): string
+    {
+        $tokens = Session::get('_tokens', []);
+        if (empty($tokens)) {
+            return CSRF::generate();
+        }
+        return end($tokens);
+    }
+
+    public static function regenerate(): string
     {
         return CSRF::generate();
     }

@@ -2,15 +2,8 @@
 
 namespace App\Core\Auth;
 
-class PasswordHasher
-{
-    public static function make(string $password): string
-    {
-        return password_hash($password, PASSWORD_BCRYPT);
-    }
+use App\Core\Security\Hash;
 
-    public static function check(string $password, string $hash): bool
-    {
-        return password_verify($password, $hash);
-    }
+class PasswordHasher extends Hash
+{
 }

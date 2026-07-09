@@ -33,6 +33,36 @@ class DocsService
             'file' => 'api.md',
         ],
         [
+            'slug' => 'cli',
+            'title' => 'CLI Reference',
+            'description' => 'Complete CLI command reference for ZeroPing.',
+            'file' => 'cli.md',
+        ],
+        [
+            'slug' => 'validation',
+            'title' => 'Validation',
+            'description' => 'Validation rules, FluentValidator, and FormRequest.',
+            'file' => 'validation.md',
+        ],
+        [
+            'slug' => 'search',
+            'title' => 'Search',
+            'description' => 'Full-text documentation search with fuzzy matching.',
+            'file' => 'search.md',
+        ],
+        [
+            'slug' => 'starter-templates',
+            'title' => 'Starter Templates',
+            'description' => 'Scaffold projects with php zero new.',
+            'file' => 'starter-templates.md',
+        ],
+        [
+            'slug' => 'performance',
+            'title' => 'Performance',
+            'description' => 'Route caching, config caching, view caching, and optimization.',
+            'file' => 'performance.md',
+        ],
+        [
             'slug' => 'roadmap',
             'title' => 'Roadmap',
             'description' => 'What is planned for ZeroPing next.',

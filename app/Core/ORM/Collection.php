@@ -4,6 +4,8 @@ namespace App\Core\ORM;
 
 use ArrayAccess;
 use ArrayIterator;
+use App\Core\Contracts\Arrayable;
+use App\Core\Contracts\Jsonable;
 use Countable;
 use IteratorAggregate;
 use JsonSerializable;

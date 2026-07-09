@@ -2,17 +2,16 @@
 
 namespace App\Core\Security;
 
-use App\Core\Database\Database;
-use Carbon\Carbon;
+use App\Models\User;
 
 class DatabaseTokenRepository
 {
-    protected $db;
-    protected $hashKey;
-    protected $table;
-    protected $expires;
+    protected \PDO $db;
+    protected string $hashKey;
+    protected string $table;
+    protected int $expires;
 
-    public function __construct(\PDO $db, $hashKey, $table, $expires = 60)
+    public function __construct(\PDO $db, string $hashKey, string $table, int $expires = 60)
     {
         $this->db = $db;
         $this->hashKey = $hashKey;
@@ -20,78 +19,88 @@ class DatabaseTokenRepository
         $this->expires = $expires * 60;
     }
 
-    public function create(User $user)
+    public function create(User $user): string
     {
-        $email = $user->email;
-
         $this->deleteExisting($user);
 
         $token = $this->createNewToken();
 
-        $this->getTable()->insert($this->getPayload($email, $token));
+        $stmt = $this->db->prepare(
+            "INSERT INTO {$this->table} (email, token, created_at) VALUES (?, ?, ?)"
+        );
+        $stmt->execute([
+            $user->email,
+            password_hash($token, PASSWORD_DEFAULT),
+            date('Y-m-d H:i:s'),
+        ]);
 
         return $token;
     }
 
-    public function exists(User $user, $token)
+    public function exists(User $user, string $token): bool
     {
-        $record = (array) $this->getTable()->where('email', $user->email)->first();
+        $stmt = $this->db->prepare(
+            "SELECT token, created_at FROM {$this->table} WHERE email = ? LIMIT 1"
+        );
+        $stmt->execute([$user->email]);
+        $record = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return $record &&
-               ! $this->tokenExpired($record['created_at']) &&
-                 password_verify($token, $record['token']);
+        if (!$record) {
+            return false;
+        }
+
+        if ($this->tokenExpired($record['created_at'])) {
+            return false;
+        }
+
+        return password_verify($token, $record['token']);
     }
 
-    public function recentlyCreatedToken(User $user)
+    public function recentlyCreatedToken(User $user): bool
     {
-        $record = (array) $this->getTable()->where('email', $user->email)->first();
+        $stmt = $this->db->prepare(
+            "SELECT created_at FROM {$this->table} WHERE email = ? LIMIT 1"
+        );
+        $stmt->execute([$user->email]);
+        $record = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return $record && $this->tokenRecentlyCreated($record['created_at']);
     }
 
-    public function delete(User $user)
+    public function delete(User $user): void
     {
-        $this->getTable()->where('email', $user->email)->delete();
+        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE email = ?");
+        $stmt->execute([$user->email]);
     }
 
-    public function deleteExpired()
+    public function deleteExpired(): void
     {
-        $expiredAt = Carbon::now()->subSeconds($this->expires);
-
-        $this->getTable()->where('created_at', '<', $expiredAt)->delete();
+        $expiredAt = date('Y-m-d H:i:s', time() - $this->expires);
+        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE created_at < ?");
+        $stmt->execute([$expiredAt]);
     }
 
-    protected function deleteExisting(User $user)
+    protected function deleteExisting(User $user): void
     {
-        return $this->getTable()->where('email', $user->email)->delete();
+        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE email = ?");
+        $stmt->execute([$user->email]);
     }
 
-    protected function getPayload($email, $token)
-    {
-        return ['email' => $email, 'token' => password_hash($token, PASSWORD_DEFAULT), 'created_at' => new Carbon];
-    }
-
-    protected function getTable()
-    {
-        return $this->db->table($this->table);
-    }
-
-    protected function createNewToken()
+    protected function createNewToken(): string
     {
         return hash_hmac('sha256', Random::string(40), $this->hashKey);
     }
 
-    protected function tokenExpired($createdAt)
+    protected function tokenExpired(string $createdAt): bool
     {
-        return Carbon::parse($createdAt)->addSeconds($this->expires)->isPast();
+        return strtotime($createdAt) + $this->expires < time();
     }
 
-    protected function tokenRecentlyCreated($createdAt)
+    protected function tokenRecentlyCreated(string $createdAt): bool
     {
         if ($this->expires === 0) {
             return true;
         }
-
-        return Carbon::parse($createdAt)->addSeconds(10)->isFuture();
+        return strtotime($createdAt) + 10 > time();
     }
 }

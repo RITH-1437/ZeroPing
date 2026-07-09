@@ -2,15 +2,17 @@
 
 namespace App\Core\Security;
 
+use App\Models\User;
+
 class Token
 {
-    public static function create(User $user)
+    public static function create(User $user): string
     {
-        return app('auth.password.tokens')->create($user);
+        return app(DatabaseTokenRepository::class)->create($user);
     }
 
-    public static function exists(User $user, $token)
+    public static function exists(User $user, string $token): bool
     {
-        return app('auth.password.tokens')->exists($user, $token);
+        return app(DatabaseTokenRepository::class)->exists($user, $token);
     }
 }

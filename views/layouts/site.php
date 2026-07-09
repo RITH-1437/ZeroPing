@@ -332,7 +332,7 @@ $activePage = $active ?? '';
                     <kbd class="text-[10px]">ESC</kbd>
                 </div>
                 <div id="search-modal-results" class="max-h-80 overflow-y-auto p-2 text-sm text-slate-500 dark:text-slate-400">
-                    <p class="p-3 text-center">Type to search documentation...</p>
+                    <p class="p-3 text-center text-slate-400">Type to search documentation...</p>
                 </div>
             </div>
         </div>
@@ -445,38 +445,84 @@ $activePage = $active ?? '';
         searchModal?.querySelector('[data-search-close]')?.addEventListener('click', closeSearch);
 
         if (searchInput) {
-            const docItems = document.querySelectorAll('[data-doc-link]');
-            searchInput.addEventListener('input', () => {
-                const query = searchInput.value.toLowerCase().trim();
-                if (!query) {
+            let searchTimeout = null;
+            const RECENT_KEY = 'zp-recent-searches';
+            const MAX_RECENT = 5;
+
+            function getRecentSearches() {
+                try {
+                    return JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
+                } catch { return []; }
+            }
+
+            function addRecentSearch(query) {
+                const recent = getRecentSearches().filter(s => s !== query);
+                recent.unshift(query);
+                localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
+            }
+
+            function renderRecentSearches() {
+                const recent = getRecentSearches();
+                if (!recent.length) {
                     searchResults.innerHTML = '<p class="p-3 text-center text-slate-400">Type to search documentation...</p>';
                     return;
                 }
-                let results = '';
-                let count = 0;
-                document.querySelectorAll('[data-doc-link] a').forEach((link) => {
-                    const text = link.textContent.toLowerCase();
-                    if (text.includes(query)) {
-                        const href = link.getAttribute('href');
-                        const label = link.textContent;
-                        const idx = label.toLowerCase().indexOf(query);
-                        let display = '';
-                        if (idx >= 0) {
-                            display = label.slice(0, idx) + '<mark class="bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded px-0.5">' + label.slice(idx, idx + query.length) + '</mark>' + label.slice(idx + query.length);
-                        } else {
-                            display = label;
-                        }
-                        results += '<a href="' + href + '" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" data-search-close>' +
-                            '<svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' +
-                            '<span class="text-sm text-slate-700 dark:text-slate-300">' + display + '</span>' +
-                            '</a>';
-                        count++;
-                    }
+                let html = '<div class="px-3 py-2 text-xs font-medium text-slate-400 uppercase tracking-wider">Recent searches</div>';
+                recent.forEach(q => {
+                    html += '<button type="button" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left" data-recent-search>' +
+                        '<svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+                        '<span class="text-sm text-slate-700 dark:text-slate-300">' + q + '</span>' +
+                        '</button>';
                 });
-                searchResults.innerHTML = count > 0
-                    ? results
-                    : '<p class="p-3 text-center text-slate-400">No results found for &quot;' + query + '&quot;</p>';
+                searchResults.innerHTML = html;
+                searchResults.querySelectorAll('[data-recent-search]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        searchInput.value = btn.textContent.trim();
+                        searchInput.dispatchEvent(new Event('input'));
+                    });
+                });
+            }
+
+            function performSearch(query) {
+                if (!query) {
+                    renderRecentSearches();
+                    return;
+                }
+                searchResults.innerHTML = '<p class="p-3 text-center text-slate-400">Searching...</p>';
+                fetch('/search?q=' + encodeURIComponent(query))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            let html = '<div class="px-3 py-2 text-xs font-medium text-slate-400">Found ' + data.count + ' result' + (data.count !== 1 ? 's' : '') + '</div>';
+                            data.results.forEach(r => {
+                                html += '<a href="' + r.url + '" class="flex flex-col gap-1 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" data-search-close>' +
+                                    '<span class="text-sm font-medium text-slate-800 dark:text-slate-200">' + r.title + '</span>' +
+                                    '<span class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">' + r.content + '</span>' +
+                                    '</a>';
+                            });
+                            searchResults.innerHTML = html;
+                            addRecentSearch(query);
+                        } else {
+                            searchResults.innerHTML =
+                                '<div class="p-6 text-center">' +
+                                '<svg class="h-8 w-8 mx-auto text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>' +
+                                '<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">No results found for <strong>"' + query + '"</strong></p>' +
+                                '<p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Try different keywords or browse the documentation sidebar.</p>' +
+                                '</div>';
+                        }
+                    })
+                    .catch(() => {
+                        searchResults.innerHTML = '<p class="p-3 text-center text-red-400">Search failed. Please try again.</p>';
+                    });
+            }
+
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                const query = searchInput.value.trim();
+                searchTimeout = setTimeout(() => performSearch(query), 250);
             });
+
+            renderRecentSearches();
         }
 
         document.addEventListener('click', (e) => {

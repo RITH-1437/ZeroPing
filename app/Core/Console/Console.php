@@ -33,6 +33,7 @@ use App\Core\Console\Commands\QueueTestCommand;
 use App\Core\Console\Commands\QueueWorkCommand;
 use App\Core\Console\Commands\RouteCacheCommand;
 use App\Core\Console\Commands\RouteClearCommand;
+use App\Core\Console\Commands\SearchIndexCommand;
 use App\Core\Console\Commands\RouteListCommand;
 use App\Core\Console\Commands\ScheduleClearCommand;
 use App\Core\Console\Commands\ScheduleListCommand;
@@ -49,6 +50,11 @@ use App\Core\Console\Commands\ViewClearCommand;
 
 class Console
 {
+    /**
+     * Parse CLI arguments and dispatch the appropriate command handler.
+     *
+     * @param array $argv The CLI argument vector ($_SERVER['argv']).
+     */
     public function run(array $argv): void
     {
         $command = $argv[1] ?? null;
@@ -254,6 +260,17 @@ class Console
                 (new SecurityTestCommand())->handle();
                 break;
 
+            // ── Search ──────────────────────────────────────────────────────
+            case 'search:index':
+                (new SearchIndexCommand())->handle();
+                break;
+
+            // ── Starter Templates ─────────────────────────────────────────
+            case 'new':
+                $command = new \App\Core\Console\Commands\NewCommand();
+                $command->handle($argv[2] ?? '', array_slice($argv, 3));
+                break;
+
             // ── Tests / Misc ─────────────────────────────────────────────────
             case 'orm:test':
                 (new OrmTestCommand())->handle();
@@ -300,6 +317,7 @@ class Console
 
                 $style->writeln("  <fg=green>serve</>                 <fg=gray>Start development server</>");
                 $style->writeln("  <fg=green>about</>                 <fg=gray>Display framework information</>");
+                $style->writeln("  <fg=green>new</>                   <fg=gray>Scaffold a new project from a template</>");
                 $style->writeln("");
 
                 $style->writeln("  <fg=yellow>Migrations</>");
@@ -362,6 +380,9 @@ class Console
 
                 $style->writeln("  <fg=yellow>Security & Keys</>");
                 $style->writeln("  <fg=green>key:generate</>          <fg=gray>Set the application key</>");
+                $style->writeln("");
+                $style->writeln("  <fg=yellow>Search</>");
+                $style->writeln("  <fg=green>search:index</>          <fg=gray>Build documentation search index</>");
                 $style->writeln("");
 
                 $style->writeln("  <fg=yellow>Testing & Diagnostics</>");

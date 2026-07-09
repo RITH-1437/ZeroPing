@@ -22,6 +22,13 @@ if (!function_exists('class_basename')) {
     }
 }
 
+if (!function_exists('base_path')) {
+    function base_path(string $path = ''): string
+    {
+        return BASE_PATH . ($path ? '/' . $path : '');
+    }
+}
+
 if (!function_exists('config')) {
 
     function config(
@@ -159,6 +166,13 @@ if (!function_exists('logger')) {
         }
 
         return app(Log::class)->debug($message, $context);
+    }
+}
+
+if (!function_exists('validator')) {
+    function validator(array $data, array $rules): \App\Core\Validation\Validator
+    {
+        return \App\Core\Validation\Validator::make($data, $rules);
     }
 }
 

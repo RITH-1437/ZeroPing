@@ -6,6 +6,6 @@ class CommandEvent extends Event
 {
     public function run(): void
     {
-        passthru($this->command);
+        passthru(escapeshellcmd($this->command));
     }
 }

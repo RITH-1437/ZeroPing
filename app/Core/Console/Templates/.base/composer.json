@@ -1,0 +1,19 @@
+{
+    "name": "{{ vendor }}/{{ project_slug }}",
+    "description": "{{ project_description }}",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "rith-1437/zeroping": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php cli/migrate.php"
+        ]
+    }
+}
