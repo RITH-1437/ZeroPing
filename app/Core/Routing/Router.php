@@ -84,7 +84,7 @@ class Router
     {
         foreach (self::$routes as $method => $routes) {
             foreach ($routes as $uri => $route) {
-                if (isset($route['as']) && $route['as'] === $name) {
+                if ($route->name !== null && $route->name === $name) {
                     $url = $uri;
                     foreach ($parameters as $key => $value) {
                         $url = str_replace("{{$key}}", $value, $url);
@@ -148,13 +148,14 @@ class Router
 
         self::$current = $route;
 
-        // Route not found
         if (!$route) {
-
             http_response_code(404);
-
-            require_once __DIR__ . '/../../../views/errors/404.php';
-
+            $title = '404 - Page Not Found';
+            $active = '';
+            ob_start();
+            require __DIR__ . '/../../../views/errors/404.php';
+            $content = ob_get_clean();
+            require __DIR__ . '/../../../views/layouts/site.php';
             return;
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Core\Database\Repository;
 use App\Models\Test;
 
 class TestRepository extends Repository

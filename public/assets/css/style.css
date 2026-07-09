@@ -10,17 +10,82 @@
 }
 
 :root{
+    /* Core palette (light mode) */
     --primary:#2563eb;
     --primary-dark:#1d4ed8;
     --success:#16a34a;
     --danger:#dc2626;
     --warning:#f59e0b;
 
-    --bg:#f5f7fb;
-    --card:#ffffff;
-    --text:#1f2937;
-    --border:#dbe2ea;
+    /* Surface / text */
+    --bg:#f5f7fb;           /* page background */
+    --card:#ffffff;         /* card background */
+    --text:#1f2937;         /* body text */
+    --muted:#6b7280;        /* secondary text */
+    --border:#dbe2ea;      /* borders */
     --shadow:0 10px 30px rgba(0,0,0,.08);
+
+    /* Buttons */
+    --btn-bg: var(--primary);
+    --btn-text: #ffffff;
+    --btn-bg-hover: var(--primary-dark);
+
+    /* Alerts */
+    --alert-success-bg: #dcfce7;
+    --alert-success-text: #166534;
+    --alert-success-border: #86efac;
+
+    --alert-error-bg: #fee2e2;
+    --alert-error-text: #991b1b;
+    --alert-error-border: #fca5a5;
+
+    --alert-warning-bg: #fef3c7;
+    --alert-warning-text: #92400e;
+    --alert-warning-border: #fde68a;
+
+    --alert-info-bg: #dbeafe;
+    --alert-info-text: #1d4ed8;
+    --alert-info-border: #93c5fd;
+
+    /* Terminal dots */
+    --term-red: #ef4444;
+    --term-yellow: #f59e0b;
+    --term-green: #10b981;
+
+    /* Badge */
+    --badge-bg: #e6f2ff;
+    --badge-border: #bfdbfe;
+    --badge-text: #1e40af;
+}
+
+/* Dark theme overrides applied when html has .dark */
+html.dark{
+    --primary:#60a5fa;
+    --primary-dark:#3b82f6;
+    --success:#34d399;
+    --danger:#f87171;
+    --warning:#fbbf24;
+
+    --bg:#0b1220;          /* dark page background */
+    --card:#0f1724;        /* dark card surface */
+    --text:#e6eef8;        /* light text on dark */
+    --muted:#9ca3af;       /* muted text */
+    --border:#263041;      /* dark borders */
+    --shadow:0 10px 30px rgba(2,6,23,0.7);
+
+    --btn-bg: var(--primary);
+    --btn-text: #e6eef8;
+    --btn-bg-hover: #2563eb;
+
+    /* terminal dots */
+    --term-red: #f87171;
+    --term-yellow: #f59e0b;
+    --term-green: #34d399;
+
+    /* badge */
+    --badge-bg: #07111b;
+    --badge-border: #1f2a36;
+    --badge-text: #7dd3fc;
 }
 
 body{
@@ -136,27 +201,27 @@ button:hover{
 }
 
 .alert-success{
-    background:#dcfce7;
-    color:#166534;
-    border:1px solid #86efac;
+    background:var(--alert-success-bg);
+    color:var(--alert-success-text);
+    border:1px solid var(--alert-success-border);
 }
 
 .alert-error{
-    background:#fee2e2;
-    color:#991b1b;
-    border:1px solid #fca5a5;
+    background:var(--alert-error-bg);
+    color:var(--alert-error-text);
+    border:1px solid var(--alert-error-border);
 }
 
 .alert-warning{
-    background:#fef3c7;
-    color:#92400e;
-    border:1px solid #fde68a;
+    background:var(--alert-warning-bg);
+    color:var(--alert-warning-text);
+    border:1px solid var(--alert-warning-border);
 }
 
 .alert-info{
-    background:#dbeafe;
-    color:#1d4ed8;
-    border:1px solid #93c5fd;
+    background:var(--alert-info-bg);
+    color:var(--alert-info-text);
+    border:1px solid var(--alert-info-border);
 }
 
 /* =========================
@@ -194,4 +259,72 @@ a:hover{
         font-size:26px;
     }
 
+}
+
+/* Button components */
+.zp-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    cursor:pointer;
+    border-radius:12px;
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+.zp-btn--primary{
+    background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+    color: var(--btn-text);
+    box-shadow: 0 8px 24px rgba(2,6,23,0.08);
+    padding: 0.625rem 1.25rem;
+}
+.zp-btn--primary:hover{
+    transform: translateY(-1px);
+    filter:brightness(.98);
+}
+.zp-btn--primary:active{ transform: translateY(0); filter:brightness(.95); }
+
+.zp-btn--secondary{
+    background: var(--card);
+    color: var(--text);
+    border:1px solid var(--border);
+    padding: 0.625rem 1.25rem;
+}
+.zp-btn--secondary:hover{ background: rgba(0,0,0,0.03); }
+html.dark .zp-btn--secondary:hover{ background: rgba(255,255,255,0.03); }
+
+.zp-btn:focus-visible{ outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+
+/* Badge */
+.zp-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    padding:.25rem .6rem;
+    border-radius:9999px;
+    background:var(--badge-bg);
+    border:1px solid var(--badge-border);
+    color:var(--badge-text);
+    font-size:.75rem;
+    font-weight:600;
+}
+
+/* Terminal dots */
+.term-dot{ display:inline-block; height:0.75rem; width:0.75rem; border-radius:9999px; }
+.term-dot--red{ background:var(--term-red); }
+.term-dot--yellow{ background:var(--term-yellow); }
+.term-dot--green{ background:var(--term-green); }
+
+/* Debug bar (dev only) */
+.zeroping-debugbar{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    color: var(--text);
+    padding: 10px;
+    border-top: 1px solid var(--border);
+    z-index: 99999;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.06);
 }

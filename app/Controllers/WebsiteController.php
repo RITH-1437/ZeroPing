@@ -13,10 +13,10 @@ class WebsiteController extends Controller
             'title' => 'ZeroPing Framework',
             'active' => 'home',
             'stats' => [
-                ['label' => 'CLI Commands', 'value' => '30+'],
-                ['label' => 'Core Modules', 'value' => '18'],
-                ['label' => 'Average Setup Time', 'value' => '< 3 min'],
-                ['label' => 'Framework Version', 'value' => 'v1.0.0'],
+                ['label' => 'CLI Commands', 'value' => '30+', 'icon' => '/assets/images/cli.png'],
+                ['label' => 'Core Modules', 'value' => '18', 'icon' => '/assets/images/core.png'],
+                ['label' => 'Average Setup Time', 'value' => '< 3 min', 'icon' => '/assets/images/time.png'],
+                ['label' => 'Framework Version', 'value' => 'v1.0.0', 'icon' => '/assets/images/version.png'],
             ],
         ], 'site');
     }
@@ -88,7 +88,7 @@ class WebsiteController extends Controller
 
         if (!$doc) {
             http_response_code(404);
-            $this->view('errors/404', ['title' => 'Not Found']);
+            $this->view('errors/404', ['title' => 'Not Found', 'active' => 'documentation'], 'site');
             return;
         }
 

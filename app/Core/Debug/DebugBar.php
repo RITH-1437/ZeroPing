@@ -23,7 +23,7 @@ class DebugBar
 
     public function render(): string
     {
-        $output = '<div id="zeroping-debugbar" style="position: fixed; bottom: 0; left: 0; right: 0; background: #f1f1f1; padding: 10px; border-top: 1px solid #ccc;">';
+        $output = '<div id="zeroping-debugbar" class="zeroping-debugbar">';
 
         foreach ($this->collectors as $collector) {
             $output .= $collector->render();

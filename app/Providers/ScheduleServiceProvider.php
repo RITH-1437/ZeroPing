@@ -9,7 +9,7 @@ class ScheduleServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(ScheduleManager::class, function (Container $app) {
+        $this->container->singleton(ScheduleManager::class, function (Container $app) {
             return new ScheduleManager();
         });
     }

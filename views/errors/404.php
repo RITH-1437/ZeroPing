@@ -1,76 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #343a40;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .error-container {
-            text-align: center;
-            background: #ffffff;
-            padding: 50px 70px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            max-width: 90%;
-        }
-
-        h1 {
-            font-size: 120px;
-            margin: 0;
-            color: #ff6b6b;
-            line-height: 1;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            font-size: 28px;
-            margin: 15px 0;
-            font-weight: 600;
-        }
-
-        p {
-            margin-bottom: 30px;
-            color: #6c757d;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        .home-button {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #4facfe;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .home-button:hover {
-            background-color: #3b8fd9;
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="error-container">
-        <h1>404</h1>
-        <h2>Oops! Page Not Found</h2>
-        <p>The page you are looking for might have been removed, had its name changed,<br>or is temporarily unavailable.</p>
-        <a href="/" class="home-button">Go Back Home</a>
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center relative" data-animate>
+    <div class="absolute inset-0 -z-10 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-3xl"></div>
     </div>
-
-</body>
-</html>
+    <h1 class="text-8xl sm:text-9xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-600 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-400">404</h1>
+    <h2 class="mt-4 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">Oops! Page Not Found</h2>
+    <p class="mt-3 text-slate-600 dark:text-slate-400 max-w-md mx-auto">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+    <a href="/" class="mt-8 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_200%] px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-600/20 dark:shadow-blue-500/10 hover:shadow-xl hover:shadow-blue-600/30 dark:hover:shadow-blue-500/20 hover:brightness-110 focus-ring transition-all duration-300">Go Back Home</a>
+</section>

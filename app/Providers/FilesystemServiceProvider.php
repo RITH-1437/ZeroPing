@@ -9,7 +9,7 @@ class FilesystemServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(FilesystemManager::class, function (Container $app) {
+        $this->container->singleton(FilesystemManager::class, function (Container $app) {
             return new FilesystemManager($app);
         });
     }

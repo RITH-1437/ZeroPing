@@ -9,7 +9,7 @@ class CacheServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(CacheManager::class, function (Container $app) {
+        $this->container->singleton(CacheManager::class, function (Container $app) {
             return new CacheManager($app);
         });
     }

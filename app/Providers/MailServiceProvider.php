@@ -9,7 +9,7 @@ class MailServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(MailManager::class, function (Container $app) {
+        $this->container->singleton(MailManager::class, function (Container $app) {
             return new MailManager($app);
         });
     }

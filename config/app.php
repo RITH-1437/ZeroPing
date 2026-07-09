@@ -10,12 +10,16 @@ return [
 
     'providers' => [
         \App\Providers\AppServiceProvider::class,
+        \App\Providers\ConfigServiceProvider::class,
         \App\Providers\DatabaseServiceProvider::class,
+        \App\Providers\EventServiceProvider::class,
         \App\Providers\CacheServiceProvider::class,
         \App\Providers\FilesystemServiceProvider::class,
+        \App\Providers\LoggingServiceProvider::class,
         \App\Providers\MailServiceProvider::class,
         \App\Providers\QueueServiceProvider::class,
         \App\Providers\ScheduleServiceProvider::class,
+        \App\Providers\ValidationServiceProvider::class,
     ],
 
 ];

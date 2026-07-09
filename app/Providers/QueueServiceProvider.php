@@ -9,7 +9,7 @@ class QueueServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(QueueManager::class, function (Container $app) {
+        $this->container->singleton(QueueManager::class, function (Container $app) {
             return new QueueManager($app);
         });
     }

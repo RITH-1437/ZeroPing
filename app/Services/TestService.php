@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class TestSerivceService
+class TestService
 {
     public function __construct()
     {
