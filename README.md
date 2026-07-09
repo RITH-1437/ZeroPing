@@ -17,6 +17,34 @@
 
 ZeroPing is a PHP framework for web artisans. It is a free, open-source PHP web framework, created by RIN NAIRITH, intended for the development of web applications following the model–view–controller (MVC) architectural pattern.
 
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/RITH-1437/ZeroPing.git
+
+# Install dependencies
+composer install
+
+# Copy environment file and configure
+cp .env.example .env
+
+# Run the development server
+php zero serve
+```
+
+### Requirements
+
+- PHP >= 8.1
+- Composer
+- MySQL / MariaDB (or supported database)
+
+### Quick Start
+
+1. Configure your database credentials in `.env`
+2. Run migrations: `php zero migrate`
+3. Start the server: `php zero serve`
+
 ## Learning ZeroPing
 
 ZeroPing has the most extensive and thorough [documentation](docs/project.md) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
