@@ -17,6 +17,10 @@ class MinRule extends AbstractRule
 
         $min = (int) $this->parameter($parameters, 0, 0);
 
+        if (is_numeric($value)) {
+            return (float) $value >= $min;
+        }
+
         return $this->length($value) >= $min;
     }
 
@@ -27,6 +31,6 @@ class MinRule extends AbstractRule
 
         $min = $parameters[0] ?? 0;
 
-        return "{$field} must be at least {$min} characters.";
+        return "{$field} must be at least {$min}.";
     }
 }

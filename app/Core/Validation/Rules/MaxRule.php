@@ -22,6 +22,10 @@ class MaxRule extends AbstractRule
             PHP_INT_MAX
         );
 
+        if (is_numeric($value)) {
+            return (float) $value <= $max;
+        }
+
         return $this->length($value) <= $max;
     }
 
@@ -32,6 +36,6 @@ class MaxRule extends AbstractRule
 
         $max = $parameters[0] ?? 0;
 
-        return "{$field} must not exceed {$max} characters.";
+        return "{$field} must not exceed {$max}.";
     }
 }

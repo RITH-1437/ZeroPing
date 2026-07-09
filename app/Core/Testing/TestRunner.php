@@ -18,7 +18,16 @@ class TestRunner
 
         foreach ($methods as $method) {
             if (str_starts_with($method->getName(), 'test')) {
-                $test->{$method->getName()}();
+                try {
+                    if (method_exists($test, 'setUp')) {
+                        $test->setUp();
+                    }
+                    $test->{$method->getName()}();
+                } finally {
+                    if (method_exists($test, 'tearDown')) {
+                        $test->tearDown();
+                    }
+                }
             }
         }
     }
