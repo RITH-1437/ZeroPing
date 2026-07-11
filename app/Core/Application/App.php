@@ -34,11 +34,15 @@ class App
 
     public function handle($request): void
     {
-        Router::dispatch();
+        Router::dispatch($this->basePath);
     }
 
     protected function bootstrap(): void
     {
+        require_once dirname(__DIR__, 2) . '/Helpers/helpers.php';
+
+        \App\Core\View\View::setBasePath($this->basePath);
+
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
@@ -61,18 +65,42 @@ class App
             define('APP_DEBUG',  ($_ENV['APP_DEBUG'] ?? 'false') === 'true');
         }
 
+        // Load config files into repository
+        $this->loadConfig();
+
         $this->registerProviders();
+    }
+
+    protected function loadConfig(): void
+    {
+        $repository = new \App\Core\Config\ConfigRepository();
+        $configDir = $this->basePath . '/config';
+
+        if (!is_dir($configDir)) {
+            \App\Core\Config\Config::setRepository($repository);
+            return;
+        }
+
+        $skipFiles = ['routes.php'];
+        $items = [];
+        foreach (glob($configDir . '/*.php') as $file) {
+            $key = pathinfo($file, PATHINFO_FILENAME);
+            if (in_array($key . '.php', $skipFiles, true)) {
+                continue;
+            }
+            $value = require $file;
+            if (is_array($value)) {
+                $items[$key] = $value;
+            }
+        }
+
+        $repository->set($items);
+        \App\Core\Config\Config::setRepository($repository);
     }
 
     protected function registerProviders(): void
     {
-        $configPath = $this->basePath . '/config/app.php';
-        if (!file_exists($configPath)) {
-            return;
-        }
-
-        $config = require $configPath;
-        $providers = $config['providers'] ?? [];
+        $providers = \App\Core\Config\Config::get('app.providers', []);
 
         $instances = [];
         foreach ($providers as $providerClass) {

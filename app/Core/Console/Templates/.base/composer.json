@@ -6,6 +6,8 @@
         "php": ">=8.1",
         "rith-1437/zeroping": "dev-main"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "App\\": "app/"
@@ -13,7 +15,7 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "php cli/migrate.php"
+            "@php -r \"echo 'Dependencies installed. Run: php zero migrate\\n';\""
         ]
     }
 }

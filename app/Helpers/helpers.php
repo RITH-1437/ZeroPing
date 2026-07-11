@@ -176,6 +176,20 @@ if (!function_exists('validator')) {
     }
 }
 
+if (!function_exists('e')) {
+    function e(mixed $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+}
+
+if (!function_exists('env')) {
+    function env(string $key, mixed $default = null): mixed
+    {
+        return $_ENV[$key] ?? $default;
+    }
+}
+
 if (!function_exists('benchmark')) {
     function benchmark(callable $callback, int $iterations = 1)
     {

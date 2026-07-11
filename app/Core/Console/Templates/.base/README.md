@@ -1,6 +1,6 @@
 # {{ project_name }}
 
-> A {{ project_type }} project built with ZeroPing Framework.
+> {{ project_description }}
 
 ## Requirements
 

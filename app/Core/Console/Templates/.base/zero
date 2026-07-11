@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Core\Application\App;
+use App\Core\Console\Console;
+
+$app = new App(__DIR__);
+
+$console = new Console();
+$console->run($argv);

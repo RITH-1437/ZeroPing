@@ -11,6 +11,13 @@ class NewCommand
         'mvc'   => 'Full MVC CRUD scaffold with user management',
     ];
 
+    private array $descriptions = [
+        'empty' => 'A minimal ZeroPing project skeleton with a welcome page',
+        'blog'  => 'A blog application built with ZeroPing, featuring posts and categories',
+        'api'   => 'A RESTful API boilerplate with authentication endpoints built with ZeroPing',
+        'mvc'   => 'A full MVC CRUD application with user management built with ZeroPing',
+    ];
+
     public function handle(string $type, array $options): void
     {
         $type = strtolower($type);
@@ -26,40 +33,93 @@ class NewCommand
         }
 
         $projectName = $this->getOption($options, 'name') ?? 'My App';
-        $targetDir = $this->getOption($options, 'dir') ?? getcwd() . '/' . $type . '-app';
+        $targetDir = $this->getOption($options, 'dir') ?? getcwd() . '/' . $this->slugify($projectName);
 
         $this->scaffold($type, $targetDir, $projectName);
     }
 
     private function scaffold(string $type, string $targetDir, string $projectName): void
     {
-        $baseDir = dirname(__DIR__, 2) . '/Core/Console/Templates';
+        $baseDir = dirname(__DIR__, 1) . '/Templates';
         $sourceDir = "$baseDir/$type";
         $sharedDir = "$baseDir/.base";
+        $frameworkDir = getcwd();
 
         if (!is_dir($sourceDir)) {
-            echo "Error: Template '$type' not found.\n";
+            (new \App\Core\Console\ConsoleStyle())->writeln("<fg=red>Error:</> Template '<fg=white>$type</>' not found.");
             return;
         }
 
         if (is_dir($targetDir)) {
-            echo "Error: Target directory already exists: $targetDir\n";
+            (new \App\Core\Console\ConsoleStyle())->writeln("<fg=red>Error:</> Target directory already exists: <fg=white>$targetDir</>");
             return;
         }
 
-        echo "Creating $type project in $targetDir...\n";
+        (new \App\Core\Console\ConsoleStyle())->writeln("<fg=green>Creating <fg=white>$type</> project in <fg=white>$targetDir</>...</>");
 
         $this->copyDirectory($sharedDir, $targetDir, $projectName, $type);
         $this->copyDirectory($sourceDir, $targetDir, $projectName, $type);
 
         $this->removePlaceholder($targetDir);
+        $this->addFrameworkRepository($targetDir, $frameworkDir);
 
-        echo "Done! Project created at: $targetDir\n";
-        echo "\nNext steps:\n";
-        echo "  1. cd $targetDir\n";
-        echo "  2. Run your web server\n";
-        echo "  3. Configure .env\n";
-        echo "\n";
+        $style = new \App\Core\Console\ConsoleStyle();
+
+        $style->writeln("");
+        $style->writeln("<fg=green>✔ Done!</> Project created at <fg=cyan>$targetDir</>");
+        $style->writeln("");
+        $style->writeln("<fg=yellow>▸ Quick start:</>");
+        $style->writeln("");
+        $style->writeln("  <fg=green>\$</> <fg=white>cd</> <fg=cyan>$targetDir</>");
+        $style->writeln("  <fg=green>\$</> <fg=white>composer install</>");
+        $style->writeln("  <fg=green>\$</> <fg=white>cp .env.example .env</>");
+        $style->writeln("  <fg=green>\$</> <fg=white>php zero key:generate</>");
+        $style->writeln("  <fg=green>\$</> <fg=white>php zero serve</>");
+        $style->writeln("");
+        $style->writeln("  <fg=gray>Then open http://localhost:1437 in your browser</>");
+        $style->writeln("");
+    }
+
+    private function addFrameworkRepository(string $projectDir, string $frameworkDir): void
+    {
+        $composerFile = $projectDir . '/composer.json';
+        if (!file_exists($composerFile)) {
+            return;
+        }
+
+        $json = json_decode(file_get_contents($composerFile), true);
+        if ($json === null) {
+            return;
+        }
+
+        $relativePath = $this->getRelativePath($projectDir, $frameworkDir);
+
+        $json['repositories'] = [
+            [
+                'type' => 'path',
+                'url' => $relativePath,
+            ],
+        ];
+
+        file_put_contents($composerFile, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+    }
+
+    private function getRelativePath(string $from, string $to): string
+    {
+        $from = str_replace('\\', '/', $from);
+        $to = str_replace('\\', '/', $to);
+        $fromParts = explode('/', rtrim($from, '/'));
+        $toParts = explode('/', rtrim($to, '/'));
+
+        $i = 0;
+        while ($i < count($fromParts) && $i < count($toParts) && $fromParts[$i] === $toParts[$i]) {
+            $i++;
+        }
+
+        $upCount = count($fromParts) - $i;
+        $relative = str_repeat('../', $upCount) . implode('/', array_slice($toParts, $i));
+
+        return rtrim($relative, '/');
     }
 
     private function copyDirectory(string $source, string $dest, string $projectName, string $type): void
@@ -90,8 +150,8 @@ class NewCommand
                     mkdir(dirname($target), 0755, true);
                 }
                 $content = str_replace(
-                    ['{{ project_name }}', '{{ project_type }}', '{{ project_slug }}', '{{ vendor }}', '{{ project_description }}'],
-                    [$projectName, strtoupper($type), $this->slugify($projectName), 'vendor', "A $type project"],
+                    ['{{ project_name }}', '{{ project_type }}', '{{ project_slug }}', '{{ vendor }}', '{{ project_description }}', '{{ php_version }}'],
+                    [$projectName, strtoupper($type), $this->slugify($projectName), 'vendor', $this->descriptions[$type], PHP_VERSION],
                     $content
                 );
                 file_put_contents($target, $content);

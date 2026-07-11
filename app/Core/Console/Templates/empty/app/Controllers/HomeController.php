@@ -10,7 +10,6 @@ class HomeController extends Controller
     {
         return view('welcome', [
             'title' => 'Welcome',
-            'frameworkVersion' => \ZeroPing::VERSION,
         ]);
     }
 }

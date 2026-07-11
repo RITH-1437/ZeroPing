@@ -97,7 +97,7 @@ class Router
         return '';
     }
 
-    public static function dispatch(): void
+    public static function dispatch(?string $basePath = null): void
     {
         $method = $_SERVER['REQUEST_METHOD'];
 
@@ -109,7 +109,13 @@ class Router
             $uri = '/';
         }
 
-        require_once __DIR__ . '/../../../config/routes.php';
+        $projectPath = $basePath ?? getcwd();
+        $frameworkPath = dirname(__DIR__, 3);
+
+        $routesPath = $projectPath . '/config/routes.php';
+        if (file_exists($routesPath)) {
+            require_once $routesPath;
+        }
 
         $route = null;
 
@@ -153,9 +159,9 @@ class Router
             $title = '404 - Page Not Found';
             $active = '';
             ob_start();
-            require __DIR__ . '/../../../views/errors/404.php';
+            require $frameworkPath . '/views/errors/404.php';
             $content = ob_get_clean();
-            require __DIR__ . '/../../../views/layouts/site.php';
+            require $frameworkPath . '/views/layouts/site.php';
             return;
         }
 
