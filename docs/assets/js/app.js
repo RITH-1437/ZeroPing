@@ -64,28 +64,8 @@
     return ia - ib;
   });
 
-  var HLJS_LIGHT = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
-  var HLJS_DARK = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
-
   /* ---------------- Theme ---------------- */
-  function setTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    var link = document.getElementById("hljs-theme");
-    if (link) link.href = theme === "dark" ? HLJS_DARK : HLJS_LIGHT;
-    try { localStorage.setItem("zp-theme", theme); } catch (e) {}
-  }
-  function initTheme() {
-    var saved;
-    try { saved = localStorage.getItem("zp-theme"); } catch (e) {}
-    if (!saved) {
-      saved = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-    setTheme(saved);
-  }
-  document.getElementById("theme-toggle").addEventListener("click", function () {
-    var cur = document.documentElement.getAttribute("data-theme");
-    setTheme(cur === "dark" ? "light" : "dark");
-  });
+  // ZeroPing owns dark mode — always dark.
 
   /* ---------------- Sidebar ---------------- */
   function buildSidebar() {
@@ -333,15 +313,6 @@
   });
   document.getElementById("sidebar-backdrop").addEventListener("click", closeSidebar);
 
-  /* ---------------- Version selector ---------------- */
-  document.getElementById("version-select").addEventListener("change", function (e) {
-    try { localStorage.setItem("zp-version", e.target.value); } catch (err) {}
-  });
-  try {
-    var sv = localStorage.getItem("zp-version");
-    if (sv) document.getElementById("version-select").value = sv;
-  } catch (e) {}
-
   /* ---------------- Routing ---------------- */
   window.addEventListener("hashchange", function () {
     // Support #/id#heading
@@ -357,7 +328,6 @@
   });
 
   /* ---------------- Boot ---------------- */
-  initTheme();
   buildSidebar();
   setupSearch();
   render(currentId());
