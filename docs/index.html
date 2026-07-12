@@ -36,7 +36,7 @@
     <div class="topbar-right">
       <label class="version-select" aria-label="Documentation version">
         <select id="version-select">
-          <option value="1.0.0" selected>v1.0.0</option>
+          <option value="1.2.0" selected>v1.2.0</option>
         </select>
       </label>
       <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
@@ -1816,6 +1816,385 @@ public function store(): void
       <div class="callout tip">
         <h4>Tip</h4>
         <p>Run <code>php zero route:list</code> to confirm the <code>posts.show</code> name before using <code>route()</code> in redirects.</p>
+      </div>
+    </template>
+
+    <template data-id="container" data-title="Container &amp; DI" data-category="Digging Deeper">
+      <h1>Service Container &amp; Dependency Injection</h1>
+      <p class="lede">A small service container with reflective auto-wiring for your classes.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing ships a lightweight inversion-of-control container at <code>App\Core\Container\Container</code>. You use it to register bindings and resolve (auto-wire) classes &mdash; including into controller constructors. Access it through the global <code>app()</code> helper.</p>
+
+      <h2>Binding services</h2>
+      <pre><code class="language-php">use App\Core\Cache\CacheManager;
+
+// Bind a non-shared instance (new resolution each time)
+app()-&gt;bind(CacheManager::class, fn () =&gt; new CacheManager());
+
+// Bind a shared (singleton) instance
+app()-&gt;singleton(CacheManager::class, fn () =&gt; new CacheManager());
+
+// Register an already-created object
+app()-&gt;instance('app.boot', new \App\Core\Container\Container());</code></pre>
+
+      <h2>Resolving services</h2>
+      <pre><code class="language-php">// No argument &rarr; the Container instance
+$container = app();
+
+// Resolve (auto-wired) a class
+$cache = app(CacheManager::class);
+$cache = app()-&gt;make(CacheManager::class);</code></pre>
+
+      <h2>Automatic dependency injection</h2>
+      <p><code>make()</code> uses reflection to build a class. Any type-hinted, non-primitive constructor parameter is recursively resolved from the container. Because the router resolves controllers through the container, you can inject dependencies straight into a controller constructor:</p>
+      <pre><code class="language-php">namespace App\Controllers;
+
+use App\Core\View\Controller;
+use App\Services\ReportService;
+
+class ReportController extends Controller
+{
+    public function __construct(private ReportService $reports) {}
+
+    public function index(): void
+    {
+        $this-&gt;view('reports/index', ['rows' =&gt; $this-&gt;reports-&gt;latest()], 'site');
+    }
+}</code></pre>
+
+      <h2>Service providers</h2>
+      <p>Providers in <code>app/Providers</code> receive the container and are the recommended place to register bindings. For example, <code>App\Providers\ScheduleServiceProvider</code> registers the <code>ScheduleManager</code> as a singleton.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Register shared services (database, cache, mail) as <code>singleton()</code> so the same instance is reused. Inject dependencies via constructors rather than calling <code>app()</code> throughout your code.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Looking for <code>resolve()</code>, <code>get()</code>, <code>has()</code>, or <code>bound()</code>. The container exposes only <code>bind()</code>, <code>singleton()</code>, <code>instance()</code>, and <code>make()</code> &mdash; use <code>make()</code> / <code>app(X::class)</code> to resolve.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Only type-hinted, non-primitive parameters are auto-resolved. A scalar parameter (e.g. <code>string $name</code>) with no default value cannot be injected and will throw &mdash; give it a default or resolve it manually. Middleware is constructed with <code>new</code> (not the container), so middleware constructors should take no required arguments.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Bind interfaces to implementations in a provider so <code>app(MyInterface::class)</code> returns the concrete class everywhere.</p>
+      </div>
+    </template>
+
+    <template data-id="caching" data-title="Caching" data-category="Digging Deeper">
+      <h1>Caching</h1>
+      <p class="lede">Speed up responses with a file, array, or null cache store.</p>
+
+      <h2>Overview</h2>
+      <p>Caching lives in <code>App\Core\Cache</code>: a <code>CacheManager</code> (selects a store), a <code>CacheRepository</code> (the object you call), and a static <code>Cache</code> facade. Three drivers ship: <code>file</code>, <code>array</code>, and <code>null</code>.</p>
+
+      <h2>Reading &amp; writing</h2>
+      <pre><code class="language-php">use App\Core\Cache\Cache;
+
+// Write (TTL in SECONDS, required)
+Cache::put('user:1', $user, 600);
+
+// Read (returns default if missing)
+$user = Cache::get('user:1');
+$user = Cache::get('user:1', null);
+
+// Existence
+if (Cache::has('user:1')) { /* ... */ }
+
+// Remember: compute once, then cache for the TTL
+$posts = Cache::remember('posts:recent', 300, fn () =&gt; Post::latest()-&gt;get());
+$config = Cache::rememberForever('app.config', fn () =&gt; loadConfig());
+Cache::forever('app.name', 'ZeroPing');
+
+// Delete / clear
+Cache::forget('user:1');
+Cache::flush();</code></pre>
+
+      <h2>The cache() helper</h2>
+      <pre><code class="language-php">cache(['name' =&gt; 'ZeroPing'], 300);  // put with 300s TTL
+$name = cache('name');               // get
+$manager = cache();                  // CacheManager instance
+$arrayStore = cache()-&gt;store('array');</code></pre>
+
+      <h2>Incrementing counters</h2>
+      <pre><code class="language-php">Cache::increment('visits');          // +1
+Cache::increment('visits', 5);       // +5
+Cache::decrement('quota');</code></pre>
+
+      <h2>Configuration</h2>
+      <p><code>config/cache.php</code> defines the default store (<code>file</code>) and the available stores: <code>file</code> (path <code>storage/cache</code>), <code>array</code> (per-request, in-memory), and <code>null</code> (no-op). Select a store with <code>Cache::store('array')</code> or via the manager.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Use <code>remember()</code> around expensive queries and render steps. Wrap cached values in a short TTL so stale data expires automatically.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Calling <code>Cache::set()</code> or <code>Cache::delete()</code>. The methods are <code>put()</code> (not <code>set()</code>) and <code>forget()</code> (not <code>delete()</code>). The TTL is in <strong>seconds</strong>, and there is no <code>Cache::get('key', 60)</code> expiry argument.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The <code>lifetime</code> key in <code>config/cache.php</code> is not read &mdash; the TTL is always passed explicitly to <code>put()</code> / <code>remember()</code>. The <code>file</code> driver stores JSON files under <code>storage/cache</code>; the <code>array</code> driver is lost at the end of the request.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Clear the cache from the CLI with <code>php zero cache:clear</code> when you need to invalidate everything at once.</p>
+      </div>
+    </template>
+
+    <template data-id="queues" data-title="Queues" data-category="Digging Deeper">
+      <h1>Queues</h1>
+      <p class="lede">Offload slow work (email, exports, webhooks) to a background worker.</p>
+
+      <h2>Overview</h2>
+      <p>A queued job is a class extending <code>App\Core\Queue\Job</code> with a <code>handle(): void</code> method. Jobs are pushed through the <code>dispatch()</code> helper or <code>App\Core\Queue\Dispatcher</code>, stored by a driver, and processed by a worker. Drivers: <code>sync</code> (default &mdash; runs inline), <code>database</code>, <code>array</code>, and <code>null</code>.</p>
+
+      <h2>Defining a job</h2>
+      <pre><code class="language-php">namespace App\Jobs;
+
+use App\Core\Queue\Job;
+
+class SendWelcomeEmail extends Job
+{
+    public string $queue = 'default';
+    public int $tries = 3;
+    public int $timeout = 60;
+
+    public function __construct(public string $email) {}
+
+    public function handle(): void
+    {
+        // deliver the email...
+    }
+
+    public function failed(\Throwable $e): void
+    {
+        // optional: log the failure
+    }
+}</code></pre>
+
+      <h2>Dispatching</h2>
+      <pre><code class="language-php">use App\Core\Queue\Dispatcher;
+
+dispatch(new SendWelcomeEmail('ada@example.com'));      // default connection
+Dispatcher::dispatch(new SendWelcomeEmail('a@b.com'));
+Dispatcher::dispatchLater(60, new SendWelcomeEmail('a@b.com')); // delay 60s
+Dispatcher::dispatchSync(new SendWelcomeEmail('a@b.com'));     // run now</code></pre>
+
+      <h2>Running the worker</h2>
+      <p>For real background processing, switch the default connection to <code>database</code> in <code>config/queue.php</code> (which uses the <code>jobs</code> table &mdash; run <code>php zero migrate</code> to create it), then start a worker:</p>
+      <pre><code class="language-bash">php zero queue:work --connection=database --queue=default --tries=3 --sleep=3</code></pre>
+
+      <h2>Worker commands</h2>
+      <table class="doc-table">
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>php zero queue:work</code></td><td>Run the daemon worker (options: <code>--connection</code>, <code>--queue</code>, <code>--delay</code>, <code>--sleep</code>, <code>--tries</code>).</td></tr>
+          <tr><td><code>php zero queue:listen</code></td><td>Listen continuously (same as work, no delay).</td></tr>
+          <tr><td><code>php zero queue:failed</code></td><td>List failed jobs (id, connection, queue, failed_at).</td></tr>
+          <tr><td><code>php zero queue:retry &lt;id&gt;</code></td><td>Retry a failed job by id.</td></tr>
+          <tr><td><code>php zero queue:clear</code></td><td>Delete all rows from the <code>jobs</code> table.</td></tr>
+          <tr><td><code>php zero queue:restart</code></td><td>Broadcast a restart signal to running workers.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Set <code>$tries</code> and a sensible <code>$timeout</code> on every job, and keep job constructors serializable (pass ids/primitives, not live resources). Use the <code>database</code> driver for anything that must survive a restart.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Calling <code>$job-&gt;dispatch()</code>, <code>pushOn()</code>, or <code>withDelay()</code>. None exist &mdash; push via the <code>dispatch()</code> helper or <code>Dispatcher</code>. Delayed dispatch is <code>Dispatcher::dispatchLater($delay, $job)</code>. There is also no <code>queue:flush</code> command &mdash; use <code>queue:clear</code>.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The default connection is <code>sync</code>, which executes <code>handle()</code> immediately and inline &mdash; nothing is queued. Failed jobs are recorded in the <code>failed_jobs</code> table (also created by <code>php zero migrate</code>).</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Run <code>php zero queue:work</code> under a process manager (Supervisor, systemd) in production so workers auto-restart.</p>
+      </div>
+    </template>
+
+    <template data-id="scheduler" data-title="Task Scheduling" data-category="Digging Deeper">
+      <h1>Task Scheduling</h1>
+      <p class="lede">Schedule closure, command, and queue-job events from code.</p>
+
+      <h2>Overview</h2>
+      <p>The scheduler is centered on <code>App\Core\Scheduling\ScheduleManager</code> (a container singleton). You define events on it: <code>call()</code> for closures, <code>command()</code> for shell commands, and <code>job()</code> for queued jobs. Each event is then given a frequency.</p>
+
+      <h2>Defining events</h2>
+      <pre><code class="language-php">use App\Core\Scheduling\ScheduleManager;
+
+$manager = app(ScheduleManager::class);
+
+// Closure every minute
+$manager-&gt;call(function () {
+    // ...
+})-&gt;everyMinute();
+
+// Shell command daily
+$manager-&gt;command('cache:clear')-&gt;daily();
+
+// Queued job hourly
+$manager-&gt;job(new \App\Jobs\CleanupJob())-&gt;hourly()-&gt;withoutOverlapping();</code></pre>
+
+      <h2>Frequencies</h2>
+      <p>Chain one of these onto an event: <code>everyMinute()</code>, <code>everyTwoMinutes()</code>, <code>everyFiveMinutes()</code>, <code>everyTenMinutes()</code>, <code>everyThirtyMinutes()</code>, <code>hourly()</code>, <code>hourlyAt($minute)</code>, <code>daily()</code>, <code>dailyAt('13:30')</code>, <code>twiceDaily($h1, $h2)</code>, <code>weekly()</code>, <code>monthly()</code>, <code>yearly()</code>, <code>cron('0 0 * * 0')</code>.</p>
+
+      <h2>Constraints &amp; conditions</h2>
+      <p>Events also accept: <code>withoutOverlapping()</code>, <code>runInBackground()</code>, <code>environments(['production'])</code>, <code>when(fn)</code>, <code>skip(fn)</code>, <code>between($start, $end)</code>, <code>unlessBetween(...)</code>, <code>weekdays()</code>, <code>weekends()</code>, and <code>timezone($tz)</code>.</p>
+
+      <h2>Running the scheduler</h2>
+      <p>ZeroPing does not run events on its own. Invoke the runner from your system cron (typically every minute):</p>
+      <pre><code class="language-bash">* * * * * php /path/to/zero schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+      <p>Other commands: <code>php zero schedule:list</code> (show defined events), <code>php zero schedule:test</code> (self-test), <code>php zero schedule:clear</code> (clear schedule cache).</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Define all schedules in a single service provider (resolve <code>ScheduleManager</code> from the container and register events there) so <code>schedule:run</code> finds them. Keep event callbacks short and idempotent.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Expecting events to fire automatically, or calling <code>at('13:30')</code>. There is no <code>at()</code> &mdash; use <code>dailyAt('13:30')</code>. And because the runner must be triggered (e.g. by system cron calling <code>schedule:run</code>), nothing runs until you wire that up.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Event <em>due-time</em> calculation and the <code>withoutOverlapping()</code> mutex are not yet implemented: <code>isDue()</code> currently returns <code>true</code>, so every event runs each time <code>schedule:run</code> is invoked. Gate expensive work with <code>when()</code>, or run <code>schedule:run</code> at the cadence you need, until that lands.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Until exact-time firing lands, run <code>schedule:run</code> at the smallest granularity you care about (e.g. every minute) and protect heavy tasks with <code>when()</code>.</p>
+      </div>
+    </template>
+
+    <template data-id="security" data-title="Security" data-category="Security &amp; HTTP">
+      <h1>Security</h1>
+      <p class="lede">Hashing, encryption, CSRF, rate limiting, signed URLs, and password reset.</p>
+
+      <h2>Overview</h2>
+      <p>Security helpers live under <code>App\Core\Security</code>. The most common tasks &mdash; verifying passwords, encrypting data, issuing CSRF tokens, throttling, and signing URLs &mdash; are available as static helpers you can call directly from controllers.</p>
+
+      <h2>Hashing &amp; password hashing</h2>
+      <pre><code class="language-php">use App\Core\Security\Hash;
+
+$hash = Hash::make('secret');          // bcrypt
+$ok   = Hash::check('secret', $hash);  // true
+$re   = Hash::needsRehash($hash);      // re-hash if cost changed</code></pre>
+
+      <h2>Encryption</h2>
+      <pre><code class="language-php">use App\Core\Security\Encryption;
+
+$seal = Encryption::encrypt('token');    // AES-256-CBC
+$open = Encryption::decrypt($seal);      // original string</code></pre>
+      <p>The key comes from <code>config/security.php</code> &rarr; <code>security.key</code> (a separate value from <code>APP_KEY</code>).</p>
+
+      <h2>CSRF protection</h2>
+      <pre><code class="language-php">use App\Core\Security\CSRF;
+use App\Core\Security\CSRFToken;
+
+$token = CSRF::generate();          // store &amp; return to client
+$ok    = CSRF::check($token);       // hash_equals-safe compare
+
+// In a form view:
+echo CSRFToken::field();            // &lt;input type="hidden" name="_token" value="..."&gt;</code></pre>
+
+      <h2>Rate limiting</h2>
+      <pre><code class="language-php">use App\Core\Security\RateLimiter;
+
+// Returns true if under the limit; false once exhausted
+$allowed = RateLimiter::attempt('login:' . $ip, 5, 1); // 5 attempts / 1 minute</code></pre>
+
+      <h2>Signed URLs</h2>
+      <pre><code class="language-php">use App\Core\Security\Signature;
+use App\Core\Security\URLSigner;
+
+$signed = Signature::sign('https://app.test/download?file=report');
+$ok     = Signature::validate($signed);
+
+// Or sign a named route:
+$url = URLSigner::signedRoute('download', ['file' =&gt; 'report']);
+$url = URLSigner::temporarySignedRoute('download', 3600, ['file' =&gt; 'report']);</code></pre>
+
+      <h2>Password reset</h2>
+      <pre><code class="language-php">use App\Core\Security\Password;
+
+$broker = Password::broker();
+$status = $broker-&gt;sendResetLink(['email' =&gt; $email]); // 'passwords.sent'
+$status = $broker-&gt;reset(
+    ['email' =&gt; $email, 'token' =&gt; $token, 'password' =&gt; $pw],
+    fn ($user, $password) =&gt; $user-&gt;update(['password' =&gt; Hash::make($password)])
+);</code></pre>
+
+      <h2>Random helpers</h2>
+      <pre><code class="language-php">use App\Core\Security\Random;
+
+Random::string(32);   // random alphanumeric string
+Random::uuid();       // UUID v4
+Random::token(60);    // long random token</code></pre>
+
+      <h2>Using the security middleware</h2>
+      <p>The CSRF, throttling, and signed-URL middleware classes live in <code>App\Core\Security\Middleware</code>. They are <em>not</em> wired to route short-names by default: the router resolves a short name only to <code>App\Http\Middleware\{Name}Middleware</code>, and the base middleware <code>handle()</code> takes no arguments while these take <code>handle(\Closure $next)</code>. The simplest path is to call the static helpers directly in your controller, as shown above.</p>
+      <p>To use them as route middleware, create a thin wrapper under <code>app/Http/Middleware</code> that extends the core class, then reference its short name on the route:</p>
+      <pre><code class="language-php">namespace App\Http\Middleware;
+
+use App\Core\Security\Middleware\ThrottleRequests;
+
+class ThrottleMiddleware extends ThrottleRequests {}</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Hash every password with <code>Hash::make()</code>, validate CSRF tokens on every state-changing (POST/PUT/DELETE) request, and throttle login/registration endpoints with <code>RateLimiter::attempt()</code>.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Assuming <code>'csrf'</code>, <code>'throttle'</code>, or <code>'signed'</code> are usable route middleware short-names out of the box &mdash; they are not. Also, encryption keys off <code>security.key</code>, not <code>APP_KEY</code>.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>A failed CSRF check, throttle, or signature validation throws <code>App\Core\Security\Exceptions\SecurityException</code>. The config keys <code>hash_driver</code>, <code>rate_limits</code>, and <code>csrf_lifetime</code> are declared in <code>config/security.php</code> but currently unused &mdash; <code>Hash</code> always uses bcrypt and throttling reads its limits from the middleware call.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Drop <code>CSRFToken::field()</code> into every HTML form so the token is submitted as <code>_token</code>, then verify it in your controller with <code>CSRF::check(Request::input('_token'))</code>.</p>
       </div>
     </template>
 
