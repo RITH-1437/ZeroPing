@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-12
 **Scope:** Public-release readiness for external developers (framework quality only; ZeroPing Arena excluded).
-**Current version:** v1.2.0 (tag pushed; GitHub Release pending — see P0).
+**Current version:** v1.2.0 (tag pushed; GitHub Release pending — see P0; Packagist package `rith-1437/zeroping` v1.2.0 published).
 
 ---
 
@@ -62,8 +62,8 @@ no required runtime dependencies" philosophy:
 
 ### P0 — do before broad promotion
 1. **Create the v1.2.0 GitHub Release** from the pushed tag (blocked in the previous session: no `gh` CLI / token in this environment). The tag `v1.2.0` is already pushed.
-2. **Verify `composer create-project` end-to-end** — *Addressed:* a `create-project` CI job now simulates the installer (`git archive` → `composer install` → `post-create-project.php` → boot on port 1437 → smoke test). Validated locally (HTTP 200). Swap to the real `composer create-project rith-1437/zeroping` once the package is on Packagist.
-3. **Submit/confirm the Packagist package** `rith-1437/zeroping` — *Confirmed NOT published* (Packagist API returns 404 as of 2026-07-12). Must be submitted manually: log in to packagist.org with GitHub, submit `https://github.com/RITH-1437/ZeroPing`, and enable the GitHub auto-update webhook. Until then, the README's Option A fails and users must use Option B (clone).
+ 2. **Verify `composer create-project` end-to-end** — *Done:* the CI `create-project` job now runs the **real** `composer create-project rith-1437/zeroping` (install → `post-create-project.php` → boot on port 1437 → smoke test). Validated locally via a real download from Packagist — install, key generation, and `php zero serve` all succeed (HTTP 200).
+ 3. **Submit/confirm the Packagist package** `rith-1437/zeroping` — *Published.* v1.2.0 is live on Packagist (verified via `repo.packagist.org/p2/rith-1437/zeroping.json`). README Option A now works; GitHub auto-update webhook should be enabled so future tags sync automatically.
 4. **Set the discussion category** on GitHub and confirm the `config.yml` contact links resolve.
 
 ### P1 — adoption-critical
@@ -86,6 +86,6 @@ no required runtime dependencies" philosophy:
 
 ## 7. Open risks
 
-- The `post-create-project-cmd` installer has **not** been validated through an actual `composer create-project` run in CI (only unit-tested logic). This is the highest-risk untested path for new users.
+- The `post-create-project-cmd` installer **has** now been validated through a real `composer create-project rith-1437/zeroping` run (install, key generation, boot on port 1437, HTTP 200). The remaining CI-side risk is only that the webhook hadn't yet propagated at first publish; future tags should auto-sync via the Packagist GitHub webhook.
 - Documentation over-claims coverage (§3). Either fill the pages or narrow the README's promises.
 - No static analysis (PHPStan/Psalm) or coverage gate in CI.

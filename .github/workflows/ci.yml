@@ -125,16 +125,11 @@ jobs:
           extensions: pdo_mysql
           tools: composer
 
-      # Reproduces what `composer create-project rith-1437/zeroping` produces,
-      # using the checked-out source as the package. Once the package is
-      # published on Packagist this can be replaced by the real command.
-      - name: Simulate composer create-project
+      - name: composer create-project rith-1437/zeroping
         run: |
-          rm -rf /tmp/myapp && mkdir -p /tmp/myapp
-          git -C "$GITHUB_WORKSPACE" archive --format=tar HEAD | tar -x -C /tmp/myapp
+          rm -rf /tmp/myapp
+          composer create-project rith-1437/zeroping /tmp/myapp --no-interaction
           cd /tmp/myapp
-          composer install --no-interaction --no-progress
-          php scripts/post-create-project.php
           php zero doctor || true
 
       - name: Boot and smoke-test (port 1437)

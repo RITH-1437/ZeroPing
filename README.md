@@ -47,10 +47,9 @@ configuration.
 
 ## Installation
 
-### Option A — Composer (once published on Packagist)
+### Option A — Composer (recommended)
 
-The package is submitted to Packagist as `rith-1437/zeroping`. Once it is
-published, start a new project with:
+Start a new project with Composer (downloads the packaged release from Packagist):
 
 ```bash
 composer create-project rith-1437/zeroping my-app
@@ -60,11 +59,11 @@ cd my-app
 php zero serve
 ```
 
-The `post-create-project-cmd` script runs automatically after install. If
-`composer create-project` reports the package cannot be found, it has not been
-published yet — use Option B below.
+The `post-create-project-cmd` script runs automatically after install.
 
-### Option B — Clone from GitHub (works today)
+### Option B — Clone from GitHub
+
+To work from the source repository instead:
 
 ```bash
 git clone https://github.com/RITH-1437/ZeroPing.git my-app
