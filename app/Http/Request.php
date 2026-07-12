@@ -6,7 +6,7 @@ use App\Core\Filesystem\UploadedFile;
 
 class Request extends \App\Core\Http\Request
 {
-    public static function capture(): self
+    public static function capture(): static
     {
         return new static();
     }
@@ -72,7 +72,7 @@ class Request extends \App\Core\Http\Request
         return fnmatch($pattern, $path);
     }
 
-    public static function header(string $key, $default = null)
+    public static function header(string $key, ?string $default = null): ?string
     {
         $key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
         return $_SERVER[$key] ?? $default;
