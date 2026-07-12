@@ -3,8 +3,6 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
-use App\Core\Testing\TestRunner;
-use App\Core\Testing\TestSuite;
 
 class TestCommand extends Command
 {
@@ -25,58 +23,41 @@ class TestCommand extends Command
     /**
      * Execute the console command.
      *
+     * Delegates to PHPUnit, which is the runner used by the project's test
+     * suite (configured via phpunit.xml).
+     *
      * @return void
      */
     public function handle(): void
     {
         $this->info('Running tests...');
 
-        $suite = new TestSuite();
-        $runner = new TestRunner();
+        $binary = BASE_PATH . '/vendor/bin/phpunit';
+        if (PHP_OS_FAMILY === 'Windows' && !is_file($binary)) {
+            $binary .= '.bat';
+        }
 
-        $this->discoverTests($suite);
+        if (!is_file($binary)) {
+            $this->error('PHPUnit binary not found. Run "composer install" first.');
+            exit(1);
+        }
 
-        $runner->run($suite);
+        $config = BASE_PATH . '/phpunit.xml';
+
+        $command = sprintf(
+            '%s --configuration %s --no-coverage',
+            escapeshellarg($binary),
+            escapeshellarg($config)
+        );
+
+        $exitCode = 0;
+        passthru($command, $exitCode);
+
+        if ($exitCode !== 0) {
+            $this->error('Tests failed.');
+            exit($exitCode);
+        }
 
         $this->info('Tests completed successfully!');
-    }
-
-    protected function discoverTests(TestSuite $suite): void
-    {
-        $this->discover('tests/Unit', $suite);
-        $this->discover('tests/Feature', $suite);
-        $this->discover('tests/Integration', $suite);
-    }
-
-    protected function discover(string $path, TestSuite $suite): void
-    {
-        $absPath = BASE_PATH . '/' . $path;
-
-        if (!is_dir($absPath)) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($absPath));
-
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                continue;
-            }
-
-            if (substr($file->getFilename(), -8) === 'Test.php') {
-                require_once $file->getPathname();
-
-                // Build class name from relative path under BASE_PATH/tests/
-                $testsBase = BASE_PATH . '/tests/';
-                $relative = substr($file->getPathname(), strlen($testsBase), -4);
-                $class = 'Tests\\' . str_replace(['/', '\\'], '\\', $relative);
-
-                if (class_exists($class)) {
-                    $suite->add(new $class());
-                } else {
-                    $this->error("Test class not found: {$class}");
-                }
-            }
-        }
     }
 }
