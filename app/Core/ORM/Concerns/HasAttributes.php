@@ -44,6 +44,13 @@ trait HasAttributes
         } else {
             $this->attributes[$key] = $value;
         }
+
+        // Keep the primary key consistently typed as an integer so that a
+        // model hydrated from the database (where PDO may return a string)
+        // matches one created in-process (which stores an int).
+        if ($key === $this->getKeyName() && is_numeric($value)) {
+            $this->attributes[$key] = (int) $value;
+        }
     }
 
     /**

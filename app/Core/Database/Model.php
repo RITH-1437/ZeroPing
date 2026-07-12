@@ -23,6 +23,11 @@ abstract class Model implements \ArrayAccess
 
     protected string $table;
 
+    /**
+     * The primary key column name.
+     */
+    protected string $primaryKey = 'id';
+
     /** Set to false on models whose tables have no deleted_at column */
     protected bool $hasSoftDeletes = true;
 
@@ -30,6 +35,14 @@ abstract class Model implements \ArrayAccess
     {
         $this->db = Database::connect();
         $this->fill($attributes);
+    }
+
+    /**
+     * Get the primary key column name.
+     */
+    public function getKeyName(): string
+    {
+        return $this->primaryKey;
     }
 
     /**

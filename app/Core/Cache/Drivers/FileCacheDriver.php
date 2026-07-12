@@ -13,6 +13,16 @@ class FileCacheDriver implements CacheDriver
         $this->path = $config['path'];
     }
 
+    /**
+     * Ensure the cache directory exists, creating it recursively if needed.
+     */
+    protected function ensureDirectory(): void
+    {
+        if (!is_dir($this->path)) {
+            @mkdir($this->path, 0777, true);
+        }
+    }
+
     public function get(string $key, $default = null)
     {
         $file = $this->path . '/' . sha1($key);
@@ -41,6 +51,8 @@ class FileCacheDriver implements CacheDriver
 
     public function put(string $key, $value, int $seconds): bool
     {
+        $this->ensureDirectory();
+
         $file = $this->path . '/' . sha1($key);
 
         $data = [
