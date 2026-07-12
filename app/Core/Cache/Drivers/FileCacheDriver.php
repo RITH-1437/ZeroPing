@@ -23,7 +23,11 @@ class FileCacheDriver implements CacheDriver
         }
 
         $content = file_get_contents($file);
-        $data = unserialize($content);
+        $data = json_decode($content, true);
+
+        if (!$data || !isset($data['expire'])) {
+            return $default;
+        }
 
         if (time() >= $data['expire']) {
             $this->forget($key);
@@ -44,7 +48,7 @@ class FileCacheDriver implements CacheDriver
             'expire' => time() + $seconds,
         ];
 
-        return file_put_contents($file, serialize($data)) !== false;
+        return file_put_contents($file, json_encode($data)) !== false;
     }
 
     public function has(string $key): bool

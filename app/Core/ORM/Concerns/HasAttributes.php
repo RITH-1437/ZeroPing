@@ -21,6 +21,15 @@ trait HasAttributes
     protected array $casts = [];
 
     /**
+     * Memoized accessor/mutator method existence, keyed by class then key.
+     * getAttribute()/setAttribute() call method_exists() + string building on
+     * every access; caching it removes that overhead in hot loops/templates.
+     *
+     * @var array<class-string, array<string, bool>>
+     */
+    private static array $accessorCache = [];
+
+    /**
      * Set a given attribute on the model.
      *
      * @param  string  $key
@@ -112,7 +121,7 @@ trait HasAttributes
      */
     public function hasGetAccessor(string $key): bool
     {
-        return method_exists($this, 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key))) . 'Attribute');
+        return $this->cachedMutator('get', $key);
     }
 
     /**
@@ -123,7 +132,30 @@ trait HasAttributes
      */
     public function hasSetMutator(string $key): bool
     {
-        return method_exists($this, 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key))) . 'Attribute');
+        return $this->cachedMutator('set', $key);
+    }
+
+    /**
+     * Memoize "<type>Attribute" method existence per (class, key).
+     */
+    private function cachedMutator(string $type, string $key): bool
+    {
+        $class = static::class;
+
+        if (!isset(self::$accessorCache[$class])) {
+            self::$accessorCache[$class] = [];
+        }
+
+        if (array_key_exists($key, self::$accessorCache[$class])) {
+            return self::$accessorCache[$class][$key];
+        }
+
+        $method = $type . str_replace(' ', '', ucwords(str_replace('_', ' ', $key))) . 'Attribute';
+        $exists = method_exists($this, $method);
+
+        self::$accessorCache[$class][$key] = $exists;
+
+        return $exists;
     }
 
     /**

@@ -4,7 +4,7 @@ namespace App\Http;
 
 use App\Core\Filesystem\UploadedFile;
 
-class Request
+class Request extends \App\Core\Http\Request
 {
     public static function capture(): self
     {

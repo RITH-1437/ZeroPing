@@ -21,7 +21,7 @@ class DatabaseDriver implements QueueDriver
              VALUES (?, ?, ?, ?, ?, ?)"
         )->execute([
             $queue,
-            serialize($job),
+            $job->toPayload(),
             0,
             null,
             time(),
@@ -36,7 +36,7 @@ class DatabaseDriver implements QueueDriver
              VALUES (?, ?, ?, ?, ?, ?)"
         )->execute([
             $queue,
-            serialize($job),
+            $job->toPayload(),
             0,
             null,
             time() + $delay,
@@ -67,9 +67,11 @@ class DatabaseDriver implements QueueDriver
 
             $this->db->commit();
 
-            $job['payload'] = unserialize($job['payload']);
+            $payload = json_decode($job['payload'], true);
+            $job['payload'] = $payload;
 
-            return new Job($job);
+            $restored = Job::fromPayload(json_encode($payload));
+            return $restored;
         }
 
         $this->db->commit();

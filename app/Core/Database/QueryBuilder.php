@@ -31,10 +31,18 @@ class QueryBuilder
 
     protected bool $softDeletes = false;
 
+    protected ?string $modelClass = null;
+
     public function __construct(PDO $db, string $table)
     {
         $this->db = $db;
         $this->table = $table;
+    }
+
+    public function setModelClass(string $modelClass): static
+    {
+        $this->modelClass = $modelClass;
+        return $this;
     }
 
     /*
@@ -50,22 +58,24 @@ class QueryBuilder
         return $this;
     }
 
-    public function where(string $column, mixed $value): static
+    public function where(string $column, mixed $value, ?string $operator = null): static
     {
-        $this->where[] = "{$column} = ?";
+        $op = $operator ?? '=';
+        $this->where[] = "{$column} {$op} ?";
 
         $this->bindings[] = $value;
 
         return $this;
     }
 
-    public function orWhere(string $column, mixed $value): static
+    public function orWhere(string $column, mixed $value, ?string $operator = null): static
     {
         if (empty($this->where)) {
-            return $this->where($column, $value);
+            return $this->where($column, $value, $operator);
         }
 
-        $this->where[] = "OR {$column} = ?";
+        $op = $operator ?? '=';
+        $this->where[] = "OR {$column} {$op} ?";
 
         $this->bindings[] = $value;
 
@@ -179,10 +189,14 @@ class QueryBuilder
 
         $this->reset();
 
+        if ($this->modelClass) {
+            $rows = array_map(fn($attrs) => new $this->modelClass($attrs), $rows);
+        }
+
         return new Collection($rows);
     }
 
-    public function first(): ?array
+    public function first(): mixed
     {
         $this->limit(1);
 
@@ -191,7 +205,7 @@ class QueryBuilder
         return $rows[0] ?? null;
     }
 
-    public function firstOrFail(): array
+    public function firstOrFail(): mixed
     {
         $result = $this->first();
 

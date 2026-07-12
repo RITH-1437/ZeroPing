@@ -15,6 +15,15 @@ class Container
     protected array $instances = [];
 
     /**
+     * ReflectionClass cache keyed by class name.
+     * Building a ReflectionClass is the dominant cost of make(); caching it
+     * removes that cost for every subsequent resolution of the same class.
+     *
+     * @var array<string, \ReflectionClass>
+     */
+    protected static array $reflectionCache = [];
+
+    /**
      * Bind a class.
      */
     public function bind(string $abstract, Closure|string $concrete): void
@@ -82,10 +91,16 @@ class Container
             throw new Exception("Class {$class} not found.");
         }
 
-        $reflection = new ReflectionClass($class);
+        if (!isset(self::$reflectionCache[$class])) {
+            $reflection = new ReflectionClass($class);
 
-        if (!$reflection->isInstantiable()) {
-            throw new Exception("Class {$class} cannot be instantiated.");
+            if (!$reflection->isInstantiable()) {
+                throw new Exception("Class {$class} cannot be instantiated.");
+            }
+
+            self::$reflectionCache[$class] = $reflection;
+        } else {
+            $reflection = self::$reflectionCache[$class];
         }
 
         $constructor = $reflection->getConstructor();

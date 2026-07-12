@@ -6,14 +6,21 @@ abstract class Command
 {
     protected array $options = [];
 
+    protected ConsoleStyle $output;
+
     public function __construct()
     {
+        $this->output = new ConsoleStyle();
+
         $this->parseOptions();
     }
 
+    /**
+     * Render a stub template from the Stubs directory.
+     */
     protected function stub(string $name): string
     {
-        $path = BASE_PATH . "/app/Core/Console/Stubs/{$name}";
+        $path = __DIR__ . "/Stubs/{$name}";
 
         if (!file_exists($path)) {
             throw new \RuntimeException("Stub {$name} not found.");
@@ -22,6 +29,9 @@ abstract class Command
         return file_get_contents($path);
     }
 
+    /**
+     * Replace {{ key }} placeholders in a stub.
+     */
     protected function replace(
         string $stub,
         array $replace
@@ -39,6 +49,9 @@ abstract class Command
         return $stub;
     }
 
+    /**
+     * Write content to a file, creating directories as needed.
+     */
     protected function write(
         string $file,
         string $content
@@ -57,15 +70,280 @@ abstract class Command
         );
     }
 
+    // ── Output helpers ───────────────────────────────────────────────────────
+
+    protected function line(string $message = ''): void
+    {
+        $this->output->writeln($message);
+    }
+
     protected function info(string $message): void
     {
-        echo "\033[32m{$message}\033[0m\n";
+        $this->output->writeln("<fg=green>{$message}</>");
+    }
+
+    protected function success(string $message): void
+    {
+        $this->output->writeln("<fg=green>✅ {$message}</>");
     }
 
     protected function error(string $message): void
     {
-        echo "\033[31m{$message}\033[0m\n";
+        $this->output->writeln("<fg=red>❌ {$message}</>");
     }
+
+    protected function warn(string $message): void
+    {
+        $this->output->writeln("<fg=yellow>⚠️  {$message}</>");
+    }
+
+    protected function comment(string $message): void
+    {
+        $this->output->writeln("<fg=cyan>{$message}</>");
+    }
+
+    /**
+     * Print a bold section title.
+     */
+    protected function title(string $text): void
+    {
+        $this->output->writeln('');
+        $this->output->writeln("<options=bold;fg=cyan>{$text}</>");
+        $this->output->writeln('<fg=gray>' . str_repeat('═', mb_strlen($text)) . '</>');
+    }
+
+    /**
+     * Print a smaller sub-heading.
+     */
+    protected function section(string $text): void
+    {
+        $this->output->writeln('');
+        $this->output->writeln("<fg=yellow>{$text}</>");
+    }
+
+    /**
+     * Render an aligned, colorized table.
+     *
+     * @param string[] $headers
+     * @param array<int,string[]> $rows
+     */
+    protected function table(array $headers, array $rows): void
+    {
+        $widths = [];
+
+        foreach ($headers as $i => $header) {
+            $widths[$i] = mb_strlen((string) $header);
+        }
+
+        foreach ($rows as $row) {
+            foreach ($row as $i => $cell) {
+                $widths[$i] = max($widths[$i] ?? 0, mb_strlen((string) $cell));
+            }
+        }
+
+        $border = function (array $cells = []) use ($widths): string {
+            $out = '  +';
+            if ($cells === []) {
+                foreach ($widths as $w) {
+                    $out .= str_repeat('-', $w + 2) . '+';
+                }
+            } else {
+                foreach ($cells as $i => $cell) {
+                    $out .= str_repeat('-', ($widths[$i] ?? 0) + 2) . '+';
+                }
+            }
+            return "<fg=gray>{$out}</>";
+        };
+
+        $rowLine = function (array $cells, string $color) use ($widths): string {
+            $out = '  |';
+            foreach ($cells as $i => $cell) {
+                $raw = (string) $cell;
+                $visible = preg_replace('/<[^>]+>/', '', $raw);
+                $target = ($widths[$i] ?? 0) + 1;
+                $padding = $target - mb_strlen($visible);
+                if ($padding > 0) {
+                    $raw .= str_repeat(' ', $padding);
+                }
+                $out .= ' ' . $raw . '|';
+            }
+            return "<{$color}>{$out}</>";
+        };
+
+        $this->output->writeln($border());
+        $this->output->writeln($rowLine($headers, 'options=bold;fg=green'));
+        $this->output->writeln($border($headers));
+
+        foreach ($rows as $row) {
+            $this->output->writeln($rowLine($row, 'fg=white'));
+        }
+
+        $this->output->writeln($border());
+    }
+
+    /**
+     * Display an animated progress bar while $step is executed for each item.
+     *
+     * @param int $total
+     * @param callable(int $index, int $total): void $step
+     */
+    protected function progress(int $total, callable $step, string $label = 'Processing'): void
+    {
+        if ($total <= 0) {
+            return;
+        }
+
+        $width = 30;
+
+        for ($i = 0; $i < $total; $i++) {
+            $step($i, $total);
+
+            $done   = $i + 1;
+            $percent = (int) round($done / $total * 100);
+            $filled = (int) round($done / $total * $width);
+            $bar    = str_repeat('█', $filled) . str_repeat('░', $width - $filled);
+
+            $this->output->write(
+                "\r  <fg=green>[{$bar}]</> <fg=yellow>{$percent}%</> <fg=gray>{$label} ({$done}/{$total})</>"
+            );
+        }
+
+        $this->output->writeln('');
+    }
+
+    /**
+     * Show a spinner-style task indicator around a unit of work.
+     */
+    protected function task(string $title, callable $work): void
+    {
+        $this->output->write("  <fg=cyan>⟳</> <fg=white>{$title}</> ...");
+
+        $work();
+
+        $this->output->writeln("\r  <fg=green>✔</> <fg=white>{$title}</>");
+    }
+
+    // ── Interactive helpers ──────────────────────────────────────────────────
+
+    protected function ask(string $question, ?string $default = null): string
+    {
+        $prompt = $default !== null
+            ? "{$question} <fg=gray>[{$default}]</>"
+            : $question;
+
+        $this->output->writeln("<fg=cyan>?</> <fg=white>{$prompt}</>");
+
+        $handle = fopen('php://stdin', 'r');
+
+        if ($handle === false) {
+            return $default ?? '';
+        }
+
+        $answer = trim(fgets($handle) ?: '');
+        fclose($handle);
+
+        return $answer === '' && $default !== null ? $default : $answer;
+    }
+
+    protected function secret(string $question): string
+    {
+        $this->output->writeln("<fg=cyan>?</> <fg=white>{$question} <fg=gray>(hidden)</></>");
+
+        $handle = fopen('php://stdin', 'r');
+
+        if ($handle === false) {
+            return '';
+        }
+
+        $answer = trim(fgets($handle) ?: '');
+        fclose($handle);
+
+        return $answer;
+    }
+
+    protected function confirm(string $question, bool $default = false): bool
+    {
+        $hint = $default ? '<fg=gray>[Y/n]</>' : '<fg=gray>[y/N]</>';
+
+        $this->output->write("<fg=cyan>?</> <fg=white>{$question}</> {$hint} ");
+
+        $handle = fopen('php://stdin', 'r');
+
+        if ($handle === false) {
+            return $default;
+        }
+
+        $answer = strtolower(trim(fgets($handle) ?: ''));
+        fclose($handle);
+
+        if ($answer === '') {
+            return $default;
+        }
+
+        return in_array($answer, ['y', 'yes', '1', 'true', 'o', 'oui'], true);
+    }
+
+    /**
+     * @param string[] $choices
+     */
+    protected function choice(string $question, array $choices, ?int $default = null): string
+    {
+        $this->output->writeln("<fg=cyan>?</> <fg=white>{$question}</>");
+
+        foreach ($choices as $key => $label) {
+            $this->output->writeln("  <fg=yellow>[" . ($key + 1) . "]</> <fg=white>{$label}</>");
+        }
+
+        $fallback = $default !== null ? (string) ($default + 1) : '';
+        $answer   = $this->ask('Select', $fallback);
+
+        if (is_numeric($answer)) {
+            $index = (int) $answer - 1;
+            if (isset($choices[$index])) {
+                return $choices[$index];
+            }
+        }
+
+        return $answer;
+    }
+
+    // ── File generation helper ───────────────────────────────────────────────
+
+    /**
+     * Write a generated file, guarding against accidental overwrites.
+     * Honors the --force flag and prompts for confirmation otherwise.
+     */
+    protected function writeGenerated(string $file, string $content, string $label): bool
+    {
+        $relative = $this->relativePath($file);
+
+        if (file_exists($file)) {
+            if ($this->option('force')) {
+                $this->warn("Overwriting existing {$label}: {$relative}");
+            } elseif (!$this->confirm("{$label} {$relative} already exists. Overwrite?")) {
+                $this->warn("Cancelled. {$label} was not overwritten.");
+                return false;
+            }
+        }
+
+        $this->write($file, $content);
+        $this->success("{$label} created: {$relative}");
+
+        return true;
+    }
+
+    protected function relativePath(string $file): string
+    {
+        $base = rtrim(BASE_PATH, '/') . '/';
+
+        if (str_starts_with($file, $base)) {
+            return substr($file, strlen($base));
+        }
+
+        return $file;
+    }
+
+    // ── Option parsing ───────────────────────────────────────────────────────
 
     protected function option(string $key)
     {
@@ -86,9 +364,12 @@ abstract class Command
         }
     }
 
+    /**
+     * Call another console command.
+     */
     protected function call(string $command, array $arguments = []): void
     {
         $argv = array_merge(['zero', $command], $arguments);
-        (new \App\Core\Console())->run($argv);
+        (new Console())->run($argv);
     }
 }

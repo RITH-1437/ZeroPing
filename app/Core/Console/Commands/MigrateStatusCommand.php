@@ -32,12 +32,20 @@ class MigrateStatusCommand extends Command
         $migrations = $migrationRunner->getMigrations();
         $ranMigrations = $migrationRunner->getRanMigrations();
 
-        $this->info('Migration Status');
-        $this->info('----------------');
+        $this->title('Migration Status');
+
+        if ($migrations === []) {
+            $this->warn('No migration files found.');
+            return;
+        }
+
+        $rows = [];
 
         foreach ($migrations as $migration) {
-            $status = in_array($migration, $ranMigrations) ? 'Ran' : 'Pending';
-            $this->info("{$migration}: {$status}");
+            $ran = in_array($migration, $ranMigrations, true);
+            $rows[] = [$migration, $ran ? '<fg=green>✓ Ran</>' : '<fg=yellow>⏳ Pending</>'];
         }
+
+        $this->table(['Migration', 'Status'], $rows);
     }
 }

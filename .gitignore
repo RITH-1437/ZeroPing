@@ -10,3 +10,15 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+
+# IDE / editor artifacts
+/.idea
+/.mimocode
+/.phpunit.cache
+
+# Generated framework artifacts
+/storage/cache
+/storage/logs
+/storage/app/*.txt
+
+arena

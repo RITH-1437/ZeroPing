@@ -7,6 +7,11 @@ use App\Core\Routing\Router;
 
 class App
 {
+    /**
+     * The current ZeroPing Framework version.
+     */
+    public const VERSION = '1.1.0';
+
     protected string $basePath;
 
     protected static ?Container $container = null;
@@ -21,6 +26,11 @@ class App
     public static function boot(?string $basePath = null): static
     {
         return new static($basePath ?? dirname(__DIR__, 3));
+    }
+
+    public static function setContainer(Container $container): void
+    {
+        static::$container = $container;
     }
 
     public static function container(): Container
@@ -75,6 +85,20 @@ class App
     {
         $repository = new \App\Core\Config\ConfigRepository();
         $configDir = $this->basePath . '/config';
+        $cacheFile = $this->basePath . '/bootstrap/cache/config.php';
+
+        // When a compiled config cache exists and is at least as fresh as the
+        // config directory, load it in a single require instead of globbing
+        // and requiring every config file on each boot.
+        if (is_dir($configDir) && file_exists($cacheFile)
+            && filemtime($cacheFile) >= $this->configDirMtime($configDir)) {
+            $items = require $cacheFile;
+            if (is_array($items)) {
+                $repository->set($items);
+                \App\Core\Config\Config::setRepository($repository);
+                return;
+            }
+        }
 
         if (!is_dir($configDir)) {
             \App\Core\Config\Config::setRepository($repository);
@@ -96,6 +120,19 @@ class App
 
         $repository->set($items);
         \App\Core\Config\Config::setRepository($repository);
+    }
+
+    /**
+     * Highest mtime of the config directory's PHP files.
+     */
+    private function configDirMtime(string $configDir): int
+    {
+        $files = glob($configDir . '/*.php') ?: [];
+        $mtime = 0;
+        foreach ($files as $file) {
+            $mtime = max($mtime, filemtime($file));
+        }
+        return $mtime;
     }
 
     protected function registerProviders(): void

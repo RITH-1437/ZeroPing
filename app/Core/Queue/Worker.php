@@ -64,7 +64,7 @@ class Worker
         FailedJob::create([
             'connection' => $job->queue,
             'queue' => $job->queue,
-            'payload' => serialize($job),
+            'payload' => $job->toPayload(),
             'exception' => (string) $e,
         ]);
     }

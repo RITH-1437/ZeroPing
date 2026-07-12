@@ -26,7 +26,7 @@ trait GuardsAttributes
     public function forceFill(array $attributes): self
     {
         foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
+            $this->attributes[$key] = $value;
         }
         return $this;
     }

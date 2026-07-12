@@ -45,15 +45,6 @@ class MakeRepositoryCommand extends Command
 
         $file = BASE_PATH . "/app/Repositories/{$name}.php";
 
-        if (file_exists($file)) {
-
-            echo "❌ Repository {$name} already exists.\n";
-
-            return;
-        }
-
-        $this->write($file, $content);
-
-        echo "✅ Repository created: app/Repositories/{$name}.php\n";
+        $this->writeGenerated($file, $content, 'Repository');
     }
 }

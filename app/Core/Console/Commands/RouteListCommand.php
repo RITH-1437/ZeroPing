@@ -3,9 +3,10 @@
 namespace App\Core\Console\Commands;
 
 use Closure;
+use App\Core\Console\Command;
 use App\Core\Routing\Router;
 
-class RouteListCommand
+class RouteListCommand extends Command
 {
     /**
      * The console command description.
@@ -20,34 +21,17 @@ class RouteListCommand
 
         $routes = Router::routes();
 
-        echo PHP_EOL;
-
-        printf(
-            "%-8s %-30s %-40s %-20s\n",
-            "METHOD",
-            "URI",
-            "ACTION",
-            "MIDDLEWARE"
-        );
-
-        echo str_repeat('-', 105) . PHP_EOL;
+        $rows = [];
 
         foreach ($routes as $method => $items) {
-
             foreach ($items as $uri => $route) {
-
                 $action = $route->action;
 
                 if ($action instanceof Closure) {
-
                     $actionName = 'Closure';
-
                 } else {
-
                     [$controller, $methodName] = $action;
-
                     $controller = class_basename($controller);
-
                     $actionName = "{$controller}@{$methodName}";
                 }
 
@@ -55,16 +39,23 @@ class RouteListCommand
                     ? '-'
                     : implode(', ', $route->middleware);
 
-                printf(
-                    "%-8s %-30s %-40s %-20s\n",
-                    $method,
-                    $uri,
-                    $actionName,
-                    $middleware
-                );
+                $rows[] = [$method, $uri, $actionName, $middleware];
             }
         }
 
-        echo PHP_EOL;
+        $this->title('Registered Routes');
+
+        if ($rows === []) {
+            $this->warn('No routes have been registered.');
+            return;
+        }
+
+        $this->table(
+            ['Method', 'URI', 'Action', 'Middleware'],
+            $rows
+        );
+
+        $this->line('');
+        $this->comment('Total: ' . count($rows) . ' route(s).');
     }
 }

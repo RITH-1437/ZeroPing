@@ -3,6 +3,7 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
+use App\Core\Queue\Job;
 use App\Core\Queue\FailedJob;
 use App\Core\Queue\Dispatcher;
 
@@ -41,7 +42,7 @@ class QueueRetryCommand extends Command
             return;
         }
 
-        $payload = unserialize($job->payload);
+        $payload = Job::fromPayload($job->payload);
 
         Dispatcher::dispatch($payload);
 

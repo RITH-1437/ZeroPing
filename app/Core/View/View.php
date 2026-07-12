@@ -7,9 +7,21 @@ class View
     private static bool $cacheEnabled = false;
     private static ?string $basePath = null;
 
+    /**
+     * Resolved view/layout paths, cached so repeated renders of the same view
+     * (e.g. inside a loop) skip the file_exists() scan.
+     *
+     * @var array<string, string|null>
+     */
+    private static array $pathCache = [];
+
     public static function setBasePath(?string $path): void
     {
         self::$basePath = $path;
+
+        // Cached view/layout paths are absolute and tied to the previous base
+        // path, so they must be invalidated when the base path changes.
+        self::$pathCache = [];
     }
 
     public static function enableCache(bool $enabled = true): void
@@ -70,31 +82,42 @@ class View
 
     public static function findView(string $view): ?string
     {
-        $path = self::basePath() . "/views/{$view}.php";
+        if (array_key_exists($view, self::$pathCache)) {
+            return self::$pathCache[$view];
+        }
+
+        $path = self::basePath() . "/views/" . str_replace('.', '/', $view) . ".php";
         if (file_exists($path)) {
-            return $path;
+            return self::$pathCache[$view] = $path;
         }
         if (self::$basePath !== null) {
-            $frameworkPath = dirname(__DIR__, 3) . "/views/{$view}.php";
+            $frameworkPath = dirname(__DIR__, 3) . "/views/" . str_replace('.', '/', $view) . ".php";
             if (file_exists($frameworkPath)) {
-                return $frameworkPath;
+                return self::$pathCache[$view] = $frameworkPath;
             }
         }
+        // Not found: do not cache the miss (a view may appear later).
         return null;
     }
 
     public static function findLayout(string $layout): ?string
     {
+        $key = "layout:{$layout}";
+        if (array_key_exists($key, self::$pathCache)) {
+            return self::$pathCache[$key];
+        }
+
         $path = self::basePath() . "/views/layouts/{$layout}.php";
         if (file_exists($path)) {
-            return $path;
+            return self::$pathCache[$key] = $path;
         }
         if (self::$basePath !== null) {
             $frameworkPath = dirname(__DIR__, 3) . "/views/layouts/{$layout}.php";
             if (file_exists($frameworkPath)) {
-                return $frameworkPath;
+                return self::$pathCache[$key] = $frameworkPath;
             }
         }
+        // Not found: do not cache the miss (a layout may appear later).
         return null;
     }
 

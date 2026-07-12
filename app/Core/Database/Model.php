@@ -12,7 +12,7 @@ use App\Core\ORM\Concerns\HasTimestamps;
 use App\Core\ORM\Concerns\SoftDeletes;
 use PDO;
 
-abstract class Model
+abstract class Model implements \ArrayAccess
 {
     use GuardsAttributes, HasTimestamps, HasAttributes, HasRelationships, SoftDeletes, HasEvents {
         HasRelationships::__get insteadof HasAttributes;
@@ -35,15 +35,16 @@ abstract class Model
     /**
      * Create a new query builder instance.
      */
-    public function query(): QueryBuilder
+    public static function query(): QueryBuilder
     {
-        $qb = new QueryBuilder($this->db, $this->table);
+        $instance = new static;
+        $qb = new QueryBuilder($instance->db, $instance->table);
 
-        if (!$this->hasSoftDeletes) {
+        if (!$instance->hasSoftDeletes) {
             $qb->withTrashed();
         }
 
-        return $qb;
+        return $qb->setModelClass(static::class);
     }
 
     /**
@@ -59,14 +60,9 @@ abstract class Model
      */
     public static function find(int|string $id): ?static
     {
-        $attributes = (new static)->query()
+        return (new static)->query()
             ->where('id', (int) $id)
             ->first();
-
-        if (!$attributes) return null;
-        $model = new static();
-        $model->forceFill((array) $attributes);
-        return $model;
     }
 
     /**
@@ -90,14 +86,9 @@ abstract class Model
      */
     public static function findBy(string $column, mixed $value): ?static
     {
-        $attributes = (new static)->query()
+        return (new static)->query()
             ->where($column, $value)
             ->first();
-
-        if (!$attributes) return null;
-        $model = new static();
-        $model->forceFill((array) $attributes);
-        return $model;
     }
 
     /**
@@ -266,7 +257,7 @@ abstract class Model
      * @param  array|null  $except
      * @return static
      */
-    public function replicate(array $except = null): static
+    public function replicate(?array $except = null): static
     {
         $attributes = $this->attributes;
 
@@ -338,6 +329,26 @@ abstract class Model
         return $this->{$column};
     }
 
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->attributes[$offset]);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->getAttribute($offset);
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->setAttribute($offset, $value);
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->attributes[$offset]);
+    }
+
     /**
      * Handle dynamic method calls into the model.
      *
@@ -347,16 +358,9 @@ abstract class Model
      */
     public function __call($method, $parameters)
     {
-        return $this->query()->$method(...$parameters);
+        return static::query()->$method(...$parameters);
     }
 
-    /**
-     * Handle dynamic static method calls into the model.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
-     */
     public static function __callStatic($method, $parameters)
     {
         return (new static)->$method(...$parameters);

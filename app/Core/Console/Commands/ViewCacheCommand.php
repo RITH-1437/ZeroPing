@@ -24,14 +24,27 @@ class ViewCacheCommand extends Command
             new \RecursiveDirectoryIterator($viewsDir, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
 
+        $skipDirs = ['components', 'emails', 'layouts'];
+
         foreach ($iterator as $file) {
             if ($file->getExtension() !== 'php') {
                 continue;
             }
 
-            $relative = str_replace($viewsDir . '/', '', $file->getPathname());
+            $relative = str_replace([$viewsDir . '/', $viewsDir . '\\'], '', $file->getPathname());
             $viewName = str_replace('.php', '', $relative);
             $viewName = str_replace('\\', '/', $viewName);
+
+            $skip = false;
+            foreach ($skipDirs as $dir) {
+                if (str_starts_with($viewName, $dir . '/') || $viewName === $dir) {
+                    $skip = true;
+                    break;
+                }
+            }
+            if ($skip) {
+                continue;
+            }
 
             $content = View::render($viewName, [], $this->detectLayout($viewName));
 

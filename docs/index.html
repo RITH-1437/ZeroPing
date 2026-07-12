@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Official documentation for the ZeroPing PHP framework." />
+  <title>ZeroPing Framework — Documentation</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" id="hljs-theme" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+</head>
+<body>
+  <a class="skip-link" href="#page-content">Skip to content</a>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">&#9776;</button>
+      <a class="brand" href="#/introduction">
+        <span class="brand-mark">Z</span>
+        <span class="brand-name">ZeroPing</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+    </div>
+
+    <div class="topbar-center">
+      <div class="search">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M21 21l-4.35-4.35M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search documentation…" autocomplete="off" aria-label="Search documentation" />
+        <kbd class="search-kbd">/</kbd>
+        <div class="search-results" id="search-results" hidden></div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <label class="version-select" aria-label="Documentation version">
+        <select id="version-select">
+          <option value="1.0.0" selected>v1.0.0</option>
+        </select>
+      </label>
+      <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+        <span class="theme-icon theme-icon-light">&#9728;</span>
+        <span class="theme-icon theme-icon-dark">&#9790;</span>
+      </button>
+      <a class="icon-btn github-link" href="https://github.com/RITH-1437/zero-ping" target="_blank" rel="noopener" aria-label="GitHub repository" title="GitHub">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <main class="content" id="content">
+      <nav class="breadcrumb" id="breadcrumb" aria-label="Breadcrumb"></nav>
+      <article class="page" id="page-content"></article>
+      <footer class="page-footer">
+        <div class="page-nav" id="page-nav"></div>
+        <p class="copyright">ZeroPing Framework &mdash; Lightweight PHP Framework built from scratch. MIT License.</p>
+      </footer>
+    </main>
+
+    <aside class="toc" aria-label="On this page">
+      <div class="toc-inner" id="toc-inner"></div>
+    </aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- Page content is stored as inert <template> blocks so PHP source (with backslashes) is preserved verbatim. -->
+  <div id="page-templates" hidden>
+    <template data-id="introduction" data-title="Introduction" data-category="Getting Started">
+      <h1>Introduction</h1>
+      <p class="lede">ZeroPing is a lightweight PHP framework built from scratch &mdash; no external dependencies, no magic. It gives you a clean, readable structure for building modern web applications with routing, an ORM, migrations, a CLI, authentication, validation, and more.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing was designed to be small, understandable, and easy to extend. Instead of hiding behavior behind layers of conventions, it exposes a straightforward, readable API so you can learn how the framework works and adapt it to your needs.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Zero dependencies</h4>
+          <p>The core ships with the framework. No Composer packages are required to run a basic app.</p>
+        </div>
+        <div class="card">
+          <h4>Batteries included</h4>
+          <p>Routing, ORM, migrations, seeders, validation, auth, middleware, a CLI, caching, queues, mail, and a scheduler.</p>
+        </div>
+        <div class="card">
+          <h4>Readable by design</h4>
+          <p>The source is meant to be opened and read. There is little "magic" &mdash; what you write is what runs.</p>
+        </div>
+        <div class="card">
+          <h4>Modern PHP</h4>
+          <p>Requires PHP &ge; 8.1 and uses namespaces, typed properties, and first-class constructors.</p>
+        </div>
+      </div>
+
+      <h2>Why ZeroPing?</h2>
+      <p>If you have ever wanted a framework you can actually understand end-to-end &mdash; or a teaching tool for how frameworks work &mdash; ZeroPing is a strong choice. It is also perfectly capable of powering real applications and APIs.</p>
+
+      <h2>Code Examples</h2>
+      <p>A minimal route + controller + view flow looks like this:</p>
+      <pre><code class="language-php">&lt;?php
+// config/routes.php
+use App\Controllers\HomeController;
+use App\Core\Routing\Router;
+
+Router::get('/', [HomeController::class, 'home']);</code></pre>
+      <pre><code class="language-php">// app/Controllers/HomeController.php
+namespace App\Controllers;
+
+use App\Core\View\Controller;
+
+class HomeController extends Controller
+{
+    public function home(): void
+    {
+        $this-&gt;view('home', ['title' =&gt; 'Welcome'], 'site');
+    }
+}</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Read the framework source. Because ZeroPing is intentionally small, the best documentation is often the corresponding class under <code>app/Core</code>. Keep a browser tab open on the relevant file while you build.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Assuming ZeroPing mirrors Laravel. It does <em>not</em> have a <code>DB::table()</code> facade, Blade templates, <code>Route::resource()</code>, or a <code>Gate</code> authorization system. Always check the actual API before copying Laravel snippets.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>ZeroPing currently supports the <code>GET</code> and <code>POST</code> HTTP verbs for routing. There is no built-in <code>PUT</code>/<code>PATCH</code>/<code>DELETE</code> or <code>_method</code> spoofing &mdash; model and helper code can still perform those operations, but routes match <code>GET</code>/<code>POST</code> only.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Run the built-in development server with <code>php zero serve</code> while you learn &mdash; no virtual host or Nginx config required.</p>
+      </div>
+    </template>
+
+    <template data-id="installation" data-title="Installation" data-category="Getting Started">
+      <h1>Installation</h1>
+      <p class="lede">Get a ZeroPing application running locally in a few minutes.</p>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li><strong>PHP</strong> &ge; 8.1 (with the <code>pdo_mysql</code> extension enabled)</li>
+        <li><strong>Composer</strong> (for dependency autoloading)</li>
+        <li><strong>MySQL / MariaDB</strong> (for database features)</li>
+        <li>A web server &mdash; the built-in server (<code>php zero serve</code>) is enough for development</li>
+      </ul>
+
+      <h2>Step 1 &mdash; Get the code</h2>
+      <p>Clone the repository or download the release, then install Composer dependencies:</p>
+      <pre><code class="language-bash">git clone https://github.com/RITH-1437/zero-ping my-app
+cd my-app
+composer install</code></pre>
+
+      <h2>Step 2 &mdash; Configure environment</h2>
+      <p>Copy the example environment file and adjust the values for your machine:</p>
+      <pre><code class="language-bash">cp .env.example .env</code></pre>
+      <p>Open <code>.env</code> and set your database credentials:</p>
+      <pre><code class="language-ini">APP_NAME=ZeroPing
+APP_ENV=development
+APP_DEBUG=true
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=zero_ping
+DB_USER=root
+DB_PASS=</code></pre>
+
+      <h2>Step 3 &mdash; Prepare storage &amp; cache</h2>
+      <p>Make sure the storage and bootstrap cache directories are writable:</p>
+      <pre><code class="language-bash">chmod -R 755 storage
+chmod -R 755 bootstrap/cache</code></pre>
+
+      <h2>Step 4 &mdash; Run migrations</h2>
+      <pre><code class="language-bash">php zero migrate
+php zero migrate:status</code></pre>
+
+      <h2>Step 5 &mdash; Start the server</h2>
+      <pre><code class="language-bash">php zero serve</code></pre>
+      <p>Then open <code>http://localhost:8000</code> in your browser.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep <code>.env</code> out of version control (it is already git-ignored). Share configuration through <code>.env.example</code> instead.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Running the app without creating <code>.env</code>. The framework falls back to sensible defaults, but your database connection will fail unless <code>DB_*</code> values are present.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>ZeroPing reads environment variables from <code>$_ENV</code>. Make sure your PHP <code>variables_order</code> includes <code>E</code> (the default), otherwise <code>env()</code> may return <code>null</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Use <code>php zero about</code> to confirm the framework boots and to see project metadata at a glance.</p>
+      </div>
+    </template>
+
+    <template data-id="quick-start" data-title="Quick Start" data-category="Getting Started">
+      <h1>Quick Start</h1>
+      <p class="lede">Build a tiny "hello" feature end-to-end: a route, a controller, and a view.</p>
+
+      <h2>Overview</h2>
+      <p>In ZeroPing, a request flows through: <strong>route &rarr; middleware &rarr; controller &rarr; view</strong>. Let's add a <code>/hello</code> page that greets a visitor by name.</p>
+
+      <h2>1. Define a route</h2>
+      <pre><code class="language-php">&lt;?php
+// config/routes.php
+use App\Controllers\GreetingController;
+use App\Core\Routing\Router;
+
+Router::get('/hello', [GreetingController::class, 'show']);</code></pre>
+
+      <h2>2. Create the controller</h2>
+      <pre><code class="language-php">// app/Controllers/GreetingController.php
+namespace App\Controllers;
+
+use App\Core\View\Controller;
+use App\Http\Request;
+
+class GreetingController extends Controller
+{
+    public function show(): void
+    {
+        $name = Request::input('name', 'World');
+        $this-&gt;view('greeting', ['name' =&gt; $name], 'site');
+    }
+}</code></pre>
+
+      <h2>3. Create the view</h2>
+      <pre><code class="language-php">&lt;?php // views/greeting.php ?&gt;
+&lt;h1&gt;Hello, &lt;?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?&gt;!&lt;/h1&gt;</code></pre>
+
+      <h2>4. See it</h2>
+      <pre><code class="language-bash">php zero serve</code></pre>
+      <p>Visit <code>http://localhost:8000/hello?name=Ada</code>.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep controllers thin. Load data, pass it to a view, and return. Put business logic in services or the model layer.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Forgetting to escape output. ZeroPing does <em>not</em> auto-escape view variables, so always wrap user data in <code>htmlspecialchars()</code> or the <code>e()</code> helper to avoid XSS.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Route parameters are passed to controller methods positionally. <code>Router::get('/users/{id}', ...)</code> means your method receives <code>$id</code> as its argument.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Generate boilerplate with the CLI: <code>php zero make:controller GreetingController</code> creates the class for you.</p>
+      </div>
+    </template>
+
+    <template data-id="project-structure" data-title="Project Structure" data-category="Getting Started">
+      <h1>Project Structure</h1>
+      <p class="lede">Where everything lives and what each directory is for.</p>
+
+      <h2>Overview</h2>
+      <pre><code class="language-text">zero-ping/
+├── app/                  # Your application code
+│   ├── Console/          # CLI commands & stubs (framework)
+│   ├── Controllers/      # HTTP controllers
+│   ├── Core/             # The framework (routing, ORM, HTTP, etc.)
+│   ├── Http/             # Request, Response, Middleware
+│   ├── Models/           # Eloquent-style models
+│   ├── Policies/         # Authorization policy classes
+│   ├── Providers/        # Service providers
+│   ├── Repositories/     # Repository classes
+│   ├── Services/         # Business logic services
+│   └── Helpers/          # Global helper functions
+├── bootstrap/            # App bootstrap
+├── config/               # Configuration files
+├── database/
+│   ├── migrations/       # Migration files
+│   └── seeders/          # Seeder classes
+├── docs/                 # This documentation site
+├── public/               # Web root (index.php)
+├── resources/            # (optional) assets
+├── storage/              # Logs, cache, uploads
+├── tests/                # PHPUnit tests
+├── views/                # View templates, layouts, components
+├── zero                  # CLI entry point
+└── phpunit.xml           # Test configuration</code></pre>
+
+      <h2>Key directories</h2>
+      <table class="doc-table">
+        <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>app/Core</code></td><td>Framework internals &mdash; safe to read, avoid editing.</td></tr>
+          <tr><td><code>app/Controllers</code>, <code>app/Models</code>, <code>app/Services</code></td><td>Your application logic.</td></tr>
+          <tr><td><code>config</code></td><td>Typed configuration, read via <code>config('file.key')</code>.</td></tr>
+          <tr><td><code>database/migrations</code></td><td>Schema definitions, run with <code>php zero migrate</code>.</td></tr>
+          <tr><td><code>views</code></td><td>Plain PHP view files plus <code>layouts/</code> and <code>components/</code>.</td></tr>
+          <tr><td><code>public</code></td><td>Document root &mdash; only this directory should be web-accessible.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Put framework-agnostic business logic in <code>app/Services</code> and keep <code>app/Controllers</code> focused on HTTP concerns. This makes logic easy to test and reuse.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Exposing <code>app/</code>, <code>config/</code>, or <code>.env</code> to the web. Point your web server's document root at <code>public/</code> only.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The <code>zero</code> script at the project root is the CLI entry point. Run it with <code>php zero &lt;command&gt;</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>New to the codebase? Start in <code>app/Core/Routing/Router.php</code> and <code>app/Core/Application/App.php</code> &mdash; they show the full request lifecycle.</p>
+      </div>
+    </template>
+
+    <template data-id="routing" data-title="Routing" data-category="The Basics">
+      <h1>Routing</h1>
+      <p class="lede">Routes map URLs to controllers (or closures). All routes live in <code>config/routes.php</code>.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing's router is a static registrar. You call <code>Router::get()</code> or <code>Router::post()</code> to register a route; the framework <code>require</code>s <code>config/routes.php</code> on every request and dispatches the match.</p>
+      <p>The router currently supports <strong>GET</strong> and <strong>POST</strong> only. There is no <code>Route</code> facade &mdash; you always use the <code>Router</code> class directly.</p>
+
+      <h2>Basic routes</h2>
+      <pre><code class="language-php">&lt;?php
+use App\Controllers\HomeController;
+use App\Core\Routing\Router;
+
+// Controller action
+Router::get('/', [HomeController::class, 'home']);
+
+// Closure route
+Router::get('/ping', function () {
+    echo 'pong';
+});
+
+// POST route
+Router::post('/contact', [ContactController::class, 'store']);</code></pre>
+
+      <h2>Route parameters</h2>
+      <p>Define a parameter with <code>{name}</code>. It is passed to your controller method positionally:</p>
+      <pre><code class="language-php">Router::get('/docs/{slug}', [DocsController::class, 'show']);
+
+// app/Controllers/DocsController.php
+public function show(string $slug = 'introduction'): void
+{
+    // $slug contains the matched value
+}</code></pre>
+
+      <h2>Named routes &amp; URL generation</h2>
+      <pre><code class="language-php">Router::get('/users/{id}', [UserController::class, 'show'])-&gt;name('users.show');
+
+// Generate a URL (global helper):
+$url = route('users.show', ['id' =&gt; 42]); // "/users/42"</code></pre>
+
+      <h2>Route groups (prefix &amp; middleware)</h2>
+      <p>There is no combined <code>group()</code>. Use <code>prefix()</code> and <code>middleware()</code> (they can be nested):</p>
+      <pre><code class="language-php">Router::prefix('/admin', function () {
+    Router::middleware(['auth'], function () {
+        Router::get('/dashboard', [AdminController::class, 'dashboard']);
+        Router::get('/users', [AdminController::class, 'users']);
+    });
+});</code></pre>
+      <p>Middleware is referenced by a short name (e.g. <code>'auth'</code>) and resolves to <code>App\Http\Middleware\AuthMiddleware</code>. See the <a href="#/middleware">Middleware</a> page.</p>
+
+      <h2>Listing routes</h2>
+      <pre><code class="language-bash">php zero route:list</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Name important routes and generate URLs with <code>route()</code> instead of hard-coding paths, so renaming a URI doesn't break links across your app.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Expecting <code>put()</code>, <code>patch()</code>, <code>delete()</code>, or <code>resource()</code> methods. They do not exist &mdash; register those operations as <code>POST</code> routes (e.g. <code>Router::post('/users/{id}/delete', ...)</code>).</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Unmatched routes render <code>views/errors/404.php</code>; uncaught exceptions render <code>views/errors/500.php</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Use <code>route:list</code> after editing <code>config/routes.php</code> to confirm your routes registered with the expected method, URI, action, and middleware.</p>
+      </div>
+    </template>
+
+    <template data-id="controllers" data-title="Controllers" data-category="The Basics">
+      <h1>Controllers</h1>
+      <p class="lede">Controllers handle a request, load data, and return a view, redirect, or JSON response.</p>
+
+      <h2>Overview</h2>
+      <p>Controllers live in <code>app/Http/Controllers</code>, use the <code>App\Controllers</code> namespace, and extend <code>App\Core\View\Controller</code>. The router instantiates them with a plain <code>new $class()</code> &mdash; there is no constructor dependency injection, so keep constructors empty or parameterless.</p>
+
+      <h2>Generating a controller</h2>
+      <pre><code class="language-bash">php zero make:controller PostController</code></pre>
+
+      <h2>A basic controller</h2>
+      <pre><code class="language-php">namespace App\Controllers;
+
+use App\Core\View\Controller;
+use App\Models\Post;
+
+class PostController extends Controller
+{
+    public function index(): void
+    {
+        $posts = Post::latest()-&gt;limit(10)-&gt;get();
+        $this-&gt;view('posts/index', ['posts' =&gt; $posts], 'site');
+    }
+
+    public function show(string $id): void
+    {
+        $post = Post::find($id);
+        $this-&gt;view('posts/show', ['post' =&gt; $post], 'site');
+    }
+}</code></pre>
+
+      <h2>Returning responses</h2>
+      <p>Controllers are <code>void</code> &mdash; they echo output directly. Use the base helpers:</p>
+      <pre><code class="language-php">// Redirect
+$this-&gt;redirect('/login');
+$this-&gt;redirectBack();           // back to the previous URL
+
+// JSON
+\App\Http\Response::json(['ok' =&gt; true]);</code></pre>
+
+      <h2>Reading request input</h2>
+      <pre><code class="language-php">use App\Http\Request;
+
+$email = Request::input('email');
+$all   = Request::all();
+if (Request::isPost()) { /* ... */ }</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep controllers thin: validate input, call a service or model, then return. Push business rules into <code>app/Services</code> or the model layer.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Trying to <code>return</code> a response object. There is no response object &mdash; use <code>$this-&gt;redirect()</code>, <code>Response::json()</code>, or echo a view. A returned value is ignored.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Route parameters are passed to the method positionally. Since controllers are created with <code>new</code> (no container), a constructor cannot receive route params or injected services &mdash; load what you need inside the method.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Access the authenticated user inside a controller with <code>AuthManager::user()</code> (see <a href="#/authentication">Authentication</a>).</p>
+      </div>
+    </template>
+
+    <template data-id="views" data-title="Views" data-category="The Basics">
+      <h1>Views</h1>
+      <p class="lede">Views are plain PHP templates. There is no Blade &mdash; you write standard PHP.</p>
+
+      <h2>Overview</h2>
+      <p>Views are <code>.php</code> files in the <code>views/</code> directory. Render one from a controller with <code>$this-&gt;view('folder/file', $data, $layout)</code>, or the global <code>view()</code> helper. Data is extracted into local variables.</p>
+
+      <h2>Rendering a view</h2>
+      <pre><code class="language-php">// Controller
+$this-&gt;view('posts/show', ['post' =&gt; $post], 'site');
+
+// Or the global helper (returns the rendered string)
+$html = view('emails.welcome', ['name' =&gt; 'Ada']);</code></pre>
+
+      <h2>Echoing &amp; escaping</h2>
+      <p>ZeroPing does <strong>not</strong> auto-escape. Escape user data yourself:</p>
+      <pre><code class="language-php">&lt;h1&gt;&lt;?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?&gt;&lt;/h1&gt;
+&lt;!-- or use the global e() helper --&gt;
+&lt;p&gt;&lt;?= e($user-&gt;name) ?&gt;&lt;/p&gt;</code></pre>
+
+      <h2>Control structures</h2>
+      <p>Use plain PHP &mdash; there are no <code>@if</code>/<code>@foreach</code> directives:</p>
+      <pre><code class="language-php">&lt;?php foreach ($posts as $post): ?&gt;
+    &lt;article&gt;
+        &lt;h2&gt;&lt;?= e($post-&gt;title) ?&gt;&lt;/h2&gt;
+    &lt;/article&gt;
+&lt;?php endforeach; ?&gt;</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Never trust output. Wrap every user-supplied value in <code>e()</code> or <code>htmlspecialchars()</code> to prevent XSS. Treat it as mandatory, not optional.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Writing <code>{{ $title }}</code> expecting Blade. ZeroPing uses native PHP; use <code>&lt;?= e($title) ?&gt;</code> instead. The only <code>{{ }}</code> token the engine understands is <code>{{ slot }}</code> in layouts (see <a href="#/layouts">Layouts</a>).</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>View file paths use dots: <code>view('site/home')</code> resolves to <code>views/site/home.php</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Enable view caching in production with <code>View::enableCache(true)</code> to store fully-rendered output and skip re-parsing on repeat requests.</p>
+      </div>
+    </template>
+
+    <template data-id="layouts" data-title="Layouts" data-category="The Basics">
+      <h1>Layouts</h1>
+      <p class="lede">Reuse a page shell (header, nav, footer) across views using slot injection.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing uses a <strong>slot-injection</strong> model rather than Blade sections. When you render a view with a layout, the framework renders the child view, captures its output, and injects it into the layout wherever the literal token <code>{{ slot }}</code> appears.</p>
+
+      <h2>The layout file</h2>
+      <pre><code class="language-php">&lt;!-- views/layouts/site.php --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;&lt;title&gt;&lt;?= e($title ?? 'ZeroPing') ?&gt;&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+    &lt;?php require __DIR__ . '/../components/navbar.php'; ?&gt;
+    &lt;main&gt;
+        {{ slot }}
+    &lt;/main&gt;
+    &lt;?php require __DIR__ . '/../components/footer.php'; ?&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h2>The child view</h2>
+      <pre><code class="language-php">&lt;!-- views/home.php --&gt;
+&lt;h1&gt;Welcome&lt;/h1&gt;
+&lt;p&gt;This content replaces the {{ slot }} token.&lt;/p&gt;</code></pre>
+
+      <h2>Selecting a layout</h2>
+      <p>The global <code>view()</code> helper only takes two arguments and defaults to the <code>guest</code> layout. To pick a layout, call <code>View::render()</code> directly, or &mdash; from a controller &mdash; <code>$this-&gt;view()</code>, whose third argument is the layout name (without <code>layouts/</code> or <code>.php</code>):</p>
+      <pre><code class="language-php">use App\Core\View\View;
+
+// Anywhere:
+View::render('home', $data, 'site');
+
+// From a controller:
+$this-&gt;view('home', $data, 'site');</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep one master layout per "area" (public site, admin, auth pages) and pass the active section so the nav can highlight it.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Looking for <code>@extends</code>/<code>@section</code>/<code>@yield</code>. Those don't exist here. Use the <code>{{ slot }}</code> token inside your layout and pass the layout name as the third argument to <code>View::render()</code> (or <code>$this-&gt;view()</code>).</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Variables from the controller (like <code>$title</code>) are available in <em>both</em> the child view and the layout, because they share the same <code>extract()</code> scope.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Remember the global <code>view()</code> helper always uses the <code>guest</code> layout. Reach for <code>View::render()</code> whenever you need anything else.</p>
+      </div>
+    </template>
+
+    <template data-id="components" data-title="Components" data-category="The Basics">
+      <h1>Components</h1>
+      <p class="lede">Components are reusable PHP partials &mdash; there is no component engine or <code>&lt;x-&gt;</code> syntax.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing has no Blade-style components and no <code>render_component()</code> helper. A "component" is simply a <code>.php</code> partial that you include with plain PHP. You <code>extract()</code> the data yourself (or pass it via <code>include</code> scope) and <code>require</code> the file.</p>
+
+      <h2>Creating a component partial</h2>
+      <pre><code class="language-php">&lt;!-- views/components/alert.php --&gt;
+&lt;?php
+$type = $type ?? 'info';
+?&gt;
+&lt;div class="alert alert-&lt;?= e($type) ?&gt;"&gt;
+    &lt;?= e($message ?? '') ?&gt;
+&lt;/div&gt;</code></pre>
+
+      <h2>Using a component</h2>
+      <pre><code class="language-php">&lt;?php
+$type = 'success';
+$message = 'Saved!';
+require __DIR__ . '/../components/alert.php';
+?&gt;</code></pre>
+      <p>To avoid repeating the scope-setup boilerplate, wrap includes in a tiny helper of your own:</p>
+      <pre><code class="language-php">function component(string $name, array $data = []): void
+{
+    extract($data, EXTR_SKIP);
+    require __DIR__ . "/../components/{$name}.php";
+}
+
+component('alert', ['type' =&gt; 'success', 'message' =&gt; 'Saved!']);</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep component partials presentational and stateless: pass everything they need as data. This makes them predictable and reusable.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Expecting <code>&lt;x-alert /&gt;</code>, <code>@component</code>, or a built-in <code>render_component()</code> function. None exist &mdash; use plain PHP <code>require</code>/<code>include</code> (or a small helper like the one above).</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The <code>views/components</code> directory is a convention only (the view cache command skips it). Nothing auto-loads components; you include them explicitly.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Build a small library of partials (navbar, card, button, pagination, alert) and compose pages from them to keep markup consistent.</p>
+      </div>
+    </template>
+
+    <template data-id="models" data-title="Models" data-category="The Basics">
+      <h1>Models</h1>
+      <p class="lede">Models represent database tables and give you an Eloquent-style API.</p>
+
+      <h2>Overview</h2>
+      <p>Models extend <code>App\Core\Database\Model</code> (namespace <code>App\Models</code>). They map to a database table and provide attribute access, mass assignment protection, relationships, and persistence.</p>
+
+      <h2>Defining a model</h2>
+      <pre><code class="language-php">namespace App\Models;
+
+use App\Core\Database\Model;
+
+class Post extends Model
+{
+    protected string $table = 'posts';            // required — no auto-pluralization
+    protected array $fillable = ['title', 'body', 'user_id'];
+    protected array $casts = ['published' =&gt; 'bool'];
+    protected bool $hasSoftDeletes = true;        // set false if the table has no deleted_at
+}</code></pre>
+
+      <h2>Mass assignment</h2>
+      <p>By default <strong>everything is guarded</strong> (<code>$guarded = ['*']</code>). You must declare <code>$fillable</code> for <code>create()</code>/<code>fill()</code> to work, or they throw <code>MassAssignmentException</code>.</p>
+      <pre><code class="language-php">$post = Post::create([
+    'title' =&gt; 'Hello',
+    'body'  =&gt; 'World',
+    'user_id' =&gt; 1,
+]);</code></pre>
+
+      <h2>Common methods</h2>
+      <table class="doc-table">
+        <thead><tr><th>Method</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>Post::all()</code></td><td>All rows as a <code>Collection</code>.</td></tr>
+          <tr><td><code>Post::find($id)</code></td><td>Row by primary key (returns <code>?static</code>).</td></tr>
+          <tr><td><code>Post::findBy($col, $val)</code></td><td>First row matching a column.</td></tr>
+          <tr><td><code>Post::create($attrs)</code></td><td>Insert and return the model.</td></tr>
+          <tr><td><code>$post-&gt;save()</code></td><td>Insert or update the model.</td></tr>
+          <tr><td><code>$post-&gt;update($attrs)</code></td><td>Update given attributes.</td></tr>
+          <tr><td><code>$post-&gt;delete()</code></td><td>Soft-delete (sets <code>deleted_at</code>).</td></tr>
+          <tr><td><code>$post-&gt;forceDelete()</code></td><td>Hard delete.</td></tr>
+          <tr><td><code>$post-&gt;increment('views')</code></td><td>Atomic increment.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Always declare <code>$fillable</code> explicitly. It is both a security boundary and documentation of what your model accepts.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Assuming the primary key is configurable or that there is a <code>$hidden</code> property. The primary key is always <code>id</code>, and ZeroPing has no <code>hidden</code> concept &mdash; sensitive columns are simply included in arrays.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Query-builder methods (<code>where</code>, <code>orderBy</code>, <code>first</code>, <code>count</code>, <code>paginate</code>, &hellip;) are forwarded from the model to a query builder via <code>__call</code>/<code>__callStatic</code>. So <code>Post::where('active', 1)-&gt;get()</code> works.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Generate a model with <code>php zero make:model Post</code> &mdash; it guesses the table name for you.</p>
+      </div>
+    </template>
+
+    <template data-id="orm" data-title="ORM" data-category="The Basics">
+      <h1>ORM &amp; Query Builder</h1>
+      <p class="lede">Query the database fluently through models or the query builder.</p>
+
+      <h2>Overview</h2>
+      <p>The ORM is Eloquent-inspired. Start from a model (<code>Post::query()</code> is called implicitly) or build a raw query builder with <code>new QueryBuilder(Database::connect(), 'table')</code>.</p>
+
+      <h2>Retrieving data</h2>
+      <pre><code class="language-php">use App\Models\Post;
+
+$posts = Post::where('published', 1)
+    -&gt;whereIn('category', ['news', 'tips'])
+    -&gt;orderBy('created_at', 'DESC')
+    -&gt;limit(10)
+    -&gt;get();                       // Collection of Post
+
+$post = Post::where('slug', $slug)-&gt;firstOrFail();
+
+$count = Post::where('published', 1)-&gt;count();
+$page  = Post::paginate(15, 1);    // Paginator instance</code></pre>
+
+      <h2>Relationships</h2>
+      <pre><code class="language-php">class Post extends Model
+{
+    public function user(): \App\Core\ORM\Relations\BelongsTo
+    {
+        return $this-&gt;belongsTo(User::class);
+    }
+
+    public function comments(): \App\Core\ORM\Relations\HasMany
+    {
+        return $this-&gt;hasMany(Comment::class);  // FK: posts_id
+    }
+}
+
+// Access as a property:
+foreach ($post-&gt;comments as $comment) { /* ... */ }
+$author = $post-&gt;user;            // User|null</code></pre>
+
+      <h2>Casts &amp; soft deletes</h2>
+      <pre><code class="language-php">protected array $casts = [
+    'meta'       =&gt; 'array',     // JSON ⇄ array
+    'published'  =&gt; 'bool',
+    'created_at' =&gt; 'datetime',  // DateTime
+];
+
+// Soft deletes are automatic when $hasSoftDeletes = true:
+$post = Post::withTrashed()-&gt;find(1);
+$post-&gt;restore();            // restore() is a model method</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Prefer model methods (<code>Post::where(...)</code>) over raw SQL so results are hydrated into model instances with casts and relationships.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Using an array form of <code>where()</code> like <code>where(['a' =&gt; 1])</code>. <code>where()</code> takes a single scalar value (and optional operator). Use <code>whereIn()</code> for lists.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p><code>Model::all()</code> and <code>get()</code> return an <code>App\Core\ORM\Collection</code>, not a plain array &mdash; use <code>foreach</code> or collection helpers, not <code>array_*</code> functions expecting arrays (though it is traversable).</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Need a raw table without a model? <code>$qb = new \App\Core\Database\QueryBuilder(\App\Core\Database\Database::connect(), 'sessions');</code> gives the same fluent API.</p>
+      </div>
+    </template>
+
+    <template data-id="database" data-title="Database" data-category="The Basics">
+      <h1>Database</h1>
+      <p class="lede">Connect to MySQL with PDO, run raw queries, or use the query builder and Schema.</p>
+
+      <h2>Overview</h2>
+      <p>There is <strong>no <code>DB::</code> facade</strong>. Get a PDO connection from <code>App\Core\Database\Database::connect()</code>, or reach the query builder through a model. Schema operations go through the <code>Schema</code> facade.</p>
+
+      <h2>Raw PDO access</h2>
+      <pre><code class="language-php">use App\Core\Database\Database;
+
+$pdo = Database::connect();
+
+$stmt = $pdo-&gt;prepare('SELECT * FROM users WHERE id = ?');
+$stmt-&gt;execute([1]);
+$user = $stmt-&gt;fetch();</code></pre>
+
+      <h2>Transactions</h2>
+      <pre><code class="language-php">$pdo-&gt;beginTransaction();
+try {
+    $pdo-&gt;prepare('UPDATE accounts SET balance = balance - ? WHERE id = ?')
+         -&gt;execute([100, 1]);
+    $pdo-&gt;prepare('UPDATE accounts SET balance = balance + ? WHERE id = ?')
+         -&gt;execute([100, 2]);
+    $pdo-&gt;commit();
+} catch (\Throwable $e) {
+    $pdo-&gt;rollBack();
+    throw $e;
+}</code></pre>
+
+      <h2>Schema (DDL)</h2>
+      <pre><code class="language-php">use App\Core\Database\Schema;
+
+if (Schema::hasTable('users')) {
+    // ...
+}
+Schema::drop('old_table');</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Prefer the ORM/query builder for application code. Reach for raw PDO only for reporting queries, transactions, or SQL features the builder doesn't expose.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Writing <code>DB::table('users')-&gt;where(...)</code>. That facade does not exist. Use <code>Database::connect()</code> for PDO, or a model/query builder.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Connections are lazy and cached as a singleton per request. Configuration comes from <code>config/database.php</code> (which falls back to <code>DB_*</code> constants).</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Enable query logging in development to inspect generated SQL &mdash; <code>Database::getLog()</code> returns the executed statements with bindings and timings.</p>
+      </div>
+    </template>
+
+    <template data-id="migrations" data-title="Migrations" data-category="The Basics">
+      <h1>Migrations</h1>
+      <p class="lede">Version your database schema with PHP classes run from the CLI.</p>
+
+      <h2>Overview</h2>
+      <p>A migration is an anonymous class extending <code>App\Core\Database\Migration</code> with <code>up()</code> and <code>down()</code> methods. Files live in <code>database/migrations</code> and run in filename order. The framework tracks which have run in a <code>migrations</code> table.</p>
+
+      <h2>Creating a migration</h2>
+      <pre><code class="language-bash">php zero make:migration CreatePostsTable</code></pre>
+
+      <h2>Example migration</h2>
+      <pre><code class="language-php">&lt;?php
+use App\Core\Database\Migration;
+use App\Core\Database\Schema;
+use App\Core\Database\Blueprint;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;string('title');
+            $table-&gt;text('body')-&gt;nullable();
+            $table-&gt;boolean('published')-&gt;default(0);
+            $table-&gt;timestamps();        // created_at, updated_at
+            $table-&gt;softDeletes();       // deleted_at
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::drop('posts');
+    }
+};</code></pre>
+
+      <h2>Column types</h2>
+      <p><code>id</code>, <code>string</code>, <code>text</code>, <code>longText</code>, <code>integer</code>, <code>bigInteger</code>, <code>unsignedBigInteger</code>, <code>boolean</code>, <code>decimal</code>, <code>float</code>, <code>date</code>, <code>dateTime</code>, <code>timestamp</code>, <code>json</code>, <code>enum</code>, <code>foreign</code>. Chain modifiers: <code>-&gt;nullable()</code>, <code>-&gt;default($v)</code>, <code>-&gt;useCurrent()</code>, <code>-&gt;unsigned()</code>.</p>
+
+      <h2>Running migrations</h2>
+      <pre><code class="language-bash">php zero migrate              # run pending
+php zero migrate:status       # show Ran / Pending
+php zero migrate:rollback     # undo last batch
+php zero migrate:refresh      # rollback all, then re-run
+php zero migrate:fresh        # drop all tables, re-run all</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Make <code>down()</code> the exact inverse of <code>up()</code> so rollbacks are reliable. Always include both.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Expecting <code>$table-&gt;foreign('user_id')-&gt;references('id')-&gt;on('users')</code> to create a constraint. <code>foreign()</code> only creates the column &mdash; no foreign-key constraint SQL is emitted. Add constraints with raw SQL if you need them.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Migrations run in batches; <code>migrate:rollback</code> undoes only the most recent batch. There is no <code>Schema::hasColumn()</code> &mdash; only <code>hasTable()</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Name migrations descriptively (<code>CreatePostsTable</code>, <code>AddPublishedToPosts</code>) &mdash; the CLI also guesses the table name from the class name.</p>
+      </div>
+    </template>
+
+    <template data-id="seeders" data-title="Seeders" data-category="The Basics">
+      <h1>Seeders</h1>
+      <p class="lede">Populate your database with sample or initial data.</p>
+
+      <h2>Overview</h2>
+      <p>A seeder is a plain class with a <code>run()</code> method, living in <code>database/seeders</code> under the <code>App\Database\Seeders</code> namespace. The <code>db:seed</code> command discovers and runs them.</p>
+
+      <h2>Creating a seeder</h2>
+      <pre><code class="language-bash">php zero make:seeder UsersSeeder</code></pre>
+
+      <h2>Writing a seeder</h2>
+      <pre><code class="language-php">namespace App\Database\Seeders;
+
+use App\Models\User;
+
+class UsersSeeder
+{
+    public function run(): void
+    {
+        User::create([
+            'name'  =&gt; 'Ada Lovelace',
+            'email' =&gt; 'ada@example.com',
+            'active' =&gt; 1,
+        ]);
+    }
+}</code></pre>
+
+      <h2>Running seeders</h2>
+      <pre><code class="language-bash">php zero db:seed                   # run all seeders (sorted)
+php zero db:seed --class=UsersSeeder   # run only one</code></pre>
+
+      <h2>Aggregating seeders</h2>
+      <pre><code class="language-php">namespace App\Database\Seeders;
+
+class DatabaseSeeder
+{
+    public function run(): void
+    {
+        (new UsersSeeder())-&gt;run();
+        (new PostsSeeder())-&gt;run();
+    }
+}
+// php zero db:seed --class=DatabaseSeeder</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Insert through models so casts, timestamps, and mass-assignment rules apply. Keep seeders idempotent where possible.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Putting a seeder in the wrong namespace. <code>db:seed</code> only registers classes whose namespace starts with <code>App\Database\Seeders\</code> and that have a <code>run()</code> method.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>If no seeders exist, <code>db:seed</code> prints a friendly hint instead of erroring.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Need raw SQL in a seeder? Grab a PDO with <code>Database::connect()</code> and <code>prepare()</code>/<code>execute()</code> directly.</p>
+      </div>
+    </template>
+
+    <template data-id="middleware" data-title="Middleware" data-category="Security &amp; HTTP">
+      <h1>Middleware</h1>
+      <p class="lede">Filter HTTP requests before they reach your controllers.</p>
+
+      <h2>Overview</h2>
+      <p>Middleware is a class extending <code>App\Http\Middleware\Middleware</code> with a single <code>handle(): void</code> method. It either lets the request continue (by returning) or stops it (typically by redirecting, which calls <code>exit</code>).</p>
+
+      <h2>Creating middleware</h2>
+      <pre><code class="language-bash">php zero make:middleware EnsureAdmin</code></pre>
+
+      <h2>Example: admin gate</h2>
+      <pre><code class="language-php">namespace App\Http\Middleware;
+
+use App\Core\Auth\AuthManager;
+use App\Http\Response;
+
+class EnsureAdminMiddleware extends Middleware
+{
+    public function handle(): void
+    {
+        $user = AuthManager::user();
+        if (($user['role'] ?? null) !== 'admin') {
+            Response::redirect('/');
+        }
+    }
+}</code></pre>
+
+      <h2>Registering middleware</h2>
+      <p>Attach it by short name; the router resolves <code>'auth'</code> &rarr; <code>App\Http\Middleware\AuthMiddleware</code>. The <code>Middleware</code> suffix is added automatically &mdash; don't include it.</p>
+      <pre><code class="language-php">// Single route
+Router::get('/dashboard', [DashboardController::class, 'index'], ['auth']);
+
+// Group
+Router::middleware(['auth'], function () {
+    Router::get('/profile', [ProfileController::class, 'show']);
+});</code></pre>
+
+      <h2>Built-in middleware</h2>
+      <table class="doc-table">
+        <thead><tr><th>Name</th><th>Class</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td><code>auth</code></td><td><code>AuthMiddleware</code></td><td>Redirects guests to <code>/login</code>.</td></tr>
+          <tr><td><code>guest</code></td><td><code>GuestMiddleware</code></td><td>Redirects authenticated users away (e.g. from login).</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep middleware focused on cross-cutting HTTP concerns (auth, roles, CSRF, throttling). Put business logic in services.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Expecting a <code>handle($request, $next)</code> signature or a global middleware <code>Kernel</code>. ZeroPing middleware is per-route only, with <code>handle(): void</code> and no <code>$next</code> continuation.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Because <code>handle()</code> receives nothing, a middleware cannot mutate the request passed to the controller. Perform checks and redirect; read shared state via <code>SessionGuard</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Reference middleware by its short name consistently, and keep the class in <code>app/Http/Middleware</code> so the router can resolve it.</p>
+      </div>
+    </template>
+
+    <template data-id="authentication" data-title="Authentication" data-category="Security &amp; HTTP">
+      <h1>Authentication</h1>
+      <p class="lede">Log users in and out using the session-based AuthManager.</p>
+
+      <h2>Overview</h2>
+      <p><code>App\Core\Auth\AuthManager</code> is a static facade over a PHP-session user store. Credential checking lives in <code>App\Services\AuthenticationService</code> (which hashes with <code>PasswordHasher</code>). The "user" is a plain associative array stored in the session.</p>
+
+      <h2>AuthManager API</h2>
+      <table class="doc-table">
+        <thead><tr><th>Method</th><th>Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>AuthManager::check()</code></td><td><code>bool</code> &mdash; is someone logged in?</td></tr>
+          <tr><td><code>AuthManager::user()</code></td><td><code>?array</code> &mdash; the stored user, or null.</td></tr>
+          <tr><td><code>AuthManager::id()</code></td><td><code>?int</code> &mdash; <code>$user['id']</code>.</td></tr>
+          <tr><td><code>AuthManager::login(array $user)</code></td><td>Stores the user array in session.</td></tr>
+          <tr><td><code>AuthManager::logout()</code></td><td>Destroys the session.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Logging in</h2>
+      <pre><code class="language-php">use App\Core\Auth\AuthManager;
+use App\Services\AuthenticationService;
+use App\Http\Response;
+
+public function authenticate(): void
+{
+    $email = Request::input('email');
+    $password = Request::input('password');
+
+    if (app(AuthenticationService::class)-&gt;login($email, $password)) {
+        Response::redirect('/dashboard');
+    }
+
+    Flash::error('Invalid credentials.');
+    Response::redirect('/login');
+}</code></pre>
+
+      <h2>Logging out &amp; checking state</h2>
+      <pre><code class="language-php">public function logout(): void
+{
+    AuthManager::logout();
+    Response::redirect('/');
+}
+
+// In a view/controller:
+if (AuthManager::check()) {
+    $user = AuthManager::user();   // array
+}</code></pre>
+
+      <h2>Password hashing</h2>
+      <pre><code class="language-php">use App\Core\Security\Hash;
+
+$hash = Hash::make('secret');          // bcrypt
+$ok   = Hash::check('secret', $hash);  // true</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Always hash passwords with <code>Hash::make()</code> before storing, and verify with <code>Hash::check()</code>. Never compare plain-text passwords.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Calling <code>AuthManager::attempt()</code> or <code>AuthManager::guest()</code>. Those methods do not exist. Use <code>AuthenticationService::login()</code> to verify credentials and <code>!AuthManager::check()</code> for "guest".</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The user is an <em>array</em>, not a User object. Ensure it contains at least <code>id</code> (read by <code>AuthManager::id()</code>) plus any fields your views need.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Guard pages with <code>['auth']</code> middleware so unauthenticated users are redirected before your controller even runs.</p>
+      </div>
+    </template>
+
+    <template data-id="authorization" data-title="Authorization" data-category="Security &amp; HTTP">
+      <h1>Authorization</h1>
+      <p class="lede">Decide what an authenticated user is allowed to do.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing does <strong>not</strong> ship a <code>Gate</code> class, a <code>$user-&gt;can()</code> method, or automatic policy resolution. Authorization is <em>manual</em>: you check conditions in your controller (or in a <code>FormRequest::authorize()</code> hook) and act on the result.</p>
+
+      <h2>The policy scaffold</h2>
+      <p><code>php zero make:policy PostPolicy</code> creates a <code>App\Policies\PostPolicy</code> class. It is a convention starter &mdash; nothing auto-resolves it, but it's a great place to centralize your rules:</p>
+      <pre><code class="language-php">namespace App\Policies;
+
+use App\Core\Database\Model;
+
+class PostPolicy
+{
+    public function update(array $user, Model $post): bool
+    {
+        return ($user['id'] ?? null) === ($post['user_id'] ?? null);
+    }
+}</code></pre>
+
+      <h2>Checking authorization</h2>
+      <pre><code class="language-php">use App\Core\Auth\AuthManager;
+use App\Http\Response;
+use App\Models\Post;
+use App\Policies\PostPolicy;
+
+public function edit(string $id): void
+{
+    $user = AuthManager::user();
+    $post = Post::find($id);
+
+    $policy = new PostPolicy();
+    if (!$policy-&gt;update($user, $post)) {
+        Response::redirect('/');   // or render a 403 view
+    }
+    // ...
+}</code></pre>
+
+      <h2>Via FormRequest</h2>
+      <pre><code class="language-php">public function authorize(): bool
+{
+    return AuthManager::check();  // or call a policy method
+}</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Centralize authorization logic in <code>App\Policies</code> classes so rules live in one place and can be unit-tested independently of controllers.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Assuming <code>Gate::allows('update', $post)</code> or <code>$user-&gt;can('update', $post)</code> works. There is no Gate runtime &mdash; you must instantiate and call your policy explicitly.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>If a <code>FormRequest::authorize()</code> returns <code>false</code>, <code>validated()</code> throws a <code>ValidationException</code>, which you can catch to redirect or respond.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>For simple ownership checks, a one-liner in the controller is fine. As rules grow, move them into policy classes to keep controllers readable.</p>
+      </div>
+    </template>
+
+    <template data-id="validation" data-title="Validation" data-category="Security &amp; HTTP">
+      <h1>Validation</h1>
+      <p class="lede">Validate user input with pipe-delimited rules and the Validator.</p>
+
+      <h2>Overview</h2>
+      <p>Validation uses <code>App\Core\Validation\Validator</code>. Rules are a pipe-delimited string per field (e.g. <code>'required|email|max:255'</code>). The validator returns errors you handle yourself &mdash; it does not auto-flash to the session.</p>
+
+      <h2>Manual validation</h2>
+      <pre><code class="language-php">use App\Core\Validation\Validator;
+use App\Http\Response;
+
+$validator = Validator::make(Request::all(), [
+    'name'  =&gt; 'required|string|min:2|max:255',
+    'email' =&gt; 'required|email|unique:users,email',
+    'age'   =&gt; 'nullable|integer|min:18',
+], [
+    'email.required' =&gt; 'We need your email address.',
+]);
+
+if ($validator-&gt;fails()) {
+    Response::json(['errors' =&gt; $validator-&gt;errors()], 422);
+    return;
+}</code></pre>
+
+      <h2>Available rules</h2>
+      <p><code>required</code>, <code>string</code>, <code>email</code>, <code>numeric</code>, <code>integer</code>, <code>min</code>, <code>max</code>, <code>size</code>, <code>between</code>, <code>array</code>, <code>in</code>, <code>not_in</code>, <code>same</code>, <code>confirmed</code>, <code>unique</code>, <code>exists</code>, <code>file</code>, <code>image</code>, <code>mimes</code>, <code>regex</code>. A <code>nullable</code> field is skipped when empty.</p>
+
+      <h2>Form requests</h2>
+      <pre><code class="language-bash">php zero make:request StorePostRequest</code></pre>
+      <pre><code class="language-php">namespace App\Http\Requests;
+
+use App\Core\Validation\FormRequest;
+
+class StorePostRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'title' =&gt; 'required|string|max:255',
+            'body'  =&gt; 'required|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return ['title.required' =&gt; 'A title is required.'];
+    }
+}
+
+// In a controller:
+$request = new StorePostRequest();
+$data = $request-&gt;validated();   // throws ValidationException on failure</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Validate at the edge &mdash; in a FormRequest or at the top of your controller &mdash; before touching the database. Return precise, field-keyed error messages.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Relying on <code>redirect()-&gt;back()-&gt;withErrors($errors)</code> from the starter templates. That helper does not exist at runtime &mdash; store errors in the session yourself (<code>SessionGuard::set('errors', ...)</code>) or return JSON.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p><code>validated()</code> returns only the keys declared in <code>rules()</code> that are present in input &mdash; convenient and safe for mass-assignment.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>For APIs, simply respond with <code>Response::json(['errors' =&gt; $validator-&gt;errors()], 422)</code>. For HTML forms, persist errors + old input in the session, then read them back in the view.</p>
+      </div>
+    </template>
+
+    <template data-id="file-upload" data-title="File Upload" data-category="Security &amp; HTTP">
+      <h1>File Upload</h1>
+      <p class="lede">Accept, validate, and store uploaded files.</p>
+
+      <h2>Overview</h2>
+      <p>Access uploads via <code>App\Http\Request::file($key)</code>, which returns an <code>UploadedFile</code> instance. Store it with the <code>Storage</code> facade or move it manually.</p>
+
+      <h2>Accessing an upload</h2>
+      <pre><code class="language-php">use App\Http\Request;
+
+if (Request::hasFile('avatar')) {
+    $file = Request::file('avatar');   // UploadedFile|null
+    $name = $file-&gt;originalName();
+    $size = $file-&gt;size();            // bytes
+}</code></pre>
+
+      <h2>Validating uploads</h2>
+      <pre><code class="language-php">$validator = Validator::make($_FILES, [
+    'avatar' =&gt; 'required|image|mimes:jpg,png|size:2048', // ≤ 2 MB
+]);</code></pre>
+      <p>Rules: <code>file</code> (valid upload), <code>image</code> (jpeg/png/gif/webp/svg/bmp), <code>mimes:ext,…</code>, <code>size:N</code> (KB).</p>
+
+      <h2>Storing the file</h2>
+      <pre><code class="language-php">use App\Core\Filesystem\Storage;
+
+// Hashed name on the default disk:
+$path = $file-&gt;store('avatars');
+
+// Explicit name + disk:
+$path = $file-&gt;storeAs('avatars', 'user-' . AuthManager::id() . '.' . $file-&gt;extension());
+
+// Or plain move to a public directory:
+$file-&gt;move(public_path('uploads'), 'user-' . AuthManager::id() . '.' . $file-&gt;extension());</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Validate type and size <em>before</em> storing, and store uploads outside the web root or serve them through a controller that can enforce access.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Trusting the client filename or MIME. Always re-validate with the <code>file</code>/<code>image</code>/<code>mimes</code> rules and generate a safe stored name (e.g. <code>storeAs()</code>).</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>There is no built-in image resizing/cropping. For thumbnails, use PHP's GD/<code>Imagick</code> directly inside your controller.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Use <code>Storage::disk('public')-&gt;url($path)</code> (or <code>storage('public')-&gt;url($path)</code>) to get a public URL for a stored file when rendering it back to users.</p>
+      </div>
+    </template>
+
+    <template data-id="helpers" data-title="Helpers" data-category="Digging Deeper">
+      <h1>Helpers</h1>
+      <p class="lede">ZeroPing ships a small set of global functions. Know exactly which exist.</p>
+
+      <h2>Overview</h2>
+      <p>Helpers live in <code>app/Helpers/helpers.php</code> and are registered in <code>composer.json</code> autoloading. They cover paths, config, views, routing, the container, and debugging.</p>
+
+      <h2>Path &amp; environment</h2>
+      <pre><code class="language-php">base_path('config/app.php');   // project root + path
+public_path('uploads');        // BASE_PATH/public + path
+storage_path('logs/app.log');  // BASE_PATH/storage + path
+env('APP_ENV', 'production');  // read $_ENV, with default</code></pre>
+
+      <h2>Config, views &amp; routing</h2>
+      <pre><code class="language-php">config('app.name', 'ZeroPing');     // read config value
+view('home', $data);                // render a view (returns + echoes)
+route('posts.show', ['id' =&gt; 1]);  // URL for a named route</code></pre>
+
+      <h2>Container &amp; services</h2>
+      <pre><code class="language-php">app();                       // the Container
+app(SomeService::class);     // resolve from container
+cache();                     // CacheManager
+cache('key');                // get cached value
+storage();                   // default Filesystem disk
+storage('s3');               // named disk
+dispatch(new Job());         // push a queued job</code></pre>
+
+      <h2>Debug &amp; misc</h2>
+      <pre><code class="language-php">dd($value);                  // dump + die
+dump($value);                // dump only
+logger('message');           // write to log
+validator($data, $rules);    // new Validator
+e($value);                   // escape HTML
+benchmark(fn () =&gt; ..., 10); // avg time over N runs
+class_basename(Model::class);// "Model"</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Prefer helpers in views and bootstrap code. In classes, inject dependencies via the container rather than calling <code>app()</code> everywhere.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Calling <code>asset()</code>, <code>url()</code>, or <code>old()</code> as global helpers &mdash; they don't exist. Use relative paths in markup, <code>route()</code> for URLs, and read old input from the request/session yourself.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p><code>ray()</code> is a placeholder stub (no-op). <code>view()</code> both echoes and returns the rendered string; in a controller prefer <code>$this-&gt;view()</code> which simply renders.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>When unsure whether a helper exists, grep <code>app/Helpers/helpers.php</code> &mdash; only the functions defined there are available globally.</p>
+      </div>
+    </template>
+
+    <template data-id="cli-commands" data-title="CLI Commands" data-category="Digging Deeper">
+      <h1>CLI Commands</h1>
+      <p class="lede">ZeroPing commands run through the <code>zero</code> binary.</p>
+
+      <h2>Running commands</h2>
+      <pre><code class="language-bash">php zero &lt;command&gt; [arguments] [options]</code></pre>
+
+      <h2>Make / scaffolding</h2>
+      <table class="doc-table">
+        <thead><tr><th>Command</th><th>Creates</th></tr></thead>
+        <tbody>
+          <tr><td><code>php zero make:controller Name</code></td><td><code>app/Http/Controllers/NameController.php</code></td></tr>
+          <tr><td><code>php zero make:model Name</code></td><td><code>app/Models/Name.php</code></td></tr>
+          <tr><td><code>php zero make:migration create_x</code></td><td><code>database/migrations/*_create_x.php</code></td></tr>
+          <tr><td><code>php zero make:seeder Name</code></td><td><code>database/seeders/NameSeeder.php</code></td></tr>
+          <tr><td><code>php zero make:middleware Name</code></td><td><code>app/Http/Middleware/NameMiddleware.php</code></td></tr>
+          <tr><td><code>php zero make:request Name</code></td><td><code>app/Http/Requests/Name.php</code></td></tr>
+          <tr><td><code>php zero make:policy Name</code></td><td><code>app/Policies/Name.php</code> (stub only)</td></tr>
+          <tr><td><code>php zero make:provider Name</code></td><td><code>app/Providers/Name.php</code></td></tr>
+          <tr><td><code>php zero make:service/mail/repository</code></td><td>Service / Mailable / repository classes</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Database &amp; seed</h2>
+      <pre><code class="language-bash">php zero migrate              # run pending migrations
+php zero migrate:fresh        # drop all tables, then migrate
+php zero migrate:refresh      # rollback + migrate
+php zero migrate:rollback     # step back
+php zero migrate:reset        # rollback everything
+php zero migrate:status       # show applied/pending
+php zero db:seed              # run all seeders
+php zero db:seed --class=UserSeeder</code></pre>
+
+      <h2>Surfacing &amp; maintenance</h2>
+      <pre><code class="language-bash">php zero serve                # built-in dev server
+php zero route:list           # list registered routes
+php zero test                 # run the PHPUnit suite
+php zero key:generate         # generate APP_KEY
+php zero queue:work           # process queued jobs
+php zero cache:clear          # clear the cache
+php zero config:cache         # cache config
+php zero view:cache           # cache rendered views
+php zero optimize             # cache routes/config/views</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Use <code>--force</code> (where supported) to overwrite existing files, and commit generated migrations/seeders to version control.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Passing the middleware/provider short name <em>without</em> the suffix when scaffolding, or expecting <code>make:policy</code> to wire up authorization automatically &mdash; it only emits a stub.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>Most commands support <code>-h</code>/<code>--help</code> and prompt for confirmation before overwriting an existing file (answer <code>y</code> or pass <code>--force</code>).</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Run <code>php zero route:list</code> after changing routes to confirm names and methods before referencing them with <code>route()</code>.</p>
+      </div>
+    </template>
+
+    <template data-id="configuration" data-title="Configuration" data-category="Digging Deeper">
+      <h1>Configuration</h1>
+      <p class="lede">Configure your app with simple PHP arrays under <code>config/</code>.</p>
+
+      <h2>Overview</h2>
+      <p>Every <code>.php</code> file in the <code>config/</code> directory is loaded automatically at boot. The file's name becomes the config "namespace"; its <code>return</code> value is an associative array.</p>
+
+      <h2>Defining config</h2>
+      <pre><code class="language-php">// config/app.php
+return [
+    'name' =&gt; env('APP_NAME', 'ZeroPing'),
+    'debug' =&gt; env('APP_DEBUG', false),
+];</code></pre>
+
+      <h2>Reading config</h2>
+      <pre><code class="language-php">$name = config('app.name');          // "ZeroPing"
+$debug = config('app.debug', false); // with default</code></pre>
+
+      <h2>Excluded files</h2>
+      <p>Three files are <strong>not</strong> treated as config arrays and are loaded manually by the bootstrap: <code>config.php</code>, <code>constants.php</code>, and <code>routes.php</code>.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep environment-specific values out of config files &mdash; reference <code>env()</code> for those and commit sane defaults.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Assuming nested keys use a different separator, or putting logic that reads <code>env()</code> outside the array <code>return</code>. Use <code>dot.notation</code> and evaluate <code>env()</code> inline in the returned array.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>In production you can cache config with <code>php zero config:cache</code>; the cached repository is served afterwards. Clear with <code>php zero config:clear</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Group related settings per file (<code>database.php</code>, <code>mail.php</code>, <code>queue.php</code>) so <code>config('mail.from')</code> reads naturally.</p>
+      </div>
+    </template>
+
+    <template data-id="environment-variables" data-title="Environment Variables" data-category="Digging Deeper">
+      <h1>Environment Variables</h1>
+      <p class="lede">Store secrets and per-environment settings in <code>.env</code>.</p>
+
+      <h2>Overview</h2>
+      <p>At boot, <code>App\Core\Config\Env::load()</code> reads your <code>.env</code> file line by line and populates <code>$_ENV</code>. Read values with the global <code>env($key, $default)</code> helper.</p>
+
+      <h2>The .env file</h2>
+      <pre><code class="language-bash">APP_NAME=ZeroPing
+APP_ENV=local
+APP_DEBUG=true
+DB_HOST=127.0.0.1
+DB_NAME=zeroping
+DB_USER=root
+DB_PASS=secret</code></pre>
+
+      <h2>Rules</h2>
+      <ul>
+        <li><code>KEY=value</code> pairs (no spaces around <code>=</code> unless quoted &mdash; and quotes are <em>not</em> stripped here).</li>
+        <li>Lines starting with <code>#</code> are comments and ignored.</li>
+        <li>Both key and value are <code>trim()</code>ed.</li>
+      </ul>
+
+      <h2>Reading in code</h2>
+      <pre><code class="language-php">$host = env('DB_HOST', '127.0.0.1');
+$debug = env('APP_DEBUG') === 'true';</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Commit a <code>.env.example</code> with safe placeholders, and keep the real <code>.env</code> out of version control.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Wrapping values in quotes and expecting them to be removed, or using spaces around <code>=</code>. The loader does a literal <code>trim()</code> &mdash; <code>KEY="value"</code> yields the literal <code>"value"</code>.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>The loader throws if the <code>.env</code> file is missing. Generate a key with <code>php zero key:generate</code> so <code>APP_KEY</code> is present.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Reference <code>env()</code> inside <code>config/*.php</code> return arrays so values flow into the config repository cleanly.</p>
+      </div>
+    </template>
+
+    <template data-id="testing" data-title="Testing" data-category="Digging Deeper">
+      <h1>Testing</h1>
+      <p class="lede">Write unit and feature tests with PHPUnit.</p>
+
+      <h2>Overview</h2>
+      <p>ZeroPing uses PHPUnit (^13). Test classes live in <code>tests/</code> under the <code>Tests</code> namespace and extend <code>Tests\TestCase</code>, which resets the container, session, and request globals between tests.</p>
+
+      <h2>Running tests</h2>
+      <pre><code class="language-bash">composer test
+# or
+vendor/bin/phpunit
+vendor/bin/phpunit --filter PostTest</code></pre>
+
+      <h2>Writing a test</h2>
+      <pre><code class="language-php">namespace Tests;
+
+use App\Models\Post;
+
+class PostTest extends TestCase
+{
+    public function test_it_creates_a_post(): void
+    {
+        $post = Post::create(['title' =&gt; 'Hi', 'body' =&gt; 'Body']);
+        $this-&gt;assertNotNull($post-&gt;id);
+        $this-&gt;assertSame('Hi', $post-&gt;title);
+    }
+}</code></pre>
+
+      <h2>Helpers provided by TestCase</h2>
+      <p><code>setRequestMethod()</code>, <code>setRequestUri()</code>, <code>setRequestHeaders()</code>, <code>setFormRequestBody()</code>, <code>setJsonRequestBody()</code>, <code>withSessionData()</code>, and <code>captureOutput()</code> &mdash; handy for exercising routers, controllers, and middleware.</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Keep tests focused and use <code>TestCase</code>'s setup/teardown to reset global state so tests stay isolated &mdash; especially session and <code>$_POST</code>/<code>$_SERVER</code>.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Letting one test leak session/request state into the next. Always rely on <code>tearDown()</code> (already provided) and avoid manual global mutation outside the helper methods.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>A <code>php zero test</code> command also exists as a convenience wrapper around the PHPUnit runner.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Use <code>--filter</code> to iterate quickly on a single method while building a feature.</p>
+      </div>
+    </template>
+
+    <template data-id="deployment" data-title="Deployment" data-category="Project &amp; Community">
+      <h1>Deployment</h1>
+      <p class="lede">Ship ZeroPing to a standard PHP web server.</p>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li>PHP 8.1+ with the PDO extension for your database.</li>
+        <li>A web server (Apache/Nginx) or PHP's built-in server for local use.</li>
+        <li>Write access for <code>storage/</code> (cache, logs, sessions).</li>
+      </ul>
+
+      <h2>Web server rewrite</h2>
+      <p>All requests must funnel to <code>public/index.php</code>. With Apache, a <code>.htaccess</code> does this; with Nginx, set <code>try_files $uri $uri/ /index.php?$query_string;</code>.</p>
+
+      <h2>Environment</h2>
+      <pre><code class="language-bash">cp .env.example .env
+php zero key:generate
+# set APP_ENV=production, APP_DEBUG=false, DB_* values</code></pre>
+
+      <h2>Production optimizations</h2>
+      <pre><code class="language-bash">php zero migrate --force
+php zero config:cache
+php zero route:cache
+php zero view:cache
+php zero optimize</code></pre>
+      <p>Optionally enable view caching in code: <code>View::enableCache(true);</code> (done by <code>view:cache</code>).</p>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Run migrations as part of a deploy script, keep <code>APP_DEBUG=false</code> in production, and cache config/routes/views to reduce per-request work.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Exposing the project root instead of <code>public/</code> as the document root. Point the web root at <code>public/</code> so <code>index.php</code> is the only entry.</p>
+      </div>
+
+      <h2>Notes</h2>
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>If you used <code>php zero serve</code> locally, that's for development only &mdash; not a production server.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Run <code>php zero security:test</code> (and the other <code>*:test</code> commands) in CI to catch regressions before deploying.</p>
+      </div>
+    </template>
+
+    <template data-id="release-notes" data-title="Release Notes" data-category="Project &amp; Community">
+      <h1>Release Notes</h1>
+      <p class="lede">Highlights from recent ZeroPing releases.</p>
+
+      <div class="callout note">
+        <h4>Note</h4>
+        <p>This page is illustrative. For the authoritative, versioned changelog, see the project's <code>CHANGELOG.md</code> and git tags.</p>
+      </div>
+
+      <h2>v1.x</h2>
+      <ul>
+        <li>Router with <code>get()</code>/<code>post()</code>, nested <code>prefix()</code>/<code>middleware()</code>, and named routes.</li>
+        <li>Plain-PHP views with slot-injection layouts.</li>
+        <li>Eloquent-style <code>Model</code> ORM, query builder, and Schema facade.</li>
+        <li>Migration and seeder runners, plus session-based authentication.</li>
+        <li>CLI <code>zero</code> with scaffolding, migrate, db:seed, queue, cache, and optimization commands.</li>
+      </ul>
+
+      <h2>Recent additions</h2>
+      <ul>
+        <li>New generators: <code>make:middleware</code>, <code>make:request</code>, <code>make:policy</code>, <code>make:provider</code>.</li>
+        <li>Colored CLI output, progress bars, and an interactive help screen.</li>
+        <li><code>db:seed</code> command and <code>--force</code> overwrite prompts.</li>
+      </ul>
+
+      <h2>Upgrade notes</h2>
+      <div class="callout warn">
+        <h4>Heads up</h4>
+        <p>ZeroPing deliberately omits many Laravel/Symfony conveniences (no Blade, no <code>Route::resource</code>, no <code>Gate</code>). When upgrading, re-read the API pages &mdash; the framework favors explicit, source-grounded usage.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Use the version selector in the topbar to pin docs to the release you're running.</p>
+      </div>
+    </template>
+
+    <template data-id="examples" data-title="Examples" data-category="Project &amp; Community">
+      <h1>Examples</h1>
+      <p class="lede">A minimal blog CRUD to tie the pieces together.</p>
+
+      <h2>Migration</h2>
+      <pre><code class="language-php">// database/migrations/*_create_posts.php
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('posts', function ($table) {
+            $table-&gt;id();                         // primary key "id"
+            $table-&gt;string('title');
+            $table-&gt;foreign('user_id')-&gt;references('id')-&gt;on('users');
+            $table-&gt;timestamps();
+        });
+    }
+    public function down(): void { Schema::drop('posts'); }
+};</code></pre>
+
+      <h2>Model</h2>
+      <pre><code class="language-php">namespace App\Models;
+
+use App\Core\Database\Model;
+
+class Post extends Model
+{
+    protected string $table = 'posts';
+    protected array $fillable = ['title', 'user_id'];
+}</code></pre>
+
+      <h2>Routes &amp; controller</h2>
+      <pre><code class="language-php">Router::prefix('/posts')-&gt;middleware(['auth'], function () {
+    Router::get('/', [PostController::class, 'index']);
+    Router::get('/create', [PostController::class, 'create']);
+    Router::post('/', [PostController::class, 'store']);
+    Router::get('/{id}', [PostController::class, 'show'], 'posts.show');
+});
+
+// PostController
+public function store(): void
+{
+    $data = (new StorePostRequest())-&gt;validated();
+    $post = Post::create($data + ['user_id' =&gt; AuthManager::id()]);
+    Response::redirect(route('posts.show', ['id' =&gt; $post-&gt;id]));
+}</code></pre>
+
+      <h2>View (plain PHP)</h2>
+      <pre><code class="language-php">&lt;?php foreach ($posts as $post): ?&gt;
+    &lt;li&gt;&lt;?= e($post-&gt;title) ?&gt;&lt;/li&gt;
+&lt;?php endforeach; ?&gt;</code></pre>
+
+      <h2>Best Practices</h2>
+      <div class="callout best">
+        <h4>Best Practice</h4>
+        <p>Validate in a FormRequest, authorize there too, and escape output with <code>e()</code> in views. Keep controllers thin by delegating to services.</p>
+      </div>
+
+      <h2>Common Mistakes</h2>
+      <div class="callout warn">
+        <h4>Common Mistake</h4>
+        <p>Forgetting that <code>$fillable</code> is required (everything is guarded by default) &mdash; <code>create()</code> throws otherwise. And remember bound params are positional: <code>show($id)</code>, not <code>show(Request $r)</code>.</p>
+      </div>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Run <code>php zero route:list</code> to confirm the <code>posts.show</code> name before using <code>route()</code> in redirects.</p>
+      </div>
+    </template>
+
+    <!--PAGE TEMPLATES-->
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

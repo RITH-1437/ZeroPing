@@ -23,16 +23,27 @@ class Schema
         }
     }
 
+    public static function table(string $table, \Closure $callback): void
+    {
+        $blueprint = new Blueprint($table);
+        $callback($blueprint);
+        $queries = $blueprint->toAlterSql();
+        foreach ($queries as $query) {
+            Database::connect()->exec($query);
+        }
+    }
+
     public static function drop(string $table): void
     {
-        $query = "DROP TABLE IF EXISTS {$table}";
-        Database::connect()->exec($query);
+        $db = Database::connect();
+        $stmt = $db->prepare("DROP TABLE IF EXISTS `{$table}`");
+        $stmt->execute();
     }
 
     public function hasTable(string $table): bool
     {
-        $query = "SHOW TABLES LIKE '{$table}'";
-        $stmt = $this->db->query($query);
+        $stmt = $this->db->prepare("SHOW TABLES LIKE ?");
+        $stmt->execute([$table]);
         return $stmt->rowCount() > 0;
     }
 }

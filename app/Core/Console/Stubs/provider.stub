@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Providers;
+
+use App\Core\Container\Container;
+
+class {{ class }} extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        //
+    }
+}

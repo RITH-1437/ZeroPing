@@ -38,7 +38,7 @@
             </div>
             <div>
                 <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Version</p>
-                <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">v1.0.0</p>
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">v1.1.0</p>
                 <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">PHP 8.1+</p>
                 <p class="mt-4 text-xs text-slate-400 dark:text-slate-500">Made by <a href="https://github.com/RITH-1437" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 transition-colors">Nairith RIN</a></p>
                 <div class="mt-3">

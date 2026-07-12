@@ -16,7 +16,7 @@ class WebsiteController extends Controller
                 ['label' => 'CLI Commands', 'value' => '30+', 'icon' => '/assets/images/cli.png'],
                 ['label' => 'Core Modules', 'value' => '18', 'icon' => '/assets/images/core.png'],
                 ['label' => 'Average Setup Time', 'value' => '< 3 min', 'icon' => '/assets/images/time.png'],
-                ['label' => 'Framework Version', 'value' => 'v1.0.0', 'icon' => '/assets/images/version.png'],
+                ['label' => 'Framework Version', 'value' => 'v' . \App\Core\Application\App::VERSION, 'icon' => '/assets/images/version.png'],
             ],
         ], 'site');
     }

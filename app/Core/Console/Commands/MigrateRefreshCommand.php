@@ -13,7 +13,11 @@ class MigrateRefreshCommand extends Command
 
     public function handle(): void
     {
+        $this->title('Refreshing Migrations');
+
         $runner = new MigrationRunner();
         $runner->refresh();
+
+        $this->success('Migrations refreshed successfully.');
     }
 }

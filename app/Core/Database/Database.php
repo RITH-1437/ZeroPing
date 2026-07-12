@@ -13,17 +13,27 @@ class Database
     {
         if (self::$connection === null) {
 
+            $configPath = dirname(__FILE__, 3) . '/config/database.php';
+            $dbConfig = file_exists($configPath) ? require $configPath : [];
+            $host = $dbConfig['host'] ?? (defined('DB_HOST') ? DB_HOST : '127.0.0.1');
+            $dbname = $dbConfig['database'] ?? (defined('DB_NAME') ? DB_NAME : '');
+            $user = $dbConfig['username'] ?? (defined('DB_USER') ? DB_USER : '');
+            $pass = $dbConfig['password'] ?? (defined('DB_PASS') ? DB_PASS : '');
+            $charset = $dbConfig['charset'] ?? (defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4');
+            $port = $dbConfig['port'] ?? (defined('DB_PORT') ? DB_PORT : 3306);
+
             $dsn = sprintf(
-                "mysql:host=%s;dbname=%s;charset=%s",
-                DB_HOST,
-                DB_NAME,
-                DB_CHARSET
+                "mysql:host=%s;dbname=%s;port=%s;charset=%s",
+                $host,
+                $dbname,
+                $port,
+                $charset
             );
 
             self::$connection = new PDO(
                 $dsn,
-                DB_USER,
-                DB_PASS,
+                $user,
+                $pass,
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -31,7 +41,14 @@ class Database
                 ]
             );
 
-            self::$connection->setAttribute(PDO::ATTR_STATEMENT_CLASS, [ProfiledStatement::class, [self::$connection]]);
+            // The profiled statement class adds overhead on every query; only
+            // enable it when debugging so production queries stay lean.
+            if (defined('APP_DEBUG') && APP_DEBUG === true) {
+                self::$connection->setAttribute(
+                    PDO::ATTR_STATEMENT_CLASS,
+                    [ProfiledStatement::class, [self::$connection]]
+                );
+            }
         }
 
         return self::$connection;

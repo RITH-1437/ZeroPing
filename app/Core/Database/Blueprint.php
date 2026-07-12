@@ -67,6 +67,9 @@ class Blueprint
     /** @var array<string|ColumnDefinition> */
     protected array $columns = [];
 
+    /** @var array<string> */
+    protected array $dropped = [];
+
     public function __construct(string $table)
     {
         $this->table = $table;
@@ -74,7 +77,7 @@ class Blueprint
 
     public function id(): static
     {
-        $this->columns[] = "id INT AUTO_INCREMENT PRIMARY KEY";
+        $this->columns[] = "id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY";
         return $this;
     }
 
@@ -232,6 +235,15 @@ class Blueprint
         return $col;
     }
 
+    public function dropColumn(string ...$names): static
+    {
+        foreach ($names as $name) {
+            $this->dropped[] = $name;
+        }
+
+        return $this;
+    }
+
     public function build(): string
     {
         $parts = [];
@@ -246,5 +258,25 @@ class Blueprint
         return [
             "CREATE TABLE IF NOT EXISTS `{$this->table}` (\n    " . $this->build() . "\n)"
         ];
+    }
+
+    public function toAlterSql(): array
+    {
+        $queries = [];
+
+        if (!empty($this->columns)) {
+            $parts = [];
+            foreach ($this->columns as $col) {
+                $parts[] = 'ADD COLUMN ' . ($col instanceof ColumnDefinition ? $col->toSql() : $col);
+            }
+            $queries[] = "ALTER TABLE `{$this->table}`\n    " . implode(",\n    ", $parts);
+        }
+
+        if (!empty($this->dropped)) {
+            $cols = array_map(fn(string $name): string => "`{$name}`", $this->dropped);
+            $queries[] = "ALTER TABLE `{$this->table}` DROP COLUMN " . implode(', ', $cols);
+        }
+
+        return $queries;
     }
 }

@@ -390,8 +390,6 @@ Our vision is to create a PHP framework that is:
 - Suitable for education
 - Capable of powering real-world applications
 
----
-
 # Conclusion
 
 ZeroPing is more than just another PHP framework.

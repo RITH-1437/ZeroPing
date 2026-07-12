@@ -28,9 +28,11 @@ class MigrateRollbackCommand extends Command
      */
     public function handle(): void
     {
+        $this->title('Rolling Back Migrations');
+
         $migrationRunner = new MigrationRunner();
         $migrationRunner->rollback();
 
-        $this->info('Migration rolled back successfully.');
+        $this->success('Migration rolled back successfully.');
     }
 }

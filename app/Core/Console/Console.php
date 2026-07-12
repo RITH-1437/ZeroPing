@@ -7,18 +7,25 @@ use App\Core\Console\Commands\CacheTestCommand;
 use App\Core\Console\Commands\ConfigCacheCommand;
 use App\Core\Console\Commands\ConfigClearCommand;
 use App\Core\Console\Commands\ConfigTestCommand;
+use App\Core\Console\Commands\DbSeedCommand;
 use App\Core\Console\Commands\KeyGenerateCommand;
 use App\Core\Console\Commands\LogTestCommand;
 use App\Core\Console\Commands\MailTestCommand;
 use App\Core\Console\Commands\MakeControllerCommand;
 use App\Core\Console\Commands\MakeMailCommand;
+use App\Core\Console\Commands\MakeMiddlewareCommand;
 use App\Core\Console\Commands\MakeMigrationCommand;
 use App\Core\Console\Commands\MakeModelCommand;
+use App\Core\Console\Commands\MakePolicyCommand;
+use App\Core\Console\Commands\MakeProviderCommand;
 use App\Core\Console\Commands\MakeRepositoryCommand;
+use App\Core\Console\Commands\MakeRequestCommand;
+use App\Core\Console\Commands\MakeSeederCommand;
 use App\Core\Console\Commands\MakeServiceCommand;
 use App\Core\Console\Commands\MigrateCommand;
 use App\Core\Console\Commands\MigrateFreshCommand;
 use App\Core\Console\Commands\MigrateRefreshCommand;
+use App\Core\Console\Commands\MigrateResetCommand;
 use App\Core\Console\Commands\MigrateRollbackCommand;
 use App\Core\Console\Commands\MigrateStatusCommand;
 use App\Core\Console\Commands\OptimizeClearCommand;
@@ -59,37 +66,20 @@ class Console
     {
         $command = $argv[1] ?? null;
 
+        if ($command === null || $command === '--help' || $command === '-h' || $command === '-?') {
+            $this->showHelp();
+            return;
+        }
+
         switch ($command) {
 
             case 'version':
-                echo "ZeroPing Framework v1.0.0\n";
+                echo "ZeroPing Framework v" . \App\Core\Application\App::VERSION . "\n";
                 break;
 
-            case 'about':
-                $style = new ConsoleStyle();
-                $style->writeln("");
-                $style->writeln("<fg=cyan>███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗</>");
-                $style->writeln("<fg=cyan>╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝</>");
-                $style->writeln("<fg=cyan>  ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗</>");
-                $style->writeln("<fg=cyan> ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║</>");
-                $style->writeln("<fg=cyan>███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝</>");
-                $style->writeln("<fg=cyan>╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝</>");
-                $style->writeln("");
-                $style->writeln("<fg=green>ZeroPing Framework</> <fg=yellow>v1.0.0</>");
-                $style->writeln("<fg=gray>Lightweight PHP Framework built from scratch.</>");
-                $style->writeln("");
-                $style->writeln("<fg=yellow>About</>");
-                $style->writeln("<fg=gray>──────────────────────────────────────────────────────────────</>");
-                $style->writeln("  <fg=white>Author    </> <fg=cyan>Nairith RIN</>");
-                $style->writeln("  <fg=white>Email     </> <fg=cyan>nairithrinn143@gmail.com</>");
-                $style->writeln("  <fg=white>GitHub    </> <fg=cyan>https://github.com/RITH-1437</>");
-                $style->writeln("  <fg=white>Repository</> <fg=cyan>https://github.com/RITH-1437/ZeroPing</>");
-                $style->writeln("  <fg=white>License   </> <fg=cyan>MIT</>");
-                $style->writeln("  <fg=white>PHP       </> <fg=cyan>>= 8.1</>");
-                $style->writeln("");
-                $style->writeln("<fg=yellow>Documentation</>");
-                $style->writeln("  <fg=gray>Coming Soon</>");
-                $style->writeln("");
+            case 'help':
+            case 'list':
+                $this->showHelp();
                 break;
 
             // ── Server ──────────────────────────────────────────────────────
@@ -112,6 +102,10 @@ class Console
 
             case 'migrate:rollback':
                 (new MigrateRollbackCommand())->handle();
+                break;
+
+            case 'migrate:reset':
+                (new MigrateResetCommand())->handle();
                 break;
 
             case 'migrate:status':
@@ -141,6 +135,31 @@ class Console
 
             case 'make:mail':
                 (new MakeMailCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:seeder':
+                (new MakeSeederCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:middleware':
+                (new MakeMiddlewareCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:request':
+                (new MakeRequestCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:policy':
+                (new MakePolicyCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:provider':
+                (new MakeProviderCommand())->handle($argv[2] ?? '');
+                break;
+
+            // ── Database / Seeds ──────────────────────────────────────────────
+            case 'db:seed':
+                (new DbSeedCommand())->handle();
                 break;
 
             // ── Routes ──────────────────────────────────────────────────────
@@ -293,119 +312,140 @@ class Console
                 break;
 
             default:
-
-                $style = new ConsoleStyle();
-
-                $style->writeln("<fg=cyan>███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗</>");
-                $style->writeln("<fg=cyan>╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝</>");
-                $style->writeln("<fg=cyan>  ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗</>");
-                $style->writeln("<fg=cyan> ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║</>");
-                $style->writeln("<fg=cyan>███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝</>");
-                $style->writeln("<fg=cyan>╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝</>");
-                $style->writeln("");
-
-                $style->writeln("<fg=green>ZeroPing Framework</> <fg=yellow>v1.0.0</>");
-                $style->writeln("<fg=gray>Lightweight PHP Framework built from scratch.</>");
-                $style->writeln("");
-
-                $style->writeln("<fg=yellow>Usage:</>");
-                $style->writeln("  <fg=white>php zero &lt;command&gt; [options]</>");
-                $style->writeln("");
-
-                $style->writeln("<fg=yellow>Available Commands</>");
-                $style->writeln("<fg=gray>──────────────────────────────────────────────────────────────</>");
-
-                $style->writeln("  <fg=green>serve</>                 <fg=gray>Start development server</>");
-                $style->writeln("  <fg=green>about</>                 <fg=gray>Display framework information</>");
-                $style->writeln("  <fg=green>new</>                   <fg=gray>Scaffold a new project from a template</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Migrations</>");
-                $style->writeln("  <fg=green>migrate</>               <fg=gray>Run database migrations</>");
-                $style->writeln("  <fg=green>migrate:fresh</>         <fg=gray>Drop all tables and re-run migrations</>");
-                $style->writeln("  <fg=green>migrate:refresh</>       <fg=gray>Rollback all migrations then re-run them</>");
-                $style->writeln("  <fg=green>migrate:rollback</>      <fg=gray>Rollback the last migration</>");
-                $style->writeln("  <fg=green>migrate:status</>        <fg=gray>Show migration status</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Make</>");
-                $style->writeln("  <fg=green>make:model</>            <fg=gray>Create a model</>");
-                $style->writeln("  <fg=green>make:controller</>       <fg=gray>Create a controller</>");
-                $style->writeln("  <fg=green>make:service</>          <fg=gray>Create a service</>");
-                $style->writeln("  <fg=green>make:repository</>       <fg=gray>Create a repository</>");
-                $style->writeln("  <fg=green>make:migration</>        <fg=gray>Create a migration</>");
-                $style->writeln("  <fg=green>make:mail</>             <fg=gray>Create a mailable</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Routes</>");
-                $style->writeln("  <fg=green>route:list</>            <fg=gray>Display all routes</>");
-                $style->writeln("  <fg=green>route:cache</>           <fg=gray>Cache the routes</>");
-                $style->writeln("  <fg=green>route:clear</>           <fg=gray>Clear the route cache</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Config</>");
-                $style->writeln("  <fg=green>config:cache</>          <fg=gray>Cache the config</>");
-                $style->writeln("  <fg=green>config:clear</>          <fg=gray>Clear the config cache</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Cache</>");
-                $style->writeln("  <fg=green>cache:clear</>           <fg=gray>Flush the application cache</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Queue</>");
-                $style->writeln("  <fg=green>queue:work</>            <fg=gray>Process jobs on the queue</>");
-                $style->writeln("  <fg=green>queue:listen</>          <fg=gray>Listen to a queue</>");
-                $style->writeln("  <fg=green>queue:failed</>          <fg=gray>List failed queue jobs</>");
-                $style->writeln("  <fg=green>queue:retry</>           <fg=gray>Retry a failed queue job</>");
-                $style->writeln("  <fg=green>queue:clear</>           <fg=gray>Delete all jobs from the queue</>");
-                $style->writeln("  <fg=green>queue:restart</>         <fg=gray>Restart queue workers</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Schedule</>");
-                $style->writeln("  <fg=green>schedule:run</>          <fg=gray>Run scheduled commands</>");
-                $style->writeln("  <fg=green>schedule:list</>         <fg=gray>List scheduled commands</>");
-                $style->writeln("  <fg=green>schedule:clear</>        <fg=gray>Clear scheduled commands</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Storage & Views</>");
-                $style->writeln("  <fg=green>storage:clear</>         <fg=gray>Clear storage files</>");
-                $style->writeln("  <fg=green>view:cache</>            <fg=gray>Compile all Blade templates</>");
-                $style->writeln("  <fg=green>view:clear</>            <fg=gray>Clear compiled view files</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Optimize</>");
-                $style->writeln("  <fg=green>optimize</>              <fg=gray>Cache config, routes and views</>");
-                $style->writeln("  <fg=green>optimize:clear</>        <fg=gray>Clear all cached data</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Security & Keys</>");
-                $style->writeln("  <fg=green>key:generate</>          <fg=gray>Set the application key</>");
-                $style->writeln("");
-                $style->writeln("  <fg=yellow>Search</>");
-                $style->writeln("  <fg=green>search:index</>          <fg=gray>Build documentation search index</>");
-                $style->writeln("");
-
-                $style->writeln("  <fg=yellow>Testing & Diagnostics</>");
-                $style->writeln("  <fg=green>test</>                  <fg=gray>Run framework tests</>");
-                $style->writeln("  <fg=green>orm:test</>              <fg=gray>Test ORM</>");
-                $style->writeln("  <fg=green>cache:test</>            <fg=gray>Test cache system</>");
-                $style->writeln("  <fg=green>mail:test</>             <fg=gray>Test mail system</>");
-                $style->writeln("  <fg=green>queue:test</>            <fg=gray>Test queue system</>");
-                $style->writeln("  <fg=green>schedule:test</>         <fg=gray>Test scheduler</>");
-                $style->writeln("  <fg=green>security:test</>         <fg=gray>Test security layer</>");
-                $style->writeln("  <fg=green>storage:test</>          <fg=gray>Test storage system</>");
-                $style->writeln("  <fg=green>log:test</>              <fg=gray>Test logger</>");
-                $style->writeln("  <fg=green>config:test</>           <fg=gray>Test config system</>");
-                $style->writeln("  <fg=green>validate:test</>         <fg=gray>Test validator</>");
-                $style->writeln("");
-
-                $style->writeln("<fg=yellow>Documentation</>");
-                $style->writeln("  <fg=gray>Coming Soon</>");
-                $style->writeln("");
-
-                $style->writeln("<fg=yellow>GitHub</>");
-                $style->writeln("  <fg=cyan>https://github.com/RITH-1437/zero-ping</>");
-                $style->writeln("");
+                $this->showHelp();
+                break;
         }
+    }
+
+    /**
+     * Render the command listing / help screen.
+     */
+    private function showHelp(): void
+    {
+        $style = new ConsoleStyle();
+
+        $style->writeln("<fg=cyan>███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗</>");
+        $style->writeln("<fg=cyan>╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝</>");
+        $style->writeln("<fg=cyan>  ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗</>");
+        $style->writeln("<fg=cyan> ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║</>");
+        $style->writeln("<fg=cyan>███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝</>");
+        $style->writeln("<fg=cyan>╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝</>");
+        $style->writeln("");
+
+        $style->writeln("<fg=green>ZeroPing Framework</> <fg=yellow>v" . \App\Core\Application\App::VERSION . "</>");
+        $style->writeln("<fg=gray>Lightweight PHP Framework built from scratch.</>");
+        $style->writeln("");
+
+        $style->writeln("<fg=yellow>Usage:</>");
+        $style->writeln("  <fg=white>php zero &lt;command&gt; [options]</>");
+        $style->writeln("");
+
+        $style->writeln("<fg=yellow>Available Commands</>");
+        $style->writeln("<fg=gray>──────────────────────────────────────────────────────────────</>");
+
+        $style->writeln("  <fg=green>serve</>                 <fg=gray>Start development server</>");
+        $style->writeln("  <fg=green>about</>                 <fg=gray>Display framework information</>");
+        $style->writeln("  <fg=green>help</>                  <fg=gray>Show this help screen</>");
+        $style->writeln("  <fg=green>new</>                   <fg=gray>Scaffold a new project from a template</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Migrations</>");
+        $style->writeln("  <fg=green>migrate</>               <fg=gray>Run database migrations</>");
+        $style->writeln("  <fg=green>migrate:fresh</>         <fg=gray>Drop all tables and re-run migrations</>");
+        $style->writeln("  <fg=green>migrate:refresh</>       <fg=gray>Rollback all migrations then re-run them</>");
+        $style->writeln("  <fg=green>migrate:rollback</>      <fg=gray>Rollback the last migration</>");
+        $style->writeln("  <fg=green>migrate:reset</>         <fg=gray>Rollback all migrations</>");
+        $style->writeln("  <fg=green>migrate:status</>        <fg=gray>Show migration status</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Make</>");
+        $style->writeln("  <fg=green>make:model</>            <fg=gray>Create a model</>");
+        $style->writeln("  <fg=green>make:controller</>       <fg=gray>Create a controller</>");
+        $style->writeln("  <fg=green>make:service</>          <fg=gray>Create a service</>");
+        $style->writeln("  <fg=green>make:repository</>       <fg=gray>Create a repository</>");
+        $style->writeln("  <fg=green>make:migration</>        <fg=gray>Create a migration</>");
+        $style->writeln("  <fg=green>make:mail</>             <fg=gray>Create a mailable</>");
+        $style->writeln("  <fg=green>make:seeder</>           <fg=gray>Create a seeder</>");
+        $style->writeln("  <fg=green>make:middleware</>       <fg=gray>Create a middleware</>");
+        $style->writeln("  <fg=green>make:request</>          <fg=gray>Create a form request</>");
+        $style->writeln("  <fg=green>make:policy</>           <fg=gray>Create a policy</>");
+        $style->writeln("  <fg=green>make:provider</>         <fg=gray>Create a service provider</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Database</>");
+        $style->writeln("  <fg=green>db:seed</>               <fg=gray>Seed the database with records</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Routes</>");
+        $style->writeln("  <fg=green>route:list</>            <fg=gray>Display all routes</>");
+        $style->writeln("  <fg=green>route:cache</>           <fg=gray>Cache the routes</>");
+        $style->writeln("  <fg=green>route:clear</>           <fg=gray>Clear the route cache</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Config</>");
+        $style->writeln("  <fg=green>config:cache</>          <fg=gray>Cache the config</>");
+        $style->writeln("  <fg=green>config:clear</>          <fg=gray>Clear the config cache</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Cache</>");
+        $style->writeln("  <fg=green>cache:clear</>           <fg=gray>Flush the application cache</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Queue</>");
+        $style->writeln("  <fg=green>queue:work</>            <fg=gray>Process jobs on the queue</>");
+        $style->writeln("  <fg=green>queue:listen</>          <fg=gray>Listen to a queue</>");
+        $style->writeln("  <fg=green>queue:failed</>          <fg=gray>List failed queue jobs</>");
+        $style->writeln("  <fg=green>queue:retry</>           <fg=gray>Retry a failed queue job</>");
+        $style->writeln("  <fg=green>queue:clear</>           <fg=gray>Delete all jobs from the queue</>");
+        $style->writeln("  <fg=green>queue:restart</>         <fg=gray>Restart queue workers</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Schedule</>");
+        $style->writeln("  <fg=green>schedule:run</>          <fg=gray>Run scheduled commands</>");
+        $style->writeln("  <fg=green>schedule:list</>         <fg=gray>List scheduled commands</>");
+        $style->writeln("  <fg=green>schedule:clear</>        <fg=gray>Clear scheduled commands</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Storage & Views</>");
+        $style->writeln("  <fg=green>storage:clear</>         <fg=gray>Clear storage files</>");
+        $style->writeln("  <fg=green>view:cache</>            <fg=gray>Compile all Blade templates</>");
+        $style->writeln("  <fg=green>view:clear</>            <fg=gray>Clear compiled view files</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Optimize</>");
+        $style->writeln("  <fg=green>optimize</>              <fg=gray>Cache config, routes and views</>");
+        $style->writeln("  <fg=green>optimize:clear</>        <fg=gray>Clear all cached data</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Security & Keys</>");
+        $style->writeln("  <fg=green>key:generate</>          <fg=gray>Set the application key</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Search</>");
+        $style->writeln("  <fg=green>search:index</>          <fg=gray>Build documentation search index</>");
+        $style->writeln("");
+
+        $style->writeln("  <fg=yellow>Testing & Diagnostics</>");
+        $style->writeln("  <fg=green>test</>                  <fg=gray>Run framework tests</>");
+        $style->writeln("  <fg=green>orm:test</>              <fg=gray>Test ORM</>");
+        $style->writeln("  <fg=green>cache:test</>            <fg=gray>Test cache system</>");
+        $style->writeln("  <fg=green>mail:test</>             <fg=gray>Test mail system</>");
+        $style->writeln("  <fg=green>queue:test</>            <fg=gray>Test queue system</>");
+        $style->writeln("  <fg=green>schedule:test</>         <fg=gray>Test scheduler</>");
+        $style->writeln("  <fg=green>security:test</>         <fg=gray>Test security layer</>");
+        $style->writeln("  <fg=green>storage:test</>          <fg=gray>Test storage system</>");
+        $style->writeln("  <fg=green>log:test</>              <fg=gray>Test logger</>");
+        $style->writeln("  <fg=green>config:test</>           <fg=gray>Test config system</>");
+        $style->writeln("  <fg=green>validate:test</>         <fg=gray>Test validator</>");
+        $style->writeln("");
+
+        $style->writeln("<fg=yellow>Options</>");
+        $style->writeln("  <fg=green>--help</>                <fg=gray>Show this help screen</>");
+        $style->writeln("  <fg=green>--force</>               <fg=gray>Overwrite existing files when generating</>");
+        $style->writeln("");
+
+        $style->writeln("<fg=yellow>GitHub</>");
+        $style->writeln("  <fg=cyan>https://github.com/RITH-1437/zero-ping</>");
+        $style->writeln("");
     }
 }

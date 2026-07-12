@@ -48,41 +48,71 @@ class MigrationRunner
 
             echo "🚀 {$migrationName} ... ";
 
-            /** @var Migration|string $migration */
-            $migration = require $file;
+            $this->runUp($file, $batch);
 
-            try {
+            echo "Done ✅\n";
+        }
 
-                if ($migration instanceof Migration) {
-                    $migration->up();
-                } elseif (is_string($migration)) {
-                    // Raw SQL migration
-                    foreach (array_filter(array_map('trim', explode(';', $migration))) as $sql) {
-                        $this->db->exec($sql);
-                    }
+        echo PHP_EOL . "🎉 Migration completed successfully." . PHP_EOL;
+    }
+
+    /**
+     * Return the list of migration files that have not yet been executed.
+     *
+     * @return string[]
+     */
+    public function pendingMigrationFiles(): array
+    {
+        $this->createMigrationTable();
+
+        $executed = $this->executedMigrations();
+
+        $pending = [];
+
+        foreach ($this->migrationFiles() as $file) {
+            if (!in_array(basename($file), $executed, true)) {
+                $pending[] = $file;
+            }
+        }
+
+        return $pending;
+    }
+
+    /**
+     * Run the "up" step of a single migration file and record it.
+     */
+    public function runUp(string $file, int $batch): void
+    {
+        $migrationName = basename($file);
+
+        /** @var Migration|string $migration */
+        $migration = require $file;
+
+        try {
+
+            if ($migration instanceof Migration) {
+                $migration->up();
+            } elseif (is_string($migration)) {
+                // Raw SQL migration
+                foreach (array_filter(array_map('trim', explode(';', $migration))) as $sql) {
+                    $this->db->exec($sql);
                 }
+            }
 
-                $stmt = $this->db->prepare("
+            $stmt = $this->db->prepare("
                 INSERT INTO migrations (migration, batch)
                 VALUES (?, ?)
             ");
 
-                $stmt->execute([
-                    $migrationName,
-                    $batch
-                ]);
+            $stmt->execute([
+                $migrationName,
+                $batch
+            ]);
 
-                echo "Done ✅\n";
+        } catch (\Throwable $e) {
 
-            } catch (\Throwable $e) {
-
-                echo "Failed ❌\n";
-
-                throw $e;
-            }
+            throw $e;
         }
-
-        echo PHP_EOL . "🎉 Migration completed successfully." . PHP_EOL;
     }
 
     private function createMigrationTable(): void
@@ -117,7 +147,7 @@ class MigrationRunner
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    private function nextBatch(): int
+    public function nextBatch(): int
     {
         $stmt = $this->db->query("
             SELECT MAX(batch)
@@ -239,6 +269,53 @@ class MigrationRunner
 
             $stmt = $this->db->prepare("DELETE FROM migrations WHERE migration = ?");
             $stmt->execute([$migrationName]);
+        }
+
+        echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
+    }
+
+    public function reset(): void
+    {
+        $this->createMigrationTable();
+
+        $maxBatch = $this->lastBatch();
+
+        if ($maxBatch === 0) {
+            echo "Nothing to rollback.\n";
+            return;
+        }
+
+        echo "⬇️  Rolling back all migrations...\n\n";
+
+        for ($batch = $maxBatch; $batch >= 1; $batch--) {
+            $migrations = array_reverse($this->getMigrationsInBatch($batch));
+
+            foreach ($migrations as $migrationName) {
+                $file = $this->migrationPath . '/' . $migrationName;
+
+                if (!file_exists($file)) {
+                    echo "⚠️  File not found: {$migrationName}\n";
+                    continue;
+                }
+
+                $migration = require $file;
+
+                if (!$migration instanceof Migration) {
+                    echo "⚠️  Skipping {$migrationName} (no down() method)\n";
+                } else {
+                    echo "⬇️  {$migrationName} ... ";
+                    try {
+                        $migration->down();
+                        echo "Done ✅\n";
+                    } catch (\Throwable $e) {
+                        echo "Failed ❌\n";
+                        throw $e;
+                    }
+                }
+
+                $stmt = $this->db->prepare("DELETE FROM migrations WHERE migration = ?");
+                $stmt->execute([$migrationName]);
+            }
         }
 
         echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;

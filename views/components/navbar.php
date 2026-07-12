@@ -17,7 +17,7 @@ $links = [
             <img src="/assets/images/logo.png" alt="ZeroPing" class="h-8 w-8 rounded-lg object-contain ring-1 ring-slate-200 dark:ring-slate-700">
             <span class="hidden sm:inline">ZeroPing</span>
             <span class="sm:hidden">ZeroPing</span>
-            <span class="hidden sm:inline-flex items-center rounded-full border border-slate-300/60 dark:border-slate-700/60 bg-slate-100/80 dark:bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400">v1.0.0</span>
+            <span class="hidden sm:inline-flex items-center rounded-full border border-slate-300/60 dark:border-slate-700/60 bg-slate-100/80 dark:bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400">v1.1.0</span>
         </a>
 
         <div class="hidden lg:flex items-center gap-1">

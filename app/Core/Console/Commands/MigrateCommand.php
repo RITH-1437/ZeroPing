@@ -2,35 +2,44 @@
 
 namespace App\Core\Console\Commands;
 
+use App\Core\Console\Command;
 use App\Core\Database\MigrationRunner;
-use PDOException;
-use Throwable;
 
-class MigrateCommand
+class MigrateCommand extends Command
 {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $signature = 'migrate';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected string $description = 'Run database migrations';
+
     public function handle(): void
     {
-        echo "========================================\n";
-        echo " ZeroPing Framework Migration\n";
-        echo "========================================\n\n";
+        $runner = new MigrationRunner();
 
-        try {
+        $pending = $runner->pendingMigrationFiles();
 
-            $runner = new MigrationRunner();
-
-            $runner->run();
-
-            echo "\n🎉 Migration completed successfully.\n";
-
-        } catch (PDOException $e) {
-
-            echo "\n❌ Database Error\n";
-            echo $e->getMessage() . PHP_EOL;
-
-        } catch (Throwable $e) {
-
-            echo "\n❌ Error\n";
-            echo $e->getMessage() . PHP_EOL;
+        if ($pending === []) {
+            $this->warn('Nothing to migrate.');
+            return;
         }
+
+        $this->title('Running Migrations');
+
+        $batch = $runner->nextBatch();
+
+        $this->progress(count($pending), function (int $index, int $total) use ($runner, $pending, $batch) {
+            $runner->runUp($pending[$index], $batch);
+        }, 'Migrating');
+
+        $this->success('Migration completed successfully (' . count($pending) . ' file(s)).');
     }
 }

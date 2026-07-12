@@ -12,7 +12,7 @@ $subtitle = $subtitle ?? 'A developer-focused PHP framework with clean architect
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-36">
         <div class="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
             <div class="max-w-3xl">
-                <?php render_component('badge', ['label' => 'ZeroPing Framework v1.0.0']); ?>
+                <?php render_component('badge', ['label' => 'ZeroPing Framework v1.1.0']); ?>
                 <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.08] text-slate-900 dark:text-slate-50">
                     <?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>
                 </h1>

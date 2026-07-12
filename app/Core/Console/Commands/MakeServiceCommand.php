@@ -41,15 +41,6 @@ class MakeServiceCommand extends Command
 
         $file = BASE_PATH . "/app/Services/{$name}.php";
 
-        if (file_exists($file)) {
-
-            echo "❌ Service {$name} already exists.\n";
-
-            return;
-        }
-
-        $this->write($file, $content);
-
-        echo "✅ Service created: app/Services/{$name}.php\n";
+        $this->writeGenerated($file, $content, 'Service');
     }
 }

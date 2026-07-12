@@ -12,7 +12,6 @@ class Config
             static::load();
         }
 
-        // Support dot-notation: "cache.default" → $items['cache']['default']
         if (str_contains($key, '.')) {
             $parts = explode('.', $key);
             $value = static::$items;
@@ -39,11 +38,51 @@ class Config
 
     protected static function load(): void
     {
-        $files = glob(BASE_PATH . '/config/*.php');
+        if (!defined('BASE_PATH')) {
+            return;
+        }
+
+        $configDir = BASE_PATH . '/config';
+        $cacheFile = BASE_PATH . '/bootstrap/cache/config.php';
+
+        // Share the compiled config cache produced by App::loadConfig /
+        // config:cache so we don't re-glob the config directory on every boot.
+        if (is_dir($configDir) && file_exists($cacheFile)
+            && filemtime($cacheFile) >= self::configDirMtime($configDir)) {
+            $items = require $cacheFile;
+            if (is_array($items)) {
+                static::$items = $items;
+                return;
+            }
+        }
+
+        if (!is_dir($configDir)) {
+            return;
+        }
+
+        $files = glob($configDir . '/*.php');
+        if ($files === false) {
+            return;
+        }
 
         foreach ($files as $file) {
             $key = basename($file, '.php');
             static::$items[$key] = require $file;
         }
+    }
+
+    private static function configDirMtime(string $configDir): int
+    {
+        $files = glob($configDir . '/*.php') ?: [];
+        $mtime = 0;
+        foreach ($files as $file) {
+            $mtime = max($mtime, filemtime($file));
+        }
+        return $mtime;
+    }
+
+    public static function setItems(array $items): void
+    {
+        static::$items = $items;
     }
 }
