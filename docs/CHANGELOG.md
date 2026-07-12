@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.2.0 (2026-07-12)
+
+This release focuses on making ZeroPing a polished, publicly installable PHP
+framework — Composer-ready packaging, richer developer tooling, more starter
+templates, and documentation accuracy.
+
+### ✨ Features
+
+- **Public distribution** — `composer.json` is now a `project` type with declared
+  PHP extension requirements, a `zero` binary, and a `post-create-project-cmd`
+  installer (`scripts/post-create-project.php`) that provisions storage, copies
+  `.env`, and generates `APP_KEY`.
+- **`php zero doctor`** — verifies PHP version, required extensions, `.env`
+  presence, writable runtime directories, the application key, and database
+  connectivity.
+- **`php zero about`** — prints framework, PHP, and environment information.
+- **`php zero make:test`** — scaffolds unit/feature tests (`--feature` flag).
+- **`php zero make:command`** — scaffolds new console commands.
+- **`php zero serve <port>`** — the development server now accepts an optional
+  port argument (defaults to `1437`).
+- **Starter template: `dashboard`** — admin dashboard with summary widgets and
+  user management, available via `php zero new dashboard`.
+- **`.gitattributes`** — keeps dev, test, and docs assets out of the Packagist
+  distribution archive.
+
+### 📚 Documentation
+
+- README now promotes `composer create-project rith-1437/zeroping` and links to
+  the correct GitHub repository and Packagist package.
+- `docs/website/installation.md` rewritten to reflect the `create-project` flow,
+  the `php zero` CLI, and accurate commands.
+
+### 🧪 Testing
+
+- Added `StarterTemplatesTest` (guards template directories) and
+  `ConsoleCommandsTest` (every command class is instantiable).
+
 ## v1.1.0 (2026-07-09)
 
 ### ✨ Features

@@ -2,15 +2,18 @@
 
 namespace App\Core\Console;
 
+use App\Core\Console\Commands\AboutCommand;
 use App\Core\Console\Commands\CacheClearCommand;
 use App\Core\Console\Commands\CacheTestCommand;
 use App\Core\Console\Commands\ConfigCacheCommand;
 use App\Core\Console\Commands\ConfigClearCommand;
 use App\Core\Console\Commands\ConfigTestCommand;
 use App\Core\Console\Commands\DbSeedCommand;
+use App\Core\Console\Commands\DoctorCommand;
 use App\Core\Console\Commands\KeyGenerateCommand;
 use App\Core\Console\Commands\LogTestCommand;
 use App\Core\Console\Commands\MailTestCommand;
+use App\Core\Console\Commands\MakeCommandCommand;
 use App\Core\Console\Commands\MakeControllerCommand;
 use App\Core\Console\Commands\MakeMailCommand;
 use App\Core\Console\Commands\MakeMiddlewareCommand;
@@ -22,6 +25,7 @@ use App\Core\Console\Commands\MakeRepositoryCommand;
 use App\Core\Console\Commands\MakeRequestCommand;
 use App\Core\Console\Commands\MakeSeederCommand;
 use App\Core\Console\Commands\MakeServiceCommand;
+use App\Core\Console\Commands\MakeTestCommand;
 use App\Core\Console\Commands\MigrateCommand;
 use App\Core\Console\Commands\MigrateFreshCommand;
 use App\Core\Console\Commands\MigrateRefreshCommand;
@@ -75,6 +79,10 @@ class Console
 
             case 'version':
                 echo "ZeroPing Framework v" . \App\Core\Application\App::VERSION . "\n";
+                break;
+
+            case 'about':
+                (new AboutCommand())->handle();
                 break;
 
             case 'help':
@@ -155,6 +163,14 @@ class Console
 
             case 'make:provider':
                 (new MakeProviderCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:command':
+                (new MakeCommandCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:test':
+                (new MakeTestCommand())->handle($argv[2] ?? '');
                 break;
 
             // ── Database / Seeds ──────────────────────────────────────────────
@@ -275,6 +291,10 @@ class Console
                 (new KeyGenerateCommand())->handle();
                 break;
 
+            case 'doctor':
+                (new DoctorCommand())->handle();
+                break;
+
             case 'security:test':
                 (new SecurityTestCommand())->handle();
                 break;
@@ -370,6 +390,8 @@ class Console
         $style->writeln("  <fg=green>make:request</>          <fg=gray>Create a form request</>");
         $style->writeln("  <fg=green>make:policy</>           <fg=gray>Create a policy</>");
         $style->writeln("  <fg=green>make:provider</>         <fg=gray>Create a service provider</>");
+        $style->writeln("  <fg=green>make:command</>          <fg=gray>Create a console command</>");
+        $style->writeln("  <fg=green>make:test</>             <fg=gray>Create a unit/feature test</>");
         $style->writeln("");
 
         $style->writeln("  <fg=yellow>Database</>");
@@ -419,6 +441,7 @@ class Console
 
         $style->writeln("  <fg=yellow>Security & Keys</>");
         $style->writeln("  <fg=green>key:generate</>          <fg=gray>Set the application key</>");
+        $style->writeln("  <fg=green>doctor</>                <fg=gray>Verify the installation and environment</>");
         $style->writeln("");
 
         $style->writeln("  <fg=yellow>Search</>");

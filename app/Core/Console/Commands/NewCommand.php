@@ -9,6 +9,7 @@ class NewCommand
         'blog'  => 'Blog with posts, categories, and pagination',
         'api'   => 'RESTful API with authentication boilerplate',
         'mvc'   => 'Full MVC CRUD scaffold with user management',
+        'dashboard' => 'Admin dashboard with stats and user management',
     ];
 
     private array $descriptions = [
@@ -16,6 +17,7 @@ class NewCommand
         'blog'  => 'A blog application built with ZeroPing, featuring posts and categories',
         'api'   => 'A RESTful API boilerplate with authentication endpoints built with ZeroPing',
         'mvc'   => 'A full MVC CRUD application with user management built with ZeroPing',
+        'dashboard' => 'An admin dashboard with summary widgets and user management built with ZeroPing',
     ];
 
     public function handle(string $type, array $options): void

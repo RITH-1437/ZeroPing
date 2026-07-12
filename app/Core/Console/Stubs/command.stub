@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Core\Console\Commands;
+
+use App\Core\Console\Command;
+
+class {{ class }} extends Command
+{
+    protected string $signature = '{{ signature }}';
+
+    protected string $description = '{{ description }}';
+
+    public function handle(): void
+    {
+        //
+    }
+}

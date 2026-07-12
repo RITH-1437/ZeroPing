@@ -1,0 +1,23 @@
+# Directives for the archive published on Packagist (composer create-project).
+# Files listed with `export-ignore` are excluded from the distributed package.
+
+/.github                 export-ignore
+/.git                    export-ignore
+/.gitattributes          export-ignore
+/.gitignore              export-ignore
+/.gitkeep                export-ignore
+
+/tests                   export-ignore
+/bench                   export-ignore
+/docs                    export-ignore
+/packages                export-ignore
+/arena                   export-ignore
+
+/storage/cache/*         export-ignore
+/storage/logs/*          export-ignore
+/bootstrap/cache/*       export-ignore
+
+*.cache                  export-ignore
+.php-cs-fixer.dist.php   export-ignore
+phpunit.xml              export-ignore
+phpunit.xml.dist         export-ignore

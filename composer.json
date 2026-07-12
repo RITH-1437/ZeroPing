@@ -1,9 +1,8 @@
 {
   "name": "rith-1437/zeroping",
-  "description": "ZeroPing is a lightweight, modern PHP framework built from scratch with MVC architecture, dependency injection, ORM, validation, caching, queue, scheduler, and developer-friendly CLI tools.",
-  "type": "library",
+  "description": "ZeroPing is a lightweight, modern PHP framework with a clean MVC architecture, dependency injection, ORM, validation, caching, queues, a task scheduler, and batteries-included CLI tooling. Install it to build production applications.",
+  "type": "project",
   "license": "MIT",
-
   "keywords": [
     "php",
     "framework",
@@ -18,9 +17,7 @@
     "cli",
     "zeroping"
   ],
-
   "homepage": "https://github.com/RITH-1437/ZeroPing",
-
   "authors": [
     {
       "name": "Rin Nairith",
@@ -28,16 +25,23 @@
       "role": "Creator"
     }
   ],
-
   "support": {
     "issues": "https://github.com/RITH-1437/ZeroPing/issues",
-    "source": "https://github.com/RITH-1437/ZeroPing"
+    "source": "https://github.com/RITH-1437/ZeroPing",
+    "docs": "https://github.com/RITH-1437/ZeroPing/tree/main/docs"
   },
-
   "require": {
-    "php": ">=8.1"
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "ext-ctype": "*",
+    "ext-tokenizer": "*",
+    "ext-fileinfo": "*",
+    "ext-openssl": "*",
+    "ext-hash": "*"
   },
-
   "autoload": {
     "psr-4": {
       "App\\": "app/"
@@ -48,12 +52,19 @@
       "Tests\\": "tests/"
     }
   },
-
+  "bin": [
+    "zero"
+  ],
+  "scripts": {
+    "post-create-project-cmd": [
+      "@php scripts/post-create-project.php"
+    ]
+  },
   "config": {
     "sort-packages": true,
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "allow-plugins": {}
   },
-
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require-dev": {

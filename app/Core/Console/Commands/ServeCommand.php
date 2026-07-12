@@ -25,10 +25,10 @@ class ServeCommand extends Command
      *
      * @return void
      */
-    public function handle(): void
+    public function handle(array $args = []): void
     {
         $host = 'localhost';
-        $port = 1437;
+        $port = (int) ($args[0] ?? 1437);
 
         $this->info("ZeroPing development server started on http://{$host}:{$port}");
 

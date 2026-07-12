@@ -1,16 +1,16 @@
 # ZeroPing Framework
 
 <p align="center">
-  <a href="https://github.com/RITH-1437/ZeroPing">
-    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
+  <a href="https://github.com/RITH-1437/zero-ping">
+    <img src="https://raw.githubusercontent.com/RITH-1437/zero-ping/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
   </a>
 </p>
 
 <p align="center">
   <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/v/rith-1437/zeroping.svg?style=flat-square" alt="Latest Stable Version"></a>
   <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/dt/rith-1437/zeroping.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://github.com/RITH-1437/ZeroPing/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/ZeroPing/ci.yml?style=flat-square" alt="Build Status"></a>
-  <a href="https://github.com/RITH-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/ZeroPing?style=flat-square" alt="License"></a>
+  <a href="https://github.com/RITH-1437/zero-ping/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/zero-ping/ci.yml?style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/RITH-1437/zero-ping/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/zero-ping?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
 </p>
 
@@ -47,21 +47,27 @@ configuration.
 
 ## Installation
 
+The fastest way to start a new ZeroPing project is with Composer:
+
 ```bash
-# Clone the repository
-git clone https://github.com/RITH-1437/ZeroPing.git
-cd ZeroPing
+composer create-project rith-1437/zeroping my-app
+cd my-app
 
-# Install dependencies
-composer install
-
-# Copy the environment file and configure
-cp .env.example .env
-
-# Run migrations and start the development server
-php zero migrate
+# The installer copies .env, generates your APP_KEY, and prepares storage.
 php zero serve
 ```
+
+The `post-create-project-cmd` script runs automatically after install. If you
+cloned the source instead, bootstrap manually:
+
+```bash
+composer install
+cp .env.example .env
+php zero key:generate
+php zero serve
+```
+
+Run `php zero doctor` at any time to verify your installation.
 
 ## Documentation
 
