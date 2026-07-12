@@ -11,17 +11,17 @@ class UserController extends Controller
     {
         $users = User::all();
 
-        return view('users.index', [
+        return $this->view('users.index', [
             'title' => 'Users',
             'users' => $users,
-        ]);
+        ], 'app');
     }
 
     public function create(): string
     {
-        return view('users.create', [
+        return $this->view('users.create', [
             'title' => 'Create User',
-        ]);
+        ], 'app');
     }
 
     public function store(): string

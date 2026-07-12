@@ -8,8 +8,8 @@ class HomeController extends Controller
 {
     public function index(): string
     {
-        return view('welcome', [
+        return $this->view('welcome', [
             'title' => 'Welcome',
-        ]);
+        ], 'app');
     }
 }

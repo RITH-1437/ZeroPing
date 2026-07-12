@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View\Controller;
+use App\Http\Response;
 
 class AuthController extends Controller
 {
@@ -16,10 +17,10 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->json(['errors' => $validator->errors()], 422);
+            Response::json(['errors' => $validator->errors()], 422);
         }
 
-        return $this->json([
+        Response::json([
             'message' => 'Login endpoint. Implement your authentication logic here.',
         ]);
     }

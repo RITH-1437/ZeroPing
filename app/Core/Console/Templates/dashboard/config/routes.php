@@ -2,7 +2,7 @@
 
 use App\Core\Routing\Router;
 
-Router::get('/', [\App\Controllers\HomeController::class, 'index']);
+Router::get('/', [\App\Controllers\DashboardController::class, 'index']);
 Router::get('/dashboard', [\App\Controllers\DashboardController::class, 'index']);
 Router::get('/users', [\App\Controllers\UserController::class, 'index']);
 Router::get('/users/create', [\App\Controllers\UserController::class, 'create']);

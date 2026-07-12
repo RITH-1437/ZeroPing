@@ -11,19 +11,19 @@ class PostController extends Controller
     {
         $posts = Post::latest()->paginate(10);
 
-        return view('posts.index', [
+        return $this->view('posts.index', [
             'title' => 'Blog',
             'posts' => $posts,
-        ]);
+        ], 'app');
     }
 
     public function show(string $slug): string
     {
         $post = Post::where('slug', $slug)->firstOrFail();
 
-        return view('posts.show', [
+        return $this->view('posts.show', [
             'title' => $post->title,
             'post' => $post,
-        ]);
+        ], 'app');
     }
 }

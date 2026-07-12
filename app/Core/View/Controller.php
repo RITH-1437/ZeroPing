@@ -12,8 +12,8 @@ class Controller
         string $view,
         array $data = [],
         string $layout = 'guest'
-    ): void {
-        View::render($view, $data, $layout);
+    ): string {
+        return View::render($view, $data, $layout);
     }
 
     protected function validateCsrf(): bool

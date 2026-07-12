@@ -9,13 +9,20 @@ class DashboardController extends Controller
 {
     public function index(): string
     {
-        $totalUsers = User::count();
-        $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
+        $totalUsers = 0;
+        $recentUsers = [];
 
-        return view('dashboard', [
+        try {
+            $totalUsers = User::count();
+            $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
+        } catch (\Exception $e) {
+            // Database not configured/migrated yet — show empty state.
+        }
+
+        return $this->view('dashboard', [
             'title' => 'Dashboard',
             'totalUsers' => $totalUsers,
             'recentUsers' => $recentUsers,
-        ]);
+        ], 'app');
     }
 }
