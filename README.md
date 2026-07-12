@@ -59,6 +59,10 @@ cd my-app
 php zero serve
 ```
 
+> **Package name:** `rith-1437/zeroping` — all lowercase, **one word, no hyphen**
+> (it is the lowercase form of the GitHub repo `RITH-1437/ZeroPing`). Typing
+> `zero-ping` will fail with "Could not find package".
+
 The `post-create-project-cmd` script runs automatically after install.
 
 ### Option B — Clone from GitHub

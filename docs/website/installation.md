@@ -19,6 +19,10 @@ composer create-project rith-1437/zeroping my-app
 cd my-app
 ```
 
+> **Package name:** `rith-1437/zeroping` — all lowercase, one word, **no hyphen**
+> (it is the lowercase form of the GitHub repo `RITH-1437/ZeroPing`). Typing
+> `zero-ping` fails with "Could not find package".
+
 The `post-create-project-cmd` script runs automatically and will:
 
 1. Create `storage/cache`, `storage/logs`, and `bootstrap/cache`.
@@ -31,7 +35,7 @@ If you are contributing to the framework, clone the repository instead:
 
 ```bash
 git clone https://github.com/RITH-1437/ZeroPing.git
-cd zero-ping
+cd ZeroPing
 composer install
 cp .env.example .env
 php zero key:generate
