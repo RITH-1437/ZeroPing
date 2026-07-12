@@ -98,18 +98,19 @@ php zero --help         # list all available commands
 
 ## Quick Start
 
-After creating your project, build your first page in three steps.
+A new ZeroPing project ships with a small demo website so you can see it running
+immediately. To add your own page alongside it, follow these three steps.
 
-**1. Register a route** (`config/routes.php`):
+**1. Register a route** (add this to the end of `config/routes.php`):
 
 ```php
 use App\Core\Routing\Router;
-use App\Controllers\HomeController;
+use App\Controllers\GreetingController;
 
-Router::get('/', [HomeController::class, 'index']);
+Router::get('/hello', [GreetingController::class, 'index']);
 ```
 
-**2. Create a controller** (`app/Controllers/HomeController.php`):
+**2. Create a controller** (`app/Controllers/GreetingController.php`):
 
 ```php
 <?php
@@ -118,18 +119,18 @@ namespace App\Controllers;
 
 use App\Core\View\Controller;
 
-class HomeController extends Controller
+class GreetingController extends Controller
 {
     public function index(): string
     {
-        return view('home', [
+        return view('greeting', [
             'name' => config('app.name'),
         ]);
     }
 }
 ```
 
-**3. Create a view** (`views/home.php`):
+**3. Create a view** (`views/greeting.php`):
 
 ```php
 <h1>Hello from <?= e($name) ?>!</h1>
@@ -139,7 +140,7 @@ Start the server and visit your page:
 
 ```bash
 php zero serve
-# open http://localhost:1437
+# open http://localhost:1437/hello
 ```
 
 ## Project Structure
