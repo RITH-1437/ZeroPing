@@ -10,6 +10,11 @@ $activePage = $active ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="ZeroPing Framework official website and documentation.">
+    <meta property="og:title" content="ZeroPing — Modern PHP Framework">
+    <meta property="og:description" content="Fast. Simple. Elegant. A lightweight PHP framework built from scratch with zero external dependencies.">
+    <meta property="og:image" content="<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev'), '/') ?>/assets/images/og-image.svg">
+    <meta property="og:url" content="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev') ?>">
+    <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="/assets/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
