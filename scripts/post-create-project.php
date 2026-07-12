@@ -38,15 +38,21 @@ if (!file_exists($envPath) && file_exists($examplePath)) {
 if (file_exists($envPath)) {
     $env = (string) file_get_contents($envPath);
 
-    if (!preg_match('/^APP_KEY=/m', $env)) {
-        $env .= "\nAPP_KEY=\n";
+    if (preg_match('/^APP_KEY=(.*)$/m', $env, $m) && $m[1] !== '') {
+        echo "Application key already set; skipping generation.\n";
+    } else {
+        if (!preg_match('/^APP_KEY=/m', $env)) {
+            $env .= "\nAPP_KEY=\n";
+        }
+
+        $key = 'base64:' . base64_encode(random_bytes(32));
+        $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
+
+        file_put_contents($envPath, $env);
+        echo "Application key generated.\n";
     }
-
-    $key = 'base64:' . base64_encode(random_bytes(32));
-    $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
-
-    file_put_contents($envPath, $env);
-    echo "Application key generated.\n";
 }
 
-echo "ZeroPing installation ready. Start the development server with: php zero serve\n";
+echo "ZeroPing installation ready.\n";
+echo "Start the development server with: php zero serve\n";
+echo "Verify your setup any time with:    php zero doctor\n";

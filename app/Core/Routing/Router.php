@@ -229,7 +229,10 @@ class Router
                     $class = "App\\Http\\Middleware\\" . ucfirst($middleware) . "Middleware";
 
                     if (!class_exists($class)) {
-                        die("Middleware {$class} not found.");
+                        throw new \RuntimeException(
+                            "Middleware '{$middleware}' could not be resolved: class {$class} not found. "
+                            . "Check the route's middleware name and that the class exists under App\\Http\\Middleware."
+                        );
                     }
 
                     self::$middlewareClasses[$middleware] = $class;
@@ -241,9 +244,11 @@ class Router
             // Controller exists?
             if (!class_exists($controllerName)) {
 
-                http_response_code(500);
-
-                die("Controller {$controllerName} not found.");
+                throw new \RuntimeException(
+                    "Controller {$controllerName} not found. Create it "
+                    . "(e.g. `php zero make:controller " . ltrim($controllerName, '\\') . "`) "
+                    . "and ensure Composer autoloading is up to date (`composer dump-autoload`)."
+                );
             }
 
             $container = App::container();
@@ -253,9 +258,10 @@ class Router
             // Method exists?
             if (!method_exists($controller, $methodName)) {
 
-                http_response_code(500);
-
-                die("Method {$methodName} not found.");
+                throw new \RuntimeException(
+                    "Method {$methodName}() does not exist on {$controllerName}. "
+                    . "Check the route's controller action points to a real public method."
+                );
             }
 
             // Execute controller with route parameters
@@ -265,6 +271,7 @@ class Router
             $title = '500 - Server Error';
             $message = $e->getMessage();
             $trace = $e->getTrace();
+            $debug = function_exists('config') ? (bool) config('app.debug', false) : false;
 
             ob_start();
             require dirname(__DIR__, 3) . '/views/errors/500.php';
