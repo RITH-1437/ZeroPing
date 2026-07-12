@@ -2198,6 +2198,144 @@ class ThrottleMiddleware extends ThrottleRequests {}</code></pre>
       </div>
     </template>
 
+    <template data-id="extending" data-title="Extending ZeroPing" data-category="Digging Deeper">
+      <h1>Extending ZeroPing</h1>
+
+      <p>ZeroPing is designed to be extended at every layer — from service registration and event-driven logic to custom drivers and middleware.</p>
+
+      <h2>Service Providers</h2>
+
+      <p>Providers are the primary extension mechanism. They live in <code>app/Providers/</code> and are registered in <code>config/app.php</code>.</p>
+
+      <pre><code class="language-php">namespace App\Providers;
+
+use App\Core\Container\Container;
+
+class MyServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->container->singleton(MyService::class, function () {
+            return new MyService();
+        });
+    }
+
+    public function boot(): void
+    {
+        $service = $this->container->resolve(MyService::class);
+        $service->init();
+    }
+}</code></pre>
+
+      <p>Every provider receives the <code>Container</code> on construction. Use <code>register()</code> to bind services, and <code>boot()</code> to run logic after all providers are registered.</p>
+
+      <h2>Events &amp; Listeners</h2>
+
+      <p>Events decouple your application logic. Define an event class, attach listeners in a Service Provider, and dispatch when the action occurs.</p>
+
+      <pre><code class="language-php">// app/Events/OrderShipped.php
+namespace App\Events;
+
+use App\Core\Events\Event;
+
+class OrderShipped extends Event
+{
+    public function __construct(public array $order) {}
+}
+
+// app/Listeners/SendShipmentNotification.php
+namespace App\Listeners;
+
+use App\Core\Events\Listener;
+use App\Core\Events\Event;
+
+class SendShipmentNotification extends Listener
+{
+    public function handle(Event $event): void
+    {
+        // $event->order ...
+    }
+}
+
+// In a ServiceProvider:
+$dispatcher = $this->container->resolve(\App\Core\Events\EventDispatcher::class);
+$dispatcher->listen(OrderShipped::class, SendShipmentNotification::class);
+
+// Dispatch anywhere:
+$dispatcher->dispatch(new OrderShipped($orderData));</code></pre>
+
+      <h2>Middleware</h2>
+
+      <p>Middleware sits between the incoming request and your controller. Create a class that extends <code>App\Http\Middleware\Middleware</code> and register it in <code>config/routes.php</code> or <code>config/app.php</code>.</p>
+
+      <pre><code class="language-php">namespace App\Http\Middleware;
+
+class CorsMiddleware extends Middleware
+{
+    public function handle(): void
+    {
+        header('Access-Control-Allow-Origin: *');
+    }
+}</code></pre>
+
+      <h2>Custom Drivers</h2>
+
+      <p>Cache, Queue, Mail, and Filesystem all use the driver pattern. Implement the corresponding driver interface and register it via a Service Provider:</p>
+
+      <ul>
+        <li>Cache: implement <code>App\Core\Cache\Drivers\CacheDriver</code></li>
+        <li>Queue: implement <code>App\Core\Queue\Drivers\QueueDriver</code></li>
+        <li>Mail: implement <code>App\Core\Mail\Drivers\MailDriver</code></li>
+        <li>Filesystem: implement <code>App\Core\Filesystem\Drivers\FilesystemDriver</code></li>
+      </ul>
+
+      <pre><code class="language-php">use App\Core\Cache\Drivers\CacheDriver;
+
+class RedisCacheDriver implements CacheDriver
+{
+    public function get(string $key): mixed { /* ... */ }
+    public function set(string $key, mixed $value, int $ttl = 0): void { /* ... */ }
+    public function delete(string $key): void { /* ... */ }
+    public function clear(): void { /* ... */ }
+}</code></pre>
+
+      <h2>Custom Validation Rules</h2>
+
+      <p>Add your own rules by extending <code>App\Core\Validation\Rules\Rule</code> and registering it via <code>RuleRegistry</code>.</p>
+
+      <pre><code class="language-php">use App\Core\Validation\Rules\Rule;
+use App\Core\Validation\RuleRegistry;
+
+class UppercaseRule extends Rule
+{
+    public function validate(mixed $value): bool
+    {
+        return strtoupper($value) === $value;
+    }
+
+    public function message(): string
+    {
+        return 'The :field must be uppercase.';
+    }
+}
+
+// Register:
+RuleRegistry::add('uppercase', UppercaseRule::class);</code></pre>
+
+      <h2>Container Bindings</h2>
+
+      <p>The <code>Container</code> lets you bind interfaces to concrete implementations, making it easy to swap components.</p>
+
+      <pre><code class="language-php">$container->bind(CacheDriver::class, RedisCacheDriver::class);
+$container->singleton(MailDriver::class, fn() => new LogDriver);</code></pre>
+
+      <h2>Tips</h2>
+      <div class="callout tip">
+        <h4>Tip</h4>
+        <p>Always register providers and middleware in <code>config/app.php</code>. This keeps your application bootstrap predictable and testable.</p>
+      </div>
+    </template>
+
     <!--PAGE TEMPLATES-->
   </div>
 

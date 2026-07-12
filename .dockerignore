@@ -1,0 +1,9 @@
+/vendor/
+/node_modules/
+/.git/
+/arena/
+/.idea/
+/.phpunit.cache/
+/database/
+/storage/
+.env

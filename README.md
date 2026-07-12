@@ -12,6 +12,7 @@
   <a href="https://github.com/RITH-1437/ZeroPing/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/ZeroPing/ci.yml?style=flat-square" alt="Build Status"></a>
   <a href="https://github.com/RITH-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/ZeroPing?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
+  <a href="https://github.com/devcontainers/features"><img src="https://img.shields.io/badge/Dev%20Container-ready-007ACC.svg?style=flat-square" alt="Dev Container Ready"></a>
 </p>
 
 ## About ZeroPing
@@ -65,7 +66,23 @@ php zero serve
 
 The `post-create-project-cmd` script runs automatically after install.
 
-### Option B — Clone from GitHub
+### Option B — Docker (development environment)
+
+A Docker Compose setup is included for local development with PHP 8.3, Nginx, and MySQL:
+
+```bash
+docker compose up -d
+docker compose exec app composer install
+docker compose exec app cp -n .env.example .env
+docker compose exec app php zero key:generate
+docker compose exec app php zero migrate
+```
+
+The app will be available at `http://localhost`.
+
+For VS Code users, a [devcontainer](.devcontainer/devcontainer.json) configuration is also provided — reopen the project in the container for a zero-setup development environment.
+
+### Option C — Clone from GitHub
 
 To work from the source repository instead:
 
@@ -86,7 +103,7 @@ Run `php zero doctor` at any time to verify your installation.
 The full documentation lives in the [`docs/`](docs/index.html) directory and can
 be opened directly in a browser, or built into a static site. It covers
 installation, routing, the container, database, ORM, validation, caching,
-queues, scheduling, security, testing, deployment, and the CLI reference.
+queues, scheduling, security, testing, deployment, extending the framework, and the CLI reference.
 
 A quick tour of the most common commands:
 

@@ -1,0 +1,30 @@
+{
+    "name": "ZeroPing Framework",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/var/www",
+    "forwardPorts": [80],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "neilbrayfield.php-docblocker",
+                "junstyle.php-cs-fixer",
+                "mrmlnc.vscode-duplicate",
+                "eamodio.gitlens",
+                "EditorConfig.EditorConfig",
+                "GitHub.vscode-github-actions"
+            ],
+            "settings": {
+                "intelephense.files.maxSize": 5000000,
+                "php.suggest.basic": false,
+                "editor.formatOnSave": true,
+                "files.associations": {
+                    "*.php": "php"
+                }
+            }
+        }
+    },
+    "postCreateCommand": "composer install --prefer-dist --no-interaction && cp -n .env.example .env 2>/dev/null; php zero key:generate",
+    "remoteUser": "zeroping"
+}
