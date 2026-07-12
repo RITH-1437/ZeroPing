@@ -22,3 +22,6 @@ yarn-error.log
 /storage/app/*.txt
 
 arena
+
+# Generated bootstrap caches
+bootstrap/cache/*
