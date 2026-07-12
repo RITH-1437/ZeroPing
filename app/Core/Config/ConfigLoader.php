@@ -15,7 +15,6 @@ class ConfigLoader
         ];
 
         foreach (glob(BASE_PATH . '/config/*.php') as $file) {
-
             $name = basename($file);
 
             if (in_array($name, $excluded)) {

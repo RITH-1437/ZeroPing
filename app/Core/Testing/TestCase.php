@@ -6,5 +6,6 @@ use App\Core\Testing\Traits\MakesHTTPRequests;
 
 abstract class TestCase
 {
-    use Assertion, MakesHTTPRequests;
+    use Assertion;
+    use MakesHTTPRequests;
 }

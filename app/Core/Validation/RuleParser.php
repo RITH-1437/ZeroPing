@@ -7,7 +7,6 @@ class RuleParser
     public function parse(string $rule): array
     {
         if (!str_contains($rule, ':')) {
-
             return [
 
                 'name' => $rule,

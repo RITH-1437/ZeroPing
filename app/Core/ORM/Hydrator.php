@@ -34,7 +34,6 @@ class Hydrator
         $items = [];
 
         foreach ($rows as $row) {
-
             $items[] = $this->hydrate(
                 $model,
                 $row

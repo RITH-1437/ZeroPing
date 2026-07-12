@@ -20,7 +20,8 @@ class ControllerTest extends \Tests\TestCase
             session_start();
         }
         $_SESSION = [];
-        $this->controller = new class extends Controller {};
+        $this->controller = new class extends Controller {
+        };
     }
 
     private function callProtected(string $method, array $args = [])

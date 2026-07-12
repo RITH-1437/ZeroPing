@@ -107,6 +107,9 @@ jobs:
       - name: Framework Test Suite
         run: php zero test
 
+      - name: PHP Code Sniffer (PSR-12)
+        run: vendor/bin/phpcs
+
       - name: Build Summary
         run: echo "✅ ZeroPing Framework build completed successfully."
 

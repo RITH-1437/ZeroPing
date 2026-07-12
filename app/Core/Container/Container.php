@@ -63,7 +63,6 @@ class Container
         }
 
         if (isset($this->bindings[$abstract])) {
-
             $binding = $this->bindings[$abstract];
 
             $concrete = $binding['concrete'];
@@ -125,7 +124,6 @@ class Container
         $type = $parameter->getType();
 
         if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
-
             if ($parameter->isDefaultValueAvailable()) {
                 return $parameter->getDefaultValue();
             }

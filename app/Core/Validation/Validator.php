@@ -41,7 +41,6 @@ class Validator
         $parser = new RuleParser();
 
         foreach ($this->rules as $field => $ruleString) {
-
             $value = $this->data[$field] ?? null;
 
             $rulesArray = explode('|', $ruleString);
@@ -64,7 +63,6 @@ class Validator
             }
 
             foreach ($rulesArray as $rule) {
-
                 $parsed = $parser->parse($rule);
 
                 $validator = $registry->get(
@@ -87,13 +85,14 @@ class Validator
                 |--------------------------------------------------------------------------
                 */
 
-                if (!$validator->validate(
-                    $field,
-                    $value,
-                    $this->data,
-                    $parsed['parameters']
-                )) {
-
+                if (
+                    !$validator->validate(
+                        $field,
+                        $value,
+                        $this->data,
+                        $parsed['parameters']
+                    )
+                ) {
                     $message = $this->messages["{$field}.{$parsed['name']}"]
                         ?? $validator->message($field, $parsed['parameters']);
 

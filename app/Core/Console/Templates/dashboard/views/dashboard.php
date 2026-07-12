@@ -34,7 +34,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($recentUsers as $user): ?>
+            <?php foreach ($recentUsers as $user) : ?>
                 <tr class="border-t border-slate-200 dark:border-slate-700">
                     <td class="px-4 py-3"><?= e($user->id) ?></td>
                     <td class="px-4 py-3"><?= e($user->name) ?></td>

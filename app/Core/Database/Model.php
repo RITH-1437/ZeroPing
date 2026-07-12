@@ -50,7 +50,7 @@ abstract class Model implements \ArrayAccess
      */
     public static function query(): QueryBuilder
     {
-        $instance = new static;
+        $instance = new static();
         $qb = new QueryBuilder($instance->db, $instance->table);
 
         if (!$instance->hasSoftDeletes) {
@@ -65,7 +65,7 @@ abstract class Model implements \ArrayAccess
      */
     public static function all(): Collection
     {
-        return (new static)->query()->get();
+        return (new static())->query()->get();
     }
 
     /**
@@ -73,7 +73,7 @@ abstract class Model implements \ArrayAccess
      */
     public static function find(int|string $id): ?static
     {
-        return (new static)->query()
+        return (new static())->query()
             ->where('id', (int) $id)
             ->first();
     }
@@ -99,7 +99,7 @@ abstract class Model implements \ArrayAccess
      */
     public static function findBy(string $column, mixed $value): ?static
     {
-        return (new static)->query()
+        return (new static())->query()
             ->where($column, $value)
             ->first();
     }
@@ -376,6 +376,6 @@ abstract class Model implements \ArrayAccess
 
     public static function __callStatic($method, $parameters)
     {
-        return (new static)->$method(...$parameters);
+        return (new static())->$method(...$parameters);
     }
 }

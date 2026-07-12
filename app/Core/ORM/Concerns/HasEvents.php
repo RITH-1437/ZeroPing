@@ -26,7 +26,7 @@ trait HasEvents
             return true;
         }
 
-        $result = Event::dispatch("model.{$event}: ".static::class, $this);
+        $result = Event::dispatch("model.{$event}: " . static::class, $this);
 
         if ($halt && ! is_null($result)) {
             return $result;

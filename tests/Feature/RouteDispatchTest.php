@@ -185,7 +185,8 @@ class RouteDispatchTest extends \Tests\TestCase
 
     public function testCurrentRouteIsSetAfterDispatch(): void
     {
-        Router::get('/current', function () {});
+        Router::get('/current', function () {
+        });
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI'] = '/current';

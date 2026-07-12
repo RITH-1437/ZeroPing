@@ -6,6 +6,5 @@ class TestService
 {
     public function __construct()
     {
-
     }
 }

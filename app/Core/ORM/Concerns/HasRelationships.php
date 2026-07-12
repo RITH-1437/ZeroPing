@@ -27,7 +27,7 @@ trait HasRelationships
      */
     public function hasOne(string $related, ?string $foreignKey = null, ?string $localKey = null): HasOne
     {
-        $instance = new $related;
+        $instance = new $related();
         $foreignKey = $foreignKey ?: $this->getForeignKey();
         $localKey = $localKey ?: $this->getKeyName();
 
@@ -44,7 +44,7 @@ trait HasRelationships
      */
     public function hasMany(string $related, ?string $foreignKey = null, ?string $localKey = null): HasMany
     {
-        $instance = new $related;
+        $instance = new $related();
         $foreignKey = $foreignKey ?: $this->getForeignKey();
         $localKey = $localKey ?: $this->getKeyName();
 
@@ -61,7 +61,7 @@ trait HasRelationships
      */
     public function belongsTo(string $related, ?string $foreignKey = null, ?string $ownerKey = null): BelongsTo
     {
-        $instance = new $related;
+        $instance = new $related();
         $foreignKey = $foreignKey ?: $instance->getForeignKey();
         $ownerKey = $ownerKey ?: $instance->getKeyName();
 
@@ -79,7 +79,7 @@ trait HasRelationships
      */
     public function belongsToMany(string $related, ?string $table = null, ?string $foreignPivotKey = null, ?string $relatedPivotKey = null): BelongsToMany
     {
-        $instance = new $related;
+        $instance = new $related();
         $table = $table ?: $this->getJoinTable($instance);
         $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
         $relatedPivotKey = $relatedPivotKey ?: $instance->getForeignKey();

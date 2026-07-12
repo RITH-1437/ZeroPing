@@ -47,8 +47,10 @@ class Config
 
         // Share the compiled config cache produced by App::loadConfig /
         // config:cache so we don't re-glob the config directory on every boot.
-        if (is_dir($configDir) && file_exists($cacheFile)
-            && filemtime($cacheFile) >= self::configDirMtime($configDir)) {
+        if (
+            is_dir($configDir) && file_exists($cacheFile)
+            && filemtime($cacheFile) >= self::configDirMtime($configDir)
+        ) {
             $items = require $cacheFile;
             if (is_array($items)) {
                 static::$items = $items;

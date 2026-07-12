@@ -6,16 +6,16 @@
     </a>
 </div>
 
-<?php if (!empty($posts)): ?>
+<?php if (!empty($posts)) : ?>
     <div class="grid gap-6 mt-12">
-        <?php foreach ($posts as $post): ?>
+        <?php foreach ($posts as $post) : ?>
             <article class="p-6 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
                 <h2 class="text-xl font-semibold mb-2">
                     <a href="/blog/<?= e($post->slug) ?>" class="hover:text-blue-600 dark:hover:text-blue-400">
                         <?= e($post->title) ?>
                     </a>
                 </h2>
-                <?php if ($post->excerpt): ?>
+                <?php if ($post->excerpt) : ?>
                     <p class="text-slate-500 dark:text-slate-400"><?= e($post->excerpt) ?></p>
                 <?php endif; ?>
             </article>

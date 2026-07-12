@@ -168,14 +168,10 @@ class Router
 
             // Exact route match
             if (isset(self::$routes[$method][$uri])) {
-
                 $route = self::$routes[$method][$uri];
-
             } else {
-
                 // Dynamic route matching (compiled patterns are cached)
                 foreach (self::$routes[$method] ?? [] as $routeUri => $routeData) {
-
                     $cacheKey = $method . '|' . $routeUri;
 
                     if (!isset(self::$compiledPatterns[$cacheKey])) {
@@ -188,7 +184,6 @@ class Router
                     }
 
                     if (preg_match(self::$compiledPatterns[$cacheKey], $uri, $matches)) {
-
                         array_shift($matches);
 
                         $params = $matches;
@@ -224,7 +219,6 @@ class Router
 
             // Execute middleware (resolved class name cached per short name)
             foreach ($route->middleware as $middleware) {
-
                 if (!isset(self::$middlewareClasses[$middleware])) {
                     $class = "App\\Http\\Middleware\\" . ucfirst($middleware) . "Middleware";
 
@@ -243,7 +237,6 @@ class Router
 
             // Controller exists?
             if (!class_exists($controllerName)) {
-
                 throw new \RuntimeException(
                     "Controller {$controllerName} not found. Create it "
                     . "(e.g. `php zero make:controller " . ltrim($controllerName, '\\') . "`) "
@@ -257,7 +250,6 @@ class Router
 
             // Method exists?
             if (!method_exists($controller, $methodName)) {
-
                 throw new \RuntimeException(
                     "Method {$methodName}() does not exist on {$controllerName}. "
                     . "Check the route's controller action points to a real public method."

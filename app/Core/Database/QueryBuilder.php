@@ -210,7 +210,7 @@ class QueryBuilder
         $result = $this->first();
 
         if (is_null($result)) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException();
         }
 
         return $result;
@@ -226,7 +226,7 @@ class QueryBuilder
         $result = $this->find($id, $columns);
 
         if (is_null($result)) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException();
         }
 
         return $result;
@@ -297,7 +297,6 @@ class QueryBuilder
         $bindings = [];
 
         foreach ($data as $column => $value) {
-
             $set[] = "{$column} = ?";
 
             $bindings[] = $value;
@@ -308,15 +307,12 @@ class QueryBuilder
         $sql .= implode(', ', $set);
 
         if (!empty($this->where)) {
-
             $sql .= " WHERE ";
 
             $first = true;
 
             foreach ($this->where as $condition) {
-
                 if ($first) {
-
                     $condition = preg_replace('/^OR /', '', $condition);
 
                     $first = false;
@@ -343,15 +339,12 @@ class QueryBuilder
         $sql = "DELETE FROM {$this->table}";
 
         if (!empty($this->where)) {
-
             $sql .= " WHERE ";
 
             $first = true;
 
             foreach ($this->where as $condition) {
-
                 if ($first) {
-
                     $condition = preg_replace('/^OR /', '', $condition);
 
                     $first = false;

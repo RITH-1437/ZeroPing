@@ -23,5 +23,4 @@ class User extends Model
             ->where('username', $username)
             ->first();
     }
-
 }

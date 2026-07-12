@@ -16,23 +16,19 @@ class MakeRepositoryCommand extends Command
     public function handle(string $name): void
     {
         if (empty($name)) {
-
             echo "Usage: php zero make:repository RepositoryName\n";
 
             return;
         }
 
         if (!str_ends_with($name, 'Repository')) {
-
             $name .= 'Repository';
         }
 
         $model = str_replace('Repository', '', $name);
 
         $content = $this->replace(
-
             $this->stub('repository.stub'),
-
             [
 
                 'class' => $name,
@@ -40,7 +36,6 @@ class MakeRepositoryCommand extends Command
                 'model' => $model
 
             ]
-
         );
 
         $file = BASE_PATH . "/app/Repositories/{$name}.php";

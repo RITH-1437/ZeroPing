@@ -45,7 +45,6 @@ class ConfigRepository
         $config = $this->items;
 
         foreach ($segments as $segment) {
-
             if (!array_key_exists($segment, $config)) {
                 $this->cache[$key] = $default;
                 return $default;
@@ -89,7 +88,6 @@ class ConfigRepository
         $config =& $this->items;
 
         foreach ($segments as $segment) {
-
             if (!isset($config[$segment])) {
                 $config[$segment] = [];
             }

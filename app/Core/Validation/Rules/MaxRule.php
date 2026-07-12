@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Core\Validation\Rules;
+
 use App\Core\Validation\Rules\AbstractRule;
 
 class MaxRule extends AbstractRule

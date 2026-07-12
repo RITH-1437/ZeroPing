@@ -7,13 +7,6 @@ namespace Tests\Unit;
 use App\Core\Database\Model;
 use App\Core\Database\QueryBuilder;
 
-class TestModel extends Model
-{
-    protected string $table = 'test_models';
-    protected bool $hasSoftDeletes = false;
-    protected array $fillable = ['id', 'name', 'email', 'slug'];
-}
-
 class ModelTest extends \Tests\TestCase
 {
     protected function setUp(): void

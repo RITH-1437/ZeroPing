@@ -8,5 +8,7 @@ use App\Core\Testing\Database\Transaction;
 
 trait InteractsWithDatabase
 {
-    use DatabaseAssertions, RefreshDatabase, Transaction;
+    use DatabaseAssertions;
+    use RefreshDatabase;
+    use Transaction;
 }

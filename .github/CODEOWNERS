@@ -1,0 +1,17 @@
+* @RITH-1437
+
+# Framework core
+/app/Core/        @RITH-1437
+/app/Http/        @RITH-1437
+/app/Providers/   @RITH-1437
+
+# CLI tooling
+/app/Core/Console/   @RITH-1437
+
+# Documentation site
+/docs/   @RITH-1437
+
+# Project configuration & release tooling
+composer.json   @RITH-1437
+.github/        @RITH-1437
+scripts/        @RITH-1437

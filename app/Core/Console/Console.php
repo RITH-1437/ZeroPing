@@ -88,7 +88,6 @@ class Console
         }
 
         switch ($command) {
-
             case 'version':
                 echo "ZeroPing Framework v" . \App\Core\Application\App::VERSION . "\n";
                 break;

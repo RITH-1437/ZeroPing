@@ -16,7 +16,6 @@ class MakeModelCommand extends Command
     public function handle(string $name): void
     {
         if (empty($name)) {
-
             echo "Usage: php zero make:model ModelName\n";
 
             return;
@@ -25,9 +24,7 @@ class MakeModelCommand extends Command
         $table = strtolower($name) . 's';
 
         $content = $this->replace(
-
             $this->stub('model.stub'),
-
             [
 
                 'class' => $name,
@@ -35,7 +32,6 @@ class MakeModelCommand extends Command
                 'table' => $table
 
             ]
-
         );
 
         $file = BASE_PATH . "/app/Models/{$name}.php";

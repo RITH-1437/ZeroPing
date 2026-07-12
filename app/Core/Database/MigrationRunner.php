@@ -25,7 +25,6 @@ class MigrationRunner
         $files = $this->migrationFiles();
 
         if (empty($files)) {
-
             echo "No migration files found.\n";
 
             return;
@@ -36,11 +35,9 @@ class MigrationRunner
         $batch = $this->nextBatch();
 
         foreach ($files as $file) {
-
             $migrationName = basename($file);
 
             if (in_array($migrationName, $executed)) {
-
                 echo "⏩ {$migrationName}\n";
 
                 continue;
@@ -89,7 +86,6 @@ class MigrationRunner
         $migration = require $file;
 
         try {
-
             if ($migration instanceof Migration) {
                 $migration->up();
             } elseif (is_string($migration)) {
@@ -108,9 +104,7 @@ class MigrationRunner
                 $migrationName,
                 $batch
             ]);
-
         } catch (\Throwable $e) {
-
             throw $e;
         }
     }
@@ -243,7 +237,6 @@ class MigrationRunner
         $migrations = array_reverse($this->getMigrationsInBatch($lastBatch));
 
         foreach ($migrations as $migrationName) {
-
             $file = $this->migrationPath . '/' . $migrationName;
 
             if (!file_exists($file)) {

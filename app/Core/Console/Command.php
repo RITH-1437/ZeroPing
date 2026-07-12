@@ -40,9 +40,8 @@ abstract class Command
     ): string {
 
         foreach ($replace as $search => $value) {
-
             $stub = str_replace(
-                '{{ '.$search.' }}',
+                '{{ ' . $search . ' }}',
                 $value,
                 $stub
             );
@@ -62,7 +61,6 @@ abstract class Command
         $directory = dirname($file);
 
         if (!is_dir($directory)) {
-
             mkdir($directory, 0777, true);
         }
 

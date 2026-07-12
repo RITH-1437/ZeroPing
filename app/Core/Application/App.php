@@ -64,15 +64,15 @@ class App
 
         // Define DB/app constants if not already defined
         if (!defined('DB_HOST')) {
-            define('DB_HOST',    $_ENV['DB_HOST']    ?? '127.0.0.1');
-            define('DB_NAME',    $_ENV['DB_NAME']    ?? '');
-            define('DB_USER',    $_ENV['DB_USER']    ?? '');
-            define('DB_PASS',    $_ENV['DB_PASS']    ?? '');
+            define('DB_HOST', $_ENV['DB_HOST']    ?? '127.0.0.1');
+            define('DB_NAME', $_ENV['DB_NAME']    ?? '');
+            define('DB_USER', $_ENV['DB_USER']    ?? '');
+            define('DB_PASS', $_ENV['DB_PASS']    ?? '');
             define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8mb4');
-            define('DB_PORT',    $_ENV['DB_PORT']    ?? 3306);
-            define('APP_NAME',   $_ENV['APP_NAME']   ?? 'ZeroPing');
-            define('APP_ENV',    $_ENV['APP_ENV']    ?? 'local');
-            define('APP_DEBUG',  ($_ENV['APP_DEBUG'] ?? 'false') === 'true');
+            define('DB_PORT', $_ENV['DB_PORT']    ?? 3306);
+            define('APP_NAME', $_ENV['APP_NAME']   ?? 'ZeroPing');
+            define('APP_ENV', $_ENV['APP_ENV']    ?? 'local');
+            define('APP_DEBUG', ($_ENV['APP_DEBUG'] ?? 'false') === 'true');
         }
 
         // Load config files into repository
@@ -90,8 +90,10 @@ class App
         // When a compiled config cache exists and is at least as fresh as the
         // config directory, load it in a single require instead of globbing
         // and requiring every config file on each boot.
-        if (is_dir($configDir) && file_exists($cacheFile)
-            && filemtime($cacheFile) >= $this->configDirMtime($configDir)) {
+        if (
+            is_dir($configDir) && file_exists($cacheFile)
+            && filemtime($cacheFile) >= $this->configDirMtime($configDir)
+        ) {
             $items = require $cacheFile;
             if (is_array($items)) {
                 $repository->set($items);

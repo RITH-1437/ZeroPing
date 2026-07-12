@@ -16,7 +16,6 @@ class MakeMigrationCommand extends Command
     public function handle(string $name): void
     {
         if (empty($name)) {
-
             $this->warn("Usage: php zero make:migration MigrationName");
 
             return;
@@ -25,7 +24,6 @@ class MakeMigrationCommand extends Command
         $directory = BASE_PATH . '/database/migrations';
 
         if (!is_dir($directory)) {
-
             mkdir($directory, 0777, true);
         }
 
@@ -78,7 +76,6 @@ PHP;
     private function guessTable(string $name): string
     {
         if (preg_match('/Create(.+)Table/i', $name, $matches)) {
-
             return strtolower($matches[1]);
         }
 

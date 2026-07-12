@@ -12,7 +12,6 @@ class Database
     public static function connect(): PDO
     {
         if (self::$connection === null) {
-
             $configPath = dirname(__FILE__, 3) . '/config/database.php';
             $dbConfig = file_exists($configPath) ? require $configPath : [];
             $host = $dbConfig['host'] ?? (defined('DB_HOST') ? DB_HOST : '127.0.0.1');

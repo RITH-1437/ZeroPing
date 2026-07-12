@@ -50,7 +50,6 @@ class Env
         $items = [];
 
         foreach ($lines as $line) {
-
             if (str_starts_with(trim($line), '#')) {
                 continue;
             }
