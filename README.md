@@ -1,16 +1,16 @@
 # ZeroPing Framework
 
 <p align="center">
-  <a href="https://github.com/RITH-1437/zero-ping">
-    <img src="https://raw.githubusercontent.com/RITH-1437/zero-ping/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
+  <a href="https://github.com/RITH-1437/ZeroPing">
+    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
   </a>
 </p>
 
 <p align="center">
   <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/v/rith-1437/zeroping.svg?style=flat-square" alt="Latest Stable Version"></a>
   <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/dt/rith-1437/zeroping.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://github.com/RITH-1437/zero-ping/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/zero-ping/ci.yml?style=flat-square" alt="Build Status"></a>
-  <a href="https://github.com/RITH-1437/zero-ping/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/zero-ping?style=flat-square" alt="License"></a>
+  <a href="https://github.com/RITH-1437/ZeroPing/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/ZeroPing/ci.yml?style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/RITH-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/ZeroPing?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
 </p>
 
@@ -47,7 +47,10 @@ configuration.
 
 ## Installation
 
-The fastest way to start a new ZeroPing project is with Composer:
+### Option A — Composer (once published on Packagist)
+
+The package is submitted to Packagist as `rith-1437/zeroping`. Once it is
+published, start a new project with:
 
 ```bash
 composer create-project rith-1437/zeroping my-app
@@ -57,10 +60,16 @@ cd my-app
 php zero serve
 ```
 
-The `post-create-project-cmd` script runs automatically after install. If you
-cloned the source instead, bootstrap manually:
+The `post-create-project-cmd` script runs automatically after install. If
+`composer create-project` reports the package cannot be found, it has not been
+published yet — use Option B below.
+
+### Option B — Clone from GitHub (works today)
 
 ```bash
+git clone https://github.com/RITH-1437/ZeroPing.git my-app
+cd my-app
+
 composer install
 cp .env.example .env
 php zero key:generate
@@ -87,6 +96,115 @@ php zero migrate        # run pending migrations
 php zero test           # run the test suite
 php zero --help         # list all available commands
 ```
+
+## Quick Start
+
+After creating your project, build your first page in three steps.
+
+**1. Register a route** (`config/routes.php`):
+
+```php
+use App\Core\Routing\Router;
+use App\Controllers\HomeController;
+
+Router::get('/', [HomeController::class, 'index']);
+```
+
+**2. Create a controller** (`app/Controllers/HomeController.php`):
+
+```php
+<?php
+
+namespace App\Controllers;
+
+use App\Core\View\Controller;
+
+class HomeController extends Controller
+{
+    public function index(): string
+    {
+        return view('home', [
+            'name' => config('app.name'),
+        ]);
+    }
+}
+```
+
+**3. Create a view** (`views/home.php`):
+
+```php
+<h1>Hello from <?= e($name) ?>!</h1>
+```
+
+Start the server and visit your page:
+
+```bash
+php zero serve
+# open http://localhost:1437
+```
+
+## Project Structure
+
+A freshly created ZeroPing project looks like this:
+
+```
+my-app/
+├── app/                  # Your application code
+│   ├── Controllers/      # HTTP controllers
+│   ├── Models/           # Eloquent-style ORM models
+│   ├── Middleware/       # HTTP middleware
+│   ├── Services/         # Business logic services
+│   └── Providers/        # Service providers
+├── config/               # routes.php, database.php, app.php
+├── public/               # Web entry point (index.php)
+├── views/                # Plain-PHP view templates
+├── database/
+│   └── migrations/       # Database migrations
+├── storage/              # Cache, logs, and uploaded files
+├── tests/                # Unit & Feature tests
+├── zero                  # The CLI binary
+└── .env                  # Environment configuration
+```
+
+## CLI Usage
+
+ZeroPing includes a batteries-included CLI. The most common commands:
+
+```bash
+php zero serve              # start the development server
+php zero migrate            # run database migrations
+php zero make:controller   # scaffold a controller
+php zero make:model        # scaffold a model
+php zero route:list        # list registered routes
+php zero doctor            # verify your installation
+php zero --help             # full command reference
+```
+
+See the [CLI Reference](docs/website/cli.md) for the complete list.
+
+## Examples
+
+ZeroPing ships with ready-made starter templates you can scaffold instantly:
+
+```bash
+php zero new empty       # minimal skeleton
+php zero new mvc         # full CRUD with user management
+php zero new blog        # blog with posts and pagination
+php zero new api         # RESTful API boilerplate
+php zero new dashboard   # admin dashboard with widgets
+```
+
+A plan for additional example applications is available in
+[docs/EXAMPLES.md](docs/EXAMPLES.md).
+
+## Community
+
+- 💬 **Discussions**: ask questions and share ideas at
+  [GitHub Discussions](https://github.com/RITH-1437/ZeroPing/discussions).
+- 🐞 **Issues**: report bugs and request features using the
+  [issue templates](https://github.com/RITH-1437/ZeroPing/issues/new/choose).
+- 🔒 **Security**: report vulnerabilities privately via our
+  [security policy](SECURITY.md).
 
 ## Contributing
 
