@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/RITH-1437/ZeroPing">
-    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.svg" alt="ZeroPing Logo" width="200">
+    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.png" alt="ZeroPing Logo" width="200">
   </a>
 </p>
 

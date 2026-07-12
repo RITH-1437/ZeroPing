@@ -28,6 +28,20 @@ $activePage = $active ?? '';
                         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
                         mono: ['JetBrains Mono', 'Menlo', 'monospace'],
                     },
+                    colors: {
+                        blue: {
+                            50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff',
+                            300: '#d8b4fe', 400: '#c084fc', 500: '#a855f7',
+                            600: '#7C3AED', 700: '#6d28d9', 800: '#5b21b6',
+                            900: '#4c1d95', 950: '#2e1065',
+                        },
+                        indigo: {
+                            50: '#ecfeff', 100: '#cffafe', 200: '#a5f3fc',
+                            300: '#67e8f9', 400: '#22D3EE', 500: '#06b6d4',
+                            600: '#0891b2', 700: '#0e7490', 800: '#155e75',
+                            900: '#164e63', 950: '#083344',
+                        },
+                    },
                     animation: {
                         'gradient': 'gradient 8s ease infinite',
                         'float': 'float 6s ease-in-out infinite',
@@ -86,10 +100,10 @@ $activePage = $active ?? '';
     <style>
         html { font-feature-settings: 'cv02','cv03','cv04','cv11'; }
 
-        ::selection { background-color: rgba(59,130,246,0.25); color: inherit; }
+        ::selection { background-color: rgba(124,58,237,0.25); color: inherit; }
 
         .gradient-text {
-            background: linear-gradient(135deg, #3b82f6, #10b981, #6366f1);
+            background: linear-gradient(135deg, #7C3AED, #22D3EE, #10B981);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -99,21 +113,21 @@ $activePage = $active ?? '';
 
         .bg-grid {
             background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
             background-size: 40px 40px;
         }
         .dark .bg-grid {
             background-image:
-                linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px);
+                linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
         }
 
         .bg-radial-gradient {
-            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59,130,246,0.12), transparent);
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.12), transparent);
         }
         .dark .bg-radial-gradient {
-            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent);
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.12), transparent);
         }
 
         html.theme-transition,
@@ -180,7 +194,7 @@ $activePage = $active ?? '';
             left: 50%;
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            background: linear-gradient(90deg, #7C3AED, #22D3EE);
             transition: width 0.3s ease, left 0.3s ease;
             border-radius: 1px;
         }
@@ -198,7 +212,7 @@ $activePage = $active ?? '';
             outline: none;
         }
         .focus-ring:focus-visible {
-            outline: 2px solid #3b82f6;
+            outline: 2px solid #7C3AED;
             outline-offset: 2px;
             border-radius: 8px;
         }
@@ -210,15 +224,15 @@ $activePage = $active ?? '';
             padding: 0.125rem 0.375rem;
             font-size: 0.75rem;
             font-family: inherit;
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.2);
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.2);
             border-radius: 4px;
-            color: #3b82f6;
+            color: #7C3AED;
         }
         .dark kbd {
-            background: rgba(59,130,246,0.15);
-            border-color: rgba(59,130,246,0.3);
-            color: #60a5fa;
+            background: rgba(124,58,237,0.15);
+            border-color: rgba(124,58,237,0.3);
+            color: #A78BFA;
         }
 
         .scrollbar-stable { scrollbar-gutter: stable; }
