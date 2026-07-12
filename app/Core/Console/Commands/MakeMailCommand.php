@@ -40,14 +40,16 @@ class MakeMailCommand extends Command
 
     protected function createMailable(string $name): void
     {
+        $view = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+
         $content = $this->replace(
             $this->stub('mailable.stub'),
-            ['class' => $name]
+            ['class' => $name, 'view' => $view]
         );
 
         $file = BASE_PATH . "/app/Mail/{$name}.php";
 
-        $this->write($file, $content);
+        $this->writeGenerated($file, $content, 'Mailable');
     }
 
     protected function createView(string $name): void
@@ -56,6 +58,6 @@ class MakeMailCommand extends Command
 
         $file = BASE_PATH . "/views/emails/{$view}.php";
 
-        $this->write($file, '');
+        $this->writeGenerated($file, '', 'View');
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Core\Console\Commands;
 
-class MakeMigrationCommand
+use App\Core\Console\Command;
+
+class MakeMigrationCommand extends Command
 {
     /**
      * The console command description.
@@ -15,7 +17,7 @@ class MakeMigrationCommand
     {
         if (empty($name)) {
 
-            echo "Usage: php zero make:migration MigrationName\n";
+            $this->warn("Usage: php zero make:migration MigrationName");
 
             return;
         }
@@ -32,13 +34,6 @@ class MakeMigrationCommand
         $filename = "{$timestamp}_{$this->snake($name)}.php";
 
         $file = $directory . '/' . $filename;
-
-        if (file_exists($file)) {
-
-            echo "❌ Migration already exists.\n";
-
-            return;
-        }
 
         $table = $this->guessTable($name);
 
@@ -70,10 +65,7 @@ return new class extends Migration
 
 PHP;
 
-        file_put_contents($file, $content);
-
-        echo "✅ Migration created:\n";
-        echo "database/migrations/{$filename}\n";
+        $this->writeGenerated($file, $content, 'Migration');
     }
 
     private function snake(string $value): string

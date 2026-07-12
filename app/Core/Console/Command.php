@@ -6,6 +6,8 @@ abstract class Command
 {
     protected array $options = [];
 
+    protected string $description = '';
+
     protected ConsoleStyle $output;
 
     public function __construct()
@@ -343,6 +345,13 @@ abstract class Command
         return $file;
     }
 
+    // ── Metadata ─────────────────────────────────────────────────────────────
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
     // ── Option parsing ───────────────────────────────────────────────────────
 
     protected function option(string $key)
@@ -352,14 +361,27 @@ abstract class Command
 
     protected function parseOptions(): void
     {
-        $argv = $_SERVER['argv'];
-        array_shift($argv);
-        array_shift($argv);
+        $argv = array_slice($_SERVER['argv'], 2);
 
-        foreach ($argv as $arg) {
-            if (strpos($arg, '--') === 0) {
-                $parts = explode('=', substr($arg, 2));
-                $this->options[$parts[0]] = $parts[1] ?? true;
+        $count = count($argv);
+
+        for ($i = 0; $i < $count; $i++) {
+            $arg = $argv[$i];
+
+            if (strpos($arg, '--') !== 0) {
+                continue;
+            }
+
+            $body = substr($arg, 2);
+
+            if (str_contains($body, '=')) {
+                [$key, $value] = explode('=', $body, 2);
+                $this->options[$key] = $value;
+            } elseif ($i + 1 < $count && strpos($argv[$i + 1], '--') !== 0) {
+                $this->options[$body] = $argv[$i + 1];
+                $i++;
+            } else {
+                $this->options[$body] = true;
             }
         }
     }

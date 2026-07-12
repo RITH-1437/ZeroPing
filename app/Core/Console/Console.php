@@ -75,6 +75,18 @@ class Console
             return;
         }
 
+        $helpFlags = ['-h', '--help', '-?'];
+        $rest = array_slice($argv, 2);
+
+        if ($command !== 'help' && $command !== 'list') {
+            foreach ($rest as $token) {
+                if (in_array($token, $helpFlags, true)) {
+                    $this->showCommandHelp($command);
+                    return;
+                }
+            }
+        }
+
         switch ($command) {
 
             case 'version':
@@ -86,6 +98,14 @@ class Console
                 break;
 
             case 'help':
+                $target = $argv[2] ?? null;
+                if ($target !== null) {
+                    $this->showCommandHelp($target);
+                } else {
+                    $this->showHelp();
+                }
+                break;
+
             case 'list':
                 $this->showHelp();
                 break;
@@ -338,6 +358,155 @@ class Console
     }
 
     /**
+     * Single source of truth for the command listing and per-command help.
+     * Group => [ command => [description, [option => description]] ].
+     *
+     * @return array<string, array<string, array{0: string, 1: array<string, string>}>>
+     */
+    private function commandInfo(): array
+    {
+        $force = ['--force' => 'Overwrite existing files when generating'];
+
+        return [
+            'General' => [
+                'serve' => ['Run the development server', []],
+                'about' => ['Show framework information', []],
+                'help'  => ['Show the help screen (or command-specific help)', []],
+                'new'   => ['Scaffold a new project from a starter template', $force],
+            ],
+            'Migrations' => [
+                'migrate'          => ['Run database migrations', []],
+                'migrate:fresh'    => ['Drop all tables and re-run migrations', []],
+                'migrate:refresh'  => ['Rollback all migrations then re-run them', []],
+                'migrate:rollback' => ['Rollback the last migration batch', []],
+                'migrate:reset'    => ['Rollback all migrations', []],
+                'migrate:status'   => ['Show migration status', []],
+            ],
+            'Make' => [
+                'make:model'      => ['Create an Eloquent-style model', $force],
+                'make:controller' => ['Create an HTTP controller', $force],
+                'make:service'    => ['Create a service class', $force],
+                'make:repository' => ['Create a repository class', $force],
+                'make:migration'  => ['Create a migration file', $force],
+                'make:mail'       => ['Create a mailable class and email view', $force],
+                'make:seeder'     => ['Create a database seeder', $force],
+                'make:middleware' => ['Create an HTTP middleware', $force],
+                'make:request'    => ['Create a form request', $force],
+                'make:policy'     => ['Create an authorization policy', $force],
+                'make:provider'   => ['Create a service provider', $force],
+                'make:command'    => ['Create a console command', $force],
+                'make:test'       => ['Create a unit or feature test', ['--feature' => 'Create a feature test instead of a unit test'] + $force],
+            ],
+            'Database' => [
+                'db:seed' => ['Seed the database with records', ['--class=' => 'Run only this seeder class']],
+            ],
+            'Routes' => [
+                'route:list'  => ['Display all registered routes', []],
+                'route:cache' => ['Cache the route definitions', []],
+                'route:clear' => ['Clear the route cache', []],
+            ],
+            'Config' => [
+                'config:cache' => ['Cache the configuration files', []],
+                'config:clear' => ['Clear the configuration cache', []],
+                'config:test'  => ['Run configuration diagnostics', []],
+            ],
+            'Cache' => [
+                'cache:clear' => ['Flush the application cache', []],
+                'cache:test'  => ['Run cache diagnostics', []],
+            ],
+            'Queue' => [
+                'queue:work'    => ['Process jobs from the queue', ['--connection=' => 'Queue connection to use', '--queue=' => 'Queue name to work', '--delay=' => 'Delay before retrying (seconds)', '--sleep=' => 'Sleep between jobs (seconds)', '--tries=' => 'Max attempts before failing']],
+                'queue:listen'  => ['Listen to the queue continuously', ['--connection=' => 'Queue connection to use', '--queue=' => 'Queue name to work', '--sleep=' => 'Sleep between jobs (seconds)', '--tries=' => 'Max attempts before failing']],
+                'queue:failed'  => ['List failed queue jobs', []],
+                'queue:retry'   => ['Retry a failed queue job by id', []],
+                'queue:clear'   => ['Delete all jobs from the queue', []],
+                'queue:restart' => ['Restart running queue workers', []],
+                'queue:test'    => ['Run queue diagnostics', []],
+            ],
+            'Schedule' => [
+                'schedule:run'   => ['Run due scheduled events', []],
+                'schedule:list'  => ['List scheduled events', []],
+                'schedule:test'  => ['Run scheduler diagnostics', []],
+                'schedule:clear' => ['Clear the scheduler cache', []],
+            ],
+            'Storage & Views' => [
+                'storage:clear' => ['Clear storage files', []],
+                'storage:test'  => ['Run storage diagnostics', []],
+                'view:cache'    => ['Cache compiled view files', []],
+                'view:clear'    => ['Clear compiled view files', []],
+            ],
+            'Optimize' => [
+                'optimize'       => ['Cache config, routes and views', []],
+                'optimize:clear' => ['Clear all cached data', []],
+            ],
+            'Security & Keys' => [
+                'key:generate' => ['Generate the application key', []],
+                'doctor'       => ['Verify the installation and environment', []],
+                'security:test' => ['Run security-layer diagnostics', []],
+            ],
+            'Search' => [
+                'search:index' => ['Build the documentation search index', []],
+            ],
+            'Testing & Diagnostics' => [
+                'test'           => ['Run the framework test suite', []],
+                'orm:test'       => ['Run ORM diagnostics', []],
+                'mail:test'      => ['Run mail diagnostics', []],
+                'log:test'       => ['Run logger diagnostics', []],
+                'validate:test'  => ['Run validator diagnostics', []],
+            ],
+        ];
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}|null
+     */
+    private function findCommand(string $name): ?array
+    {
+        foreach ($this->commandInfo() as $commands) {
+            if (array_key_exists($name, $commands)) {
+                return $commands[$name];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Render help for a single command.
+     */
+    private function showCommandHelp(string $name): void
+    {
+        $style = new ConsoleStyle();
+
+        $info = $this->findCommand($name);
+
+        if ($info === null) {
+            $style->writeln("<fg=red>Command '{$name}' not found. Run <fg=white>php zero help</> for a list.</>");
+            return;
+        }
+
+        [$description, $options] = $info;
+
+        $style->writeln('');
+        $style->writeln("<options=bold;fg=cyan>{$name}</>");
+        $style->writeln('<fg=gray>' . str_repeat('═', mb_strlen($name)) . '</>');
+        $style->writeln('');
+        $style->writeln("<fg=white>{$description}</>");
+        $style->writeln('');
+        $style->writeln('<fg=yellow>Usage:</>');
+        $style->writeln("  <fg=white>php zero {$name} [options]</>");
+        $style->writeln('');
+        $style->writeln('<fg=yellow>Options:</>');
+        $style->writeln("  <fg=green>--help</>   <fg=gray>Show this command's help</>");
+
+        foreach ($options as $flag => $desc) {
+            $style->writeln("  <fg=green>{$flag}</>   <fg=gray>{$desc}</>");
+        }
+
+        $style->writeln('');
+    }
+
+    /**
      * Render the command listing / help screen.
      */
     private function showHelp(): void
@@ -363,108 +532,27 @@ class Console
         $style->writeln("<fg=yellow>Available Commands</>");
         $style->writeln("<fg=gray>──────────────────────────────────────────────────────────────</>");
 
-        $style->writeln("  <fg=green>serve</>                 <fg=gray>Start development server</>");
-        $style->writeln("  <fg=green>about</>                 <fg=gray>Display framework information</>");
-        $style->writeln("  <fg=green>help</>                  <fg=gray>Show this help screen</>");
-        $style->writeln("  <fg=green>new</>                   <fg=gray>Scaffold a new project from a template</>");
-        $style->writeln("");
+        foreach ($this->commandInfo() as $group => $commands) {
+            $style->writeln('');
+            $style->writeln("  <fg=yellow>{$group}</>");
 
-        $style->writeln("  <fg=yellow>Migrations</>");
-        $style->writeln("  <fg=green>migrate</>               <fg=gray>Run database migrations</>");
-        $style->writeln("  <fg=green>migrate:fresh</>         <fg=gray>Drop all tables and re-run migrations</>");
-        $style->writeln("  <fg=green>migrate:refresh</>       <fg=gray>Rollback all migrations then re-run them</>");
-        $style->writeln("  <fg=green>migrate:rollback</>      <fg=gray>Rollback the last migration</>");
-        $style->writeln("  <fg=green>migrate:reset</>         <fg=gray>Rollback all migrations</>");
-        $style->writeln("  <fg=green>migrate:status</>        <fg=gray>Show migration status</>");
-        $style->writeln("");
+            foreach ($commands as $name => [$description]) {
+                $padded = str_pad($name, 22);
+                $style->writeln("  <fg=green>{$padded}</> <fg=gray>{$description}</>");
+            }
+        }
 
-        $style->writeln("  <fg=yellow>Make</>");
-        $style->writeln("  <fg=green>make:model</>            <fg=gray>Create a model</>");
-        $style->writeln("  <fg=green>make:controller</>       <fg=gray>Create a controller</>");
-        $style->writeln("  <fg=green>make:service</>          <fg=gray>Create a service</>");
-        $style->writeln("  <fg=green>make:repository</>       <fg=gray>Create a repository</>");
-        $style->writeln("  <fg=green>make:migration</>        <fg=gray>Create a migration</>");
-        $style->writeln("  <fg=green>make:mail</>             <fg=gray>Create a mailable</>");
-        $style->writeln("  <fg=green>make:seeder</>           <fg=gray>Create a seeder</>");
-        $style->writeln("  <fg=green>make:middleware</>       <fg=gray>Create a middleware</>");
-        $style->writeln("  <fg=green>make:request</>          <fg=gray>Create a form request</>");
-        $style->writeln("  <fg=green>make:policy</>           <fg=gray>Create a policy</>");
-        $style->writeln("  <fg=green>make:provider</>         <fg=gray>Create a service provider</>");
-        $style->writeln("  <fg=green>make:command</>          <fg=gray>Create a console command</>");
-        $style->writeln("  <fg=green>make:test</>             <fg=gray>Create a unit/feature test</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Database</>");
-        $style->writeln("  <fg=green>db:seed</>               <fg=gray>Seed the database with records</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Routes</>");
-        $style->writeln("  <fg=green>route:list</>            <fg=gray>Display all routes</>");
-        $style->writeln("  <fg=green>route:cache</>           <fg=gray>Cache the routes</>");
-        $style->writeln("  <fg=green>route:clear</>           <fg=gray>Clear the route cache</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Config</>");
-        $style->writeln("  <fg=green>config:cache</>          <fg=gray>Cache the config</>");
-        $style->writeln("  <fg=green>config:clear</>          <fg=gray>Clear the config cache</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Cache</>");
-        $style->writeln("  <fg=green>cache:clear</>           <fg=gray>Flush the application cache</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Queue</>");
-        $style->writeln("  <fg=green>queue:work</>            <fg=gray>Process jobs on the queue</>");
-        $style->writeln("  <fg=green>queue:listen</>          <fg=gray>Listen to a queue</>");
-        $style->writeln("  <fg=green>queue:failed</>          <fg=gray>List failed queue jobs</>");
-        $style->writeln("  <fg=green>queue:retry</>           <fg=gray>Retry a failed queue job</>");
-        $style->writeln("  <fg=green>queue:clear</>           <fg=gray>Delete all jobs from the queue</>");
-        $style->writeln("  <fg=green>queue:restart</>         <fg=gray>Restart queue workers</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Schedule</>");
-        $style->writeln("  <fg=green>schedule:run</>          <fg=gray>Run scheduled commands</>");
-        $style->writeln("  <fg=green>schedule:list</>         <fg=gray>List scheduled commands</>");
-        $style->writeln("  <fg=green>schedule:clear</>        <fg=gray>Clear scheduled commands</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Storage & Views</>");
-        $style->writeln("  <fg=green>storage:clear</>         <fg=gray>Clear storage files</>");
-        $style->writeln("  <fg=green>view:cache</>            <fg=gray>Cache compiled PHP view files</>");
-        $style->writeln("  <fg=green>view:clear</>            <fg=gray>Clear compiled view files</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Optimize</>");
-        $style->writeln("  <fg=green>optimize</>              <fg=gray>Cache config, routes and views</>");
-        $style->writeln("  <fg=green>optimize:clear</>        <fg=gray>Clear all cached data</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Security & Keys</>");
-        $style->writeln("  <fg=green>key:generate</>          <fg=gray>Set the application key</>");
-        $style->writeln("  <fg=green>doctor</>                <fg=gray>Verify the installation and environment</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Search</>");
-        $style->writeln("  <fg=green>search:index</>          <fg=gray>Build documentation search index</>");
-        $style->writeln("");
-
-        $style->writeln("  <fg=yellow>Testing & Diagnostics</>");
-        $style->writeln("  <fg=green>test</>                  <fg=gray>Run framework tests</>");
-        $style->writeln("  <fg=green>orm:test</>              <fg=gray>Test ORM</>");
-        $style->writeln("  <fg=green>cache:test</>            <fg=gray>Test cache system</>");
-        $style->writeln("  <fg=green>mail:test</>             <fg=gray>Test mail system</>");
-        $style->writeln("  <fg=green>queue:test</>            <fg=gray>Test queue system</>");
-        $style->writeln("  <fg=green>schedule:test</>         <fg=gray>Test scheduler</>");
-        $style->writeln("  <fg=green>security:test</>         <fg=gray>Test security layer</>");
-        $style->writeln("  <fg=green>storage:test</>          <fg=gray>Test storage system</>");
-        $style->writeln("  <fg=green>log:test</>              <fg=gray>Test logger</>");
-        $style->writeln("  <fg=green>config:test</>           <fg=gray>Test config system</>");
-        $style->writeln("  <fg=green>validate:test</>         <fg=gray>Test validator</>");
-        $style->writeln("");
-
-        $style->writeln("<fg=yellow>Options</>");
-        $style->writeln("  <fg=green>--help</>                <fg=gray>Show this help screen</>");
-        $style->writeln("  <fg=green>--force</>               <fg=gray>Overwrite existing files when generating</>");
+        $style->writeln('');
+        $style->writeln("<fg=yellow>Global Options</>");
+        $style->writeln("  <fg=green>--help</>        <fg=gray>Show this help screen or command-specific help</>");
+        $style->writeln("  <fg=green>--force</>       <fg=gray>Overwrite existing files when generating</>");
+        $style->writeln("  <fg=green>--class=</>      <fg=gray>Target a specific class (db:seed)</>");
+        $style->writeln("  <fg=green>--feature</>     <fg=gray>Create a feature test (make:test)</>");
+        $style->writeln("  <fg=green>--connection=</> <fg=gray>Queue connection (queue:work, queue:listen)</>");
+        $style->writeln("  <fg=green>--queue=</>      <fg=gray>Queue name (queue:work, queue:listen)</>");
+        $style->writeln("  <fg=green>--delay=</>      <fg=gray>Delay before retry in seconds (queue:work)</>");
+        $style->writeln("  <fg=green>--sleep=</>      <fg=gray>Sleep between jobs in seconds (queue)</>");
+        $style->writeln("  <fg=green>--tries=</>      <fg=gray>Max attempts before failing (queue)</>");
         $style->writeln("");
 
         $style->writeln("<fg=yellow>GitHub</>");

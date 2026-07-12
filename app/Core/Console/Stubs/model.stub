@@ -7,4 +7,6 @@ use App\Core\Database\Model;
 class {{ class }} extends Model
 {
     protected string $table = '{{ table }}';
+
+    protected array $fillable = [];
 }
