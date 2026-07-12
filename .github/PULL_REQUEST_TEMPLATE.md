@@ -4,34 +4,34 @@ about: Propose a change to ZeroPing
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
-**What kind of change does this PR introduce?** (check at least one)
+## What kind of change does this PR introduce? (check at least one)
 
 - [ ] Bugfix
 - [ ] Feature
-- [ ] Code style update
-- [ ] Refactor
-- [ ] Build-related changes
-- [ ] Other, please describe:
+- [ ] Documentation
+- [ ] Code style / refactor
+- [ ] Build / CI change
 
-**Does this PR introduce a breaking change?** (check one)
+## Does this PR introduce a breaking change?
 
-- [ ] Yes
+- [ ] Yes — describe the impact and migration path below.
 - [ ] No
 
-If yes, please describe the impact and migration path for existing applications:
+## Description
 
-**The PR fulfills these requirements:**
+What does this PR do, and why? Link any related issue (e.g. `fixes #123`).
 
-- [ ] When resolving a specific issue, it's referenced in the PR's title (e.g. `fix #xxx[,#xxx]`, where "xxx" is the issue number)
-- [ ] The code proposed here has been tested
-- [ ] All tests pass on existing code
-- [ ] The code has been documented (if applicable)
+## Checklist
 
-**What is the current behavior?** (if it's a bug fix)
+- [ ] I have read the [Contributing Guide](CONTRIBUTING.md).
+- [ ] My code follows PSR-12 and the project's coding standards.
+- [ ] I have added or updated tests under `tests/` where applicable.
+- [ ] `php zero test` passes locally (with a configured database).
+- [ ] I have updated documentation in `docs/` if behavior changed.
+- [ ] `composer validate --strict` passes.
 
-**What is the new behavior?**
+## Additional notes
 
-**Other information:**
+Add any context, screenshots, or benchmark results here.

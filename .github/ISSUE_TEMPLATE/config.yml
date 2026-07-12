@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Q&A and Discussions
+    url: https://github.com/RITH-1437/ZeroPing/discussions
+    about: Ask questions, share ideas, and connect with the ZeroPing community.
+  - name: 🔒 Security vulnerability
+    url: https://github.com/RITH-1437/ZeroPing/security/advisories/new
+    about: Please report security issues privately via our security policy instead of a public issue.

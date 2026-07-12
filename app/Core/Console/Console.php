@@ -430,7 +430,7 @@ class Console
 
         $style->writeln("  <fg=yellow>Storage & Views</>");
         $style->writeln("  <fg=green>storage:clear</>         <fg=gray>Clear storage files</>");
-        $style->writeln("  <fg=green>view:cache</>            <fg=gray>Compile all Blade templates</>");
+        $style->writeln("  <fg=green>view:cache</>            <fg=gray>Cache compiled PHP view files</>");
         $style->writeln("  <fg=green>view:clear</>            <fg=gray>Clear compiled view files</>");
         $style->writeln("");
 
@@ -468,7 +468,7 @@ class Console
         $style->writeln("");
 
         $style->writeln("<fg=yellow>GitHub</>");
-        $style->writeln("  <fg=cyan>https://github.com/RITH-1437/zero-ping</>");
+        $style->writeln("  <fg=cyan>https://github.com/RITH-1437/ZeroPing</>");
         $style->writeln("");
     }
 }

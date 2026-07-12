@@ -30,7 +30,7 @@ The `post-create-project-cmd` script runs automatically and will:
 If you are contributing to the framework, clone the repository instead:
 
 ```bash
-git clone https://github.com/RITH-1437/zero-ping.git
+git clone https://github.com/RITH-1437/ZeroPing.git
 cd zero-ping
 composer install
 cp .env.example .env

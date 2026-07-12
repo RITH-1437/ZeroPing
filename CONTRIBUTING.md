@@ -75,6 +75,16 @@ php zero test
 The `php zero` command exposes the full developer toolchain (migrations,
 scaffolding, queues, and more). Run `php zero --help` for the complete list.
 
+## Community & Support
+
+- **Questions & ideas** belong in [GitHub Discussions](https://github.com/RITH-1437/ZeroPing/discussions).
+  Please use Discussions for "how do I…" questions and general feedback rather
+  than opening an issue.
+- **Bug reports** and concrete **feature requests** should use the issue
+  templates so they're properly triaged.
+- **Security vulnerabilities** must be reported privately via our
+  [security policy](SECURITY.md), not as public issues or Discussions.
+
 ## Release Process (Maintainers)
 
 1. Ensure `main` is green in CI.

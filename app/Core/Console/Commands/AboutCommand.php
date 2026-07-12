@@ -22,7 +22,7 @@ class AboutCommand extends Command
         $this->line('  <fg=white>Environment</>    <fg=cyan>' . ($_ENV['APP_ENV'] ?? 'local') . '</>');
         $this->line('  <fg=white>Debug</>          <fg=cyan>' . ($_ENV['APP_DEBUG'] ?? 'false') . '</>');
         $this->line('');
-        $this->line('  <fg=gray>Repository: https://github.com/RITH-1437/zero-ping</>');
+        $this->line('  <fg=gray>Repository: https://github.com/RITH-1437/ZeroPing</>');
         $this->line('');
     }
 }
