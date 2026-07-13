@@ -42,33 +42,52 @@ class NewCommand
 
     private function scaffold(string $type, string $targetDir, string $projectName): void
     {
+        $style = new \App\Core\Console\ConsoleStyle();
         $frameworkDir = getcwd();
         $sourceDir = dirname(__DIR__, 1) . '/Templates/' . $type;
 
         if (!is_dir($sourceDir)) {
-            (new \App\Core\Console\ConsoleStyle())->writeln("<fg=red>Error:</> Template '<fg=white>$type</>' not found.");
+            $style->writeln("<fg=red>✗ Unknown template '</><fg=white>{$type}</><fg=red>'.</>");
+            $style->writeln("  <fg=gray>Available templates:</> " . implode(', ', array_keys($this->templates)));
+            $style->writeln("  <fg=gray>Example:</> <fg=cyan>php zero new empty --name=\"My App\"</>");
             return;
         }
 
         if (is_dir($targetDir)) {
-            (new \App\Core\Console\ConsoleStyle())->writeln("<fg=red>Error:</> Target directory already exists: <fg=white>$targetDir</>");
+            $style->writeln("<fg=red>✗ Target directory already exists:</> <fg=white>{$targetDir}</>");
+            $style->writeln("  <fg=gray>Choose another name, or remove the existing directory first.</>");
             return;
         }
 
-        $style = new \App\Core\Console\ConsoleStyle();
-        $style->writeln("<fg=green>Creating <fg=white>$type</> project in <fg=white>$targetDir</>...</>");
+        $parent = dirname($targetDir);
+        if (!is_dir($parent)) {
+            @mkdir($parent, 0755, true);
+        }
+        if (!is_dir($parent) || !is_writable($parent)) {
+            $style->writeln("<fg=red>✗ Cannot write to:</> <fg=white>{$parent}</>");
+            $style->writeln("  <fg=gray>Check the folder permissions and try again.</>");
+            return;
+        }
 
-        // 1. Copy the framework (self-contained) into the target.
-        $this->copyFramework($frameworkDir, $targetDir);
+        $style->writeln("<fg=green>Creating </><fg=white>{$type}</><fg=green> project in </><fg=white>{$targetDir}</><fg=green>...</>");
 
-        // 2. Overlay the chosen template's app/config/views/etc.
-        $this->copyDirectory($sourceDir, $targetDir, $projectName, $type);
+        try {
+            // 1. Copy the framework (self-contained) into the target.
+            $this->copyFramework($frameworkDir, $targetDir);
 
-        // 3. Brand the generated composer.json for the new project.
-        $this->brandComposer($targetDir, $projectName);
+            // 2. Overlay the chosen template's app/config/views/etc.
+            $this->copyDirectory($sourceDir, $targetDir, $projectName, $type);
 
-        // 4. Prepare environment so the app boots after `composer install`.
-        $this->prepareEnv($targetDir);
+            // 3. Brand the generated composer.json for the new project.
+            $this->brandComposer($targetDir, $projectName);
+
+            // 4. Prepare environment so the app boots after `composer install`.
+            $this->prepareEnv($targetDir, $projectName);
+        } catch (\Throwable $e) {
+            $style->writeln("<fg=red>✗ Project creation failed:</> <fg=white>{$e->getMessage()}</>");
+            $style->writeln("  <fg=gray>Partially created files may remain in:</> {$targetDir}");
+            return;
+        }
 
         $style->writeln("");
         $style->writeln("<fg=green>✔ Done!</> Project created at <fg=cyan>$targetDir</>");
@@ -96,13 +115,20 @@ class NewCommand
         );
 
         foreach ($items as $item) {
-            $relative = $items->getSubPathname();
+            // Normalize separators so exclusion works on Windows too.
+            $relative = str_replace('\\', '/', $items->getSubPathname());
 
             if ($this->isExcluded($relative)) {
                 continue;
             }
 
             $dest = $target . '/' . $relative;
+
+            // Skip reparse points / junctions (common in node_modules on Windows).
+            $sourcePath = $item->getPathname();
+            if (is_dir($sourcePath) && !$item->isDir()) {
+                continue;
+            }
 
             if ($item->isDir()) {
                 if (!is_dir($dest)) {
@@ -112,7 +138,12 @@ class NewCommand
                 if (!is_dir(dirname($dest))) {
                     mkdir(dirname($dest), 0755, true);
                 }
-                copy($item->getRealPath(), $dest);
+                if (!@copy($sourcePath, $dest)) {
+                    // Non-fatal: report and continue so one bad file doesn't
+                    // abort the whole scaffold.
+                    (new \App\Core\Console\ConsoleStyle())
+                        ->writeln("<fg=yellow>  skipped</> <fg=gray>{$relative}</>");
+                }
             }
         }
     }
@@ -123,9 +154,15 @@ class NewCommand
      */
     private function isExcluded(string $relative): bool
     {
+        $relative = str_replace('\\', '/', $relative);
         $top = explode('/', $relative)[0];
 
-        $excludeTop = ['.git', 'vendor', 'node_modules', 'arena', 'docs', 'tests', '.github', 'composer.lock', '.env', 'storage'];
+        $excludeTop = [
+            '.git', '.github', '.idea', '.devcontainer', '.docker', '.mimocode',
+            '.phpunit.cache', 'vendor', 'node_modules', 'arena', 'docs', 'tests',
+            'bench', 'packages', 'composer.lock', '.env', 'storage',
+            'package.json', 'package-lock.json',
+        ];
         if (in_array($top, $excludeTop, true)) {
             return true;
         }
@@ -168,7 +205,7 @@ class NewCommand
         file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
     }
 
-    private function prepareEnv(string $dir): void
+    private function prepareEnv(string $dir, string $projectName = 'ZeroPing'): void
     {
         $envPath = $dir . '/.env';
         $examplePath = $dir . '/.env.example';
@@ -180,6 +217,14 @@ class NewCommand
         if (file_exists($envPath)) {
             $env = (string) file_get_contents($envPath);
 
+            // Brand the environment with the project name.
+            $appName = preg_match('/\s/', $projectName) ? '"' . $projectName . '"' : $projectName;
+            if (preg_match('/^APP_NAME=/m', $env)) {
+                $env = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME=' . $appName, $env);
+            } else {
+                $env = "APP_NAME={$appName}\n" . $env;
+            }
+
             if (!preg_match('/^APP_KEY=/m', $env)) {
                 $env .= "\nAPP_KEY=\n";
             }
@@ -187,8 +232,9 @@ class NewCommand
             if (preg_match('/^APP_KEY=(.*)$/m', $env, $m) && $m[1] === '') {
                 $key = 'base64:' . base64_encode(random_bytes(32));
                 $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
-                file_put_contents($envPath, $env);
             }
+
+            file_put_contents($envPath, $env);
         }
     }
 
@@ -204,7 +250,7 @@ class NewCommand
         );
 
         foreach ($items as $item) {
-            $relative = $items->getSubPathname();
+            $relative = str_replace('\\', '/', $items->getSubPathname());
             $target = $dest . '/' . $relative;
 
             if ($item->isDir()) {

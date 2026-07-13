@@ -1,5 +1,5 @@
 {
-  "name": "rith-1437/zeroping",
+  "name": "rith-1437/zero-ping",
   "description": "ZeroPing is a lightweight, modern PHP framework with a clean MVC architecture, dependency injection, ORM, validation, caching, queues, a task scheduler, and batteries-included CLI tooling. Install it to build production applications.",
   "type": "project",
   "license": "MIT",
@@ -58,12 +58,32 @@
   "scripts": {
     "post-create-project-cmd": [
       "@php scripts/post-create-project.php"
-    ]
+    ],
+    "doctor": "@php zero doctor",
+    "install-wizard": "@php zero install",
+    "serve": "@php zero serve",
+    "test": "phpunit",
+    "lint": "phpcs",
+    "lint:fix": "phpcbf"
+  },
+  "scripts-descriptions": {
+    "doctor": "Verify the ZeroPing installation and environment.",
+    "install-wizard": "Run the interactive ZeroPing installation wizard.",
+    "serve": "Start the ZeroPing development server.",
+    "test": "Run the PHPUnit test suite.",
+    "lint": "Check coding standards with PHP_CodeSniffer.",
+    "lint:fix": "Automatically fix coding standard violations."
   },
   "config": {
     "sort-packages": true,
     "optimize-autoloader": true,
+    "preferred-install": "dist",
     "allow-plugins": {}
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "1.2.x-dev"
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true,

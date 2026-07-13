@@ -11,9 +11,9 @@
 
 :root{
     /* Core palette (light mode) */
-    --primary:#7C3AED;
-    --primary-dark:#5B21B6;
-    --secondary:#22D3EE;
+    --primary:#22D3EE;
+    --primary-dark:#06B6D4;
+    --secondary:#4ADE80;
     --success:#10B981;
     --danger:#dc2626;
     --warning:#f59e0b;
@@ -61,9 +61,9 @@
 
 /* Dark theme overrides applied when html has .dark */
 html.dark{
-    --primary:#A78BFA;
-    --primary-dark:#8B5CF6;
-    --secondary:#67E8F9;
+    --primary:#22D3EE;
+    --primary-dark:#06B6D4;
+    --secondary:#4ADE80;
     --success:#34d399;
     --danger:#f87171;
     --warning:#fbbf24;

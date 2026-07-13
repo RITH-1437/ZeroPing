@@ -15,10 +15,11 @@ $activePage = $active ?? '';
     <meta property="og:image" content="<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev'), '/') ?>/assets/images/og-image.svg">
     <meta property="og:url" content="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev') ?>">
     <meta property="og:type" content="website">
-    <link rel="icon" type="image/png" href="/assets/images/logo.png">
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
@@ -31,20 +32,28 @@ $activePage = $active ?? '';
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        display: ['Space Grotesk', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
                         mono: ['JetBrains Mono', 'Menlo', 'monospace'],
                     },
                     colors: {
-                        blue: {
-                            50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff',
-                            300: '#d8b4fe', 400: '#c084fc', 500: '#a855f7',
-                            600: '#7C3AED', 700: '#6d28d9', 800: '#5b21b6',
-                            900: '#4c1d95', 950: '#2e1065',
-                        },
-                        indigo: {
+                        cyan: {
                             50: '#ecfeff', 100: '#cffafe', 200: '#a5f3fc',
                             300: '#67e8f9', 400: '#22D3EE', 500: '#06b6d4',
                             600: '#0891b2', 700: '#0e7490', 800: '#155e75',
                             900: '#164e63', 950: '#083344',
+                        },
+                        emerald: {
+                            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0',
+                            300: '#6ee7b7', 400: '#34d399', 500: '#10b981',
+                            600: '#059669', 700: '#047857', 800: '#065f46',
+                            900: '#064e3b', 950: '#022c22',
+                        },
+                        zp: {
+                            bg: '#0B1120',
+                            surface: '#111827',
+                            border: '#1F2937',
+                            white: '#F8FAFC',
+                            muted: '#94A3B8',
                         },
                     },
                     animation: {
@@ -105,10 +114,10 @@ $activePage = $active ?? '';
     <style>
         html { font-feature-settings: 'cv02','cv03','cv04','cv11'; }
 
-        ::selection { background-color: rgba(124,58,237,0.25); color: inherit; }
+        ::selection { background-color: rgba(34,211,238,0.25); color: inherit; }
 
         .gradient-text {
-            background: linear-gradient(135deg, #7C3AED, #22D3EE, #10B981);
+            background: linear-gradient(135deg, #22D3EE, #4ADE80);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -118,21 +127,16 @@ $activePage = $active ?? '';
 
         .bg-grid {
             background-image:
-                linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(34,211,238,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 1px);
             background-size: 40px 40px;
-        }
-        .dark .bg-grid {
-            background-image:
-                linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
         }
 
         .bg-radial-gradient {
-            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.12), transparent);
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34,211,238,0.10), transparent);
         }
         .dark .bg-radial-gradient {
-            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.12), transparent);
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34,211,238,0.12), transparent);
         }
 
         html.theme-transition,
@@ -199,7 +203,7 @@ $activePage = $active ?? '';
             left: 50%;
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, #7C3AED, #22D3EE);
+            background: linear-gradient(90deg, #22D3EE, #4ADE80);
             transition: width 0.3s ease, left 0.3s ease;
             border-radius: 1px;
         }
@@ -217,7 +221,7 @@ $activePage = $active ?? '';
             outline: none;
         }
         .focus-ring:focus-visible {
-            outline: 2px solid #7C3AED;
+            outline: 2px solid #22D3EE;
             outline-offset: 2px;
             border-radius: 8px;
         }
@@ -229,15 +233,15 @@ $activePage = $active ?? '';
             padding: 0.125rem 0.375rem;
             font-size: 0.75rem;
             font-family: inherit;
-            background: rgba(124,58,237,0.1);
-            border: 1px solid rgba(124,58,237,0.2);
+            background: rgba(34,211,238,0.1);
+            border: 1px solid rgba(34,211,238,0.2);
             border-radius: 4px;
-            color: #7C3AED;
+            color: #22D3EE;
         }
         .dark kbd {
-            background: rgba(124,58,237,0.15);
-            border-color: rgba(124,58,237,0.3);
-            color: #A78BFA;
+            background: rgba(34,211,238,0.15);
+            border-color: rgba(34,211,238,0.3);
+            color: #67E8F9;
         }
 
         .scrollbar-stable { scrollbar-gutter: stable; }

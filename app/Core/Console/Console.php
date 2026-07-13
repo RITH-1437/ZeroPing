@@ -10,6 +10,7 @@ use App\Core\Console\Commands\ConfigClearCommand;
 use App\Core\Console\Commands\ConfigTestCommand;
 use App\Core\Console\Commands\DbSeedCommand;
 use App\Core\Console\Commands\DoctorCommand;
+use App\Core\Console\Commands\InstallCommand;
 use App\Core\Console\Commands\KeyGenerateCommand;
 use App\Core\Console\Commands\LogTestCommand;
 use App\Core\Console\Commands\MailTestCommand;
@@ -314,6 +315,10 @@ class Console
                 (new DoctorCommand())->handle();
                 break;
 
+            case 'install':
+                (new InstallCommand())->handle();
+                break;
+
             case 'security:test':
                 (new SecurityTestCommand())->handle();
                 break;
@@ -368,10 +373,11 @@ class Console
 
         return [
             'General' => [
-                'serve' => ['Run the development server', []],
-                'about' => ['Show framework information', []],
-                'help'  => ['Show the help screen (or command-specific help)', []],
-                'new'   => ['Scaffold a new project from a starter template', $force],
+                'serve'   => ['Run the development server', []],
+                'install' => ['Run the interactive installation wizard', []],
+                'about'   => ['Show framework information', []],
+                'help'    => ['Show the help screen (or command-specific help)', []],
+                'new'     => ['Scaffold a new project from a starter template', $force],
             ],
             'Migrations' => [
                 'migrate'          => ['Run database migrations', []],

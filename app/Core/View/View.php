@@ -39,7 +39,6 @@ class View
             $cacheKey = self::cacheKey($view, $layout);
             $cached = self::loadFromCache($cacheKey);
             if ($cached !== null) {
-                echo $cached;
                 return $cached;
             }
         }
@@ -69,8 +68,6 @@ class View
         if (self::$cacheEnabled) {
             self::storeToCache(self::cacheKey($view, $layout), $output);
         }
-
-        echo $output;
 
         return $output;
     }

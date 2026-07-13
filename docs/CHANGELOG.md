@@ -27,7 +27,7 @@ templates, and documentation accuracy.
 
 ### 📚 Documentation
 
-- README now promotes `composer create-project rith-1437/zeroping` and links to
+- README now promotes `composer create-project rith-1437/zero-ping` and links to
   the correct GitHub repository and Packagist package.
 - `docs/website/installation.md` rewritten to reflect the `create-project` flow,
   the `php zero` CLI, and accurate commands.

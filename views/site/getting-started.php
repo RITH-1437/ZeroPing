@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Getting Started']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">Getting Started</h1>
-    <p class="mt-4 text-slate-600 dark:text-slate-400">Create routes, controllers, and views using a clear MVC structure.</p>
+    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-zp-white">Getting Started</h1>
+    <p class="mt-4 text-zp-muted">Create routes, controllers, and views using a clear MVC structure.</p>
 
     <div class="mt-10 space-y-0">
         <?php

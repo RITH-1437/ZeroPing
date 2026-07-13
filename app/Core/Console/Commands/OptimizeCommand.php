@@ -36,7 +36,8 @@ class OptimizeCommand extends Command
             return;
         }
 
-        $cmd = '"' . $composer . '" dump-autoload -o 2>&1';
+        $hasSpace = str_contains($composer, ' ');
+        $cmd = ($hasSpace ? '"' . $composer . '"' : $composer) . ' dump-autoload -o 2>&1';
         $output = shell_exec($cmd);
 
         if ($output !== null && trim($output) !== '') {
@@ -49,24 +50,14 @@ class OptimizeCommand extends Command
     /**
      * Locate the composer binary (global or local phar).
      */
+    /**
+     * Locate the composer binary (global or local phar).
+     */
     protected function findComposer(): ?string
     {
-        $candidates = [
-            'composer',
-            'composer.phar',
-            PHP_BINARY . '/../composer',
-            BASE_PATH . '/composer.phar',
-        ];
-
-        foreach ($candidates as $candidate) {
-            $test = (str_contains($candidate, '/') || str_contains($candidate, '\\'))
-                ? $candidate
-                : (shell_exec("where $candidate 2>nul") ?: '');
-            if (is_executable($candidate) || (is_string($test) && trim($test) !== '')) {
-                return $candidate;
-            }
-        }
-
-        return null;
+        // Return just the short name so the OS resolves via PATH.
+        // On Windows this picks up composer.bat (the proper shim),
+        // on Linux/macOS it picks up the composer binary in PATH.
+        return 'composer';
     }
 }

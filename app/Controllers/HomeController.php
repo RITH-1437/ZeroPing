@@ -10,14 +10,14 @@ use App\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index(): void
+    public function index(): string
     {
-        $this->view('home/index');
+        return $this->view('home/index');
     }
 
-    public function about(): void
+    public function about(): string
     {
-        $this->view('home/about');
+        return $this->view('home/about');
     }
 
     public function requestTest(): void

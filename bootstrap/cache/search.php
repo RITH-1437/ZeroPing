@@ -1,7 +1,5 @@
-<?php
-
-return array (
-  0 =>
+<?php return array (
+  0 => 
   array (
     'slug' => 'introduction',
     'title' => 'Introduction',
@@ -14,15 +12,51 @@ views/
 public/Next StepContinue to the installation guide to bootstrap your first ZeroPing app.',
     'url' => '/docs/introduction',
   ),
-  1 =>
+  1 => 
   array (
     'slug' => 'installation',
     'title' => 'Installation',
-    'content' => 'InstallationInstall ZeroPing with Composer and run migrations.RequirementsPHP 8.1+ComposerMySQL-compatible databaseClone the repositoryCopygit clone https://github.com/RITH-1437/ZeroPing.git
-cd ZeroPingInstall dependenciesCopycomposer installEnvironment configurationCopycp .env.example .envUpdate your database credentials in .env, then run:Copyphp cli\\migrate.phpServe the applicationCopyphp -S localhost:1437 -t public',
+    'content' => 'InstallationZeroPing is distributed as a Composer package.',
     'url' => '/docs/installation',
   ),
-  2 =>
+  2 => 
+  array (
+    'slug' => 'installation',
+    'title' => 'Installation',
+    'content' => 'The recommended way to start a new project is composer create-project, which installs the framework, copies your environment file, generates an application key, and prepares storage.Requirementsctype, tokenizer, fileinfo, openssl, hashPHP 8.1 or higherThe following PHP extensions: pdo, pdo_mysql, mbstring, json,ComposerA MySQL-compatible database (or any PDO-supported engine)Create a new projectCopycomposer create-project rith-1437/zeroping my-app
+cd my-app&gt; Package name: rith-1437/zeroping — all lowercase, one word, no hyphen &gt; (it is the lowercase form of the GitHub repo RITH-1437/ZeroPing).',
+    'url' => '/docs/installation',
+  ),
+  3 => 
+  array (
+    'slug' => 'installation',
+    'title' => 'Installation',
+    'content' => 'Typing &gt; zero-ping fails with &quot;Could not find package&quot;.The post-create-project-cmd script runs automatically and will:1. Create storage/cache, storage/logs, and bootstrap/cache. 2. Copy .env.example to .env. 3.',
+    'url' => '/docs/installation',
+  ),
+  4 => 
+  array (
+    'slug' => 'installation',
+    'title' => 'Installation',
+    'content' => 'Generate a random APP_KEY.Alternative: install from sourceIf you are contributing to the framework, clone the repository instead:Copygit clone https://github.com/RITH-1437/ZeroPing.git
+cd ZeroPing
+composer install
+cp .env.example .env
+php zero key:generateConfigure the environmentOpen .env and set your database credentials:CopyDB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=zeroping
+DB_USER=root
+DB_PASS=Run migrationsCopyphp zero migrateStart the development serverCopyphp zero serveBy default the server listens on http://localhost:1437.',
+    'url' => '/docs/installation',
+  ),
+  5 => 
+  array (
+    'slug' => 'installation',
+    'title' => 'Installation',
+    'content' => 'Pass a port to override: php zero serve 9000.Verify your installationRun the built-in doctor to confirm PHP, extensions, environment, and database connectivity are correctly configured:Copyphp zero doctor',
+    'url' => '/docs/installation',
+  ),
+  6 => 
   array (
     'slug' => 'getting-started',
     'title' => 'Getting Started',
@@ -36,7 +70,7 @@ Router::get(&#039;/&#039;, [WebsiteController::class, &#039;home&#039;]);Create 
 &lt;p&gt;You are ready to build.&lt;/p&gt;Add styling with TailwindUse Tailwind utility classes to ship responsive layouts quickly while keeping design consistent.',
     'url' => '/docs/getting-started',
   ),
-  3 =>
+  7 => 
   array (
     'slug' => 'api',
     'title' => 'API',
@@ -57,14 +91,21 @@ if ($validator-&gt;fails()) {
 Response::redirect(&#039;/dashboard&#039;);',
     'url' => '/docs/api',
   ),
-  4 =>
+  8 => 
   array (
     'slug' => 'cli',
     'title' => 'CLI Reference',
-    'content' => 'CLI ReferenceZeroPing ships with a powerful CLI (php zero) for managing your application.General Commands| Command | Description | |---|---| | php zero | Display the command list | | php zero about | Display framework information | | php zero version | Show the framework version | | php zero serve | Start the development server |Project Scaffolding| Command | Description | |---|---| | php zero new {type} | Create a new project from a template |Types: empty, blog, api, mvcCopyphp zero new blog --name=&quot;My Blog&quot; --dir=./my-blogSearch| Command | Description | |---|---| | php zero search:index | Build the documentation search index |Migrations| Command | Description | |---|---| | php zero migrate | Run all pending migrations | | php zero migrate:fresh | Drop all tables and re-run migrations | | php zero migrate:refresh | Rollback all migrations then re-run them | | php zero migrate:rollback | Rollback the last migration | | php zero migrate:status | Show migration status |Make (Code Generation)| Command | Description | |---|---| | php zero make:model {name} | Create a new model | | php zero make:controller {name} | Create a new controller | | php zero make:service {name} | Create a new service class | | php zero make:repository {name} | Create a new repository | | php zero make:migration {name} | Create a new migration | | php zero make:mail {name} | Create a new mailable class |Routes| Command | Description | |---|---| | php zero route:list | Display all registered routes | | php zero route:cache | Cache routes for faster resolution | | php zero route:clear | Clear the route cache |Configuration| Command | Description | |---|---| | php zero config:cache | Cache configuration files | | php zero config:clear | Clear the configuration cache |Cache| Command | Description | |---|---| | php zero cache:clear | Flush the application cache | | php zero view:cache | Cache compiled view files | | php zero view:clear | Clear compiled view files |Optimization| Command | Description | |---|---| | php zero optimize | Cache config, routes, views, and search index | | php zero optimize:clear | Clear all cached data |Queue| Command | Description | |---|---| | php zero queue:work | Process jobs on the queue | | php zero queue:listen | Listen to a queue | | php zero queue:failed | List failed queue jobs | | php zero queue:retry {id} | Retry a failed job | | php zero queue:clear | Delete all jobs from the queue | | php zero queue:restart | Restart queue workers |Schedule| Command | Description | |---|---| | php zero schedule:run | Run scheduled commands | | php zero schedule:list | List scheduled commands | | php zero schedule:clear | Clear scheduled commands |Security| Command | Description | |---|---| | php zero key:generate | Generate a new application key | | php zero security:test | Run security diagnostics |Testing| Command | Description | |---|---| | php zero test | Run framework tests | | php zero orm:test | Test ORM | | php zero cache:test | Test cache system | | php zero mail:test | Test mail system | | php zero queue:test | Test queue system | | php zero schedule:test | Test scheduler | | php zero security:test | Test security layer | | php zero storage:test | Test storage system | | php zero log:test | Test logger | | php zero config:test | Test config system | | php zero validate:test | Test validator |',
+    'content' => 'CLI ReferenceZeroPing ships with a powerful CLI (php zero) for managing your application.',
     'url' => '/docs/cli',
   ),
-  5 =>
+  9 => 
+  array (
+    'slug' => 'cli',
+    'title' => 'CLI Reference',
+    'content' => 'Run php zero or php zero help to list every available command.General Commands| Command | Description | |---|---| | php zero | Display the command list | | php zero about | Display framework, PHP, and environment information | | php zero version | Show the framework version | | php zero doctor | Verify the installation (PHP, extensions, env, key, database) | | php zero serve [port] | Start the development server (defaults to 1437) |Project Scaffolding| Command | Description | |---|---| | php zero new {type} | Create a new project from a template |Types: empty, blog, api, mvc, dashboardCopyphp zero new blog --name=&quot;My Blog&quot; --dir=./my-blogSearch| Command | Description | |---|---| | php zero search:index | Build the documentation search index |Migrations| Command | Description | |---|---| | php zero migrate | Run all pending migrations | | php zero migrate:fresh | Drop all tables and re-run migrations | | php zero migrate:refresh | Rollback all migrations then re-run them | | php zero migrate:rollback | Rollback the last migration | | php zero migrate:reset | Rollback all migrations | | php zero migrate:status | Show migration status |Make (Code Generation)| Command | Description | |---|---| | php zero make:model {name} | Create a new model | | php zero make:controller {name} | Create a new controller | | php zero make:service {name} | Create a new service class | | php zero make:repository {name} | Create a new repository | | php zero make:migration {name} | Create a new migration | | php zero make:mail {name} | Create a new mailable class | | php zero make:seeder {name} | Create a new database seeder | | php zero make:middleware {name} | Create a new HTTP middleware | | php zero make:request {name} | Create a new form request | | php zero make:policy {name} | Create a new authorization policy | | php zero make:provider {name} | Create a new service provider | | php zero make:command {name} | Create a new console command | | php zero make:test {name} | Create a unit test (--feature for a feature test) |Routes| Command | Description | |---|---| | php zero route:list | Display all registered routes | | php zero route:cache | Cache routes for faster resolution | | php zero route:clear | Clear the route cache |Configuration| Command | Description | |---|---| | php zero config:cache | Cache configuration files | | php zero config:clear | Clear the configuration cache |Cache &amp; Views| Command | Description | |---|---| | php zero cache:clear | Flush the application cache | | php zero view:cache | Cache compiled PHP view files | | php zero view:clear | Clear compiled view files |Optimization| Command | Description | |---|---| | php zero optimize | Cache config, routes, views, and search index | | php zero optimize:clear | Clear all cached data |Queue| Command | Description | |---|---| | php zero queue:work | Process jobs on the queue | | php zero queue:listen | Listen to a queue | | php zero queue:failed | List failed queue jobs | | php zero queue:retry {id} | Retry a failed job | | php zero queue:clear | Delete all jobs from the queue | | php zero queue:restart | Restart queue workers |Schedule| Command | Description | |---|---| | php zero schedule:run | Run scheduled commands | | php zero schedule:list | List scheduled commands | | php zero schedule:clear | Clear scheduled commands |Security| Command | Description | |---|---| | php zero key:generate | Generate a new application key | | php zero security:test | Run security diagnostics |Testing| Command | Description | |---|---| | php zero test | Run the framework test suite | | php zero orm:test | Test the ORM | | php zero cache:test | Test the cache system | | php zero mail:test | Test the mail system | | php zero queue:test | Test the queue system | | php zero schedule:test | Test the scheduler | | php zero security:test | Test the security layer | | php zero storage:test | Test the storage system | | php zero log:test | Test the logger | | php zero config:test | Test the config system | | php zero validate:test | Test the validator |',
+    'url' => '/docs/cli',
+  ),
+  10 => 
   array (
     'slug' => 'validation',
     'title' => 'Validation',
@@ -154,14 +195,14 @@ class StoreUserRequest extends FormRequest
 }',
     'url' => '/docs/validation',
   ),
-  6 =>
+  11 => 
   array (
     'slug' => 'search',
     'title' => 'Search',
     'content' => 'Documentation SearchZeroPing includes a full-text search engine for your documentation, accessible via the search modal (Ctrl+K / Cmd+K) or the /search API endpoint.Search IndexThe search index is built from all markdown documents in docs/.',
     'url' => '/docs/search',
   ),
-  7 =>
+  12 => 
   array (
     'slug' => 'search',
     'title' => 'Search',
@@ -179,14 +220,14 @@ class StoreUserRequest extends FormRequest
 }Frontend IntegrationThe search modal in views/layouts/site.php is wired to this endpoint with:Debounced input — 250ms delay before searchingRecent searches — last 5 queries stored in localStorageHighlighted results — matching terms are wrapped in &lt;mark&gt; tagsEmpty state — friendly message when no results matchError state — graceful fallback when the server is unreachableFuzzy MatchingResults that don&#039;t match exactly are ranked using Levenshtein distance.',
     'url' => '/docs/search',
   ),
-  8 =>
+  13 => 
   array (
     'slug' => 'search',
     'title' => 'Search',
     'content' => 'This means:valdiation still finds &quot;Validation&quot;instal finds &quot;Installation&quot;gettin startd finds &quot;Getting Started&quot;ScoringResults are sorted by:1. Title match (highest weight) 2. Content term frequency 3. Fuzzy distance (lower = better) 4. Document length (shorter = slightly preferred)Only results above the relevance threshold (score &gt; 0.2) are returned.',
     'url' => '/docs/search',
   ),
-  9 =>
+  14 => 
   array (
     'slug' => 'starter-templates',
     'title' => 'Starter Templates',
@@ -204,42 +245,42 @@ cp .env.example .env
 php zero serve',
     'url' => '/docs/starter-templates',
   ),
-  10 =>
+  15 => 
   array (
     'slug' => 'performance',
     'title' => 'Performance',
     'content' => 'PerformanceZeroPing includes several performance optimization features to speed up your application in production.Route CachingRoute caching compiles all registered routes into a single optimized file, eliminating the need to parse config/routes.php on every request.Copyphp zero route:cacheTo clear the route cache:Copyphp zero route:clearConfiguration CachingConfiguration caching merges all config files into a single array and writes it to a cached file.',
     'url' => '/docs/performance',
   ),
-  11 =>
+  16 => 
   array (
     'slug' => 'performance',
     'title' => 'Performance',
     'content' => 'This avoids repeated require calls and file I/O on every request.Copyphp zero config:cacheTo clear the config cache:Copyphp zero config:clearView CachingCompiled views are stored in storage/cache/views/.',
     'url' => '/docs/performance',
   ),
-  12 =>
+  17 => 
   array (
     'slug' => 'performance',
     'title' => 'Performance',
     'content' => 'Once cached, views are served directly from the pre-compiled file without re-parsing the template.Copyphp zero view:cacheTo clear the view cache:Copyphp zero view:clearOptimize CommandThe optimize command runs all caching operations at once:Copyphp zero optimizeThis runs:1. config:cache — Cache configuration 2. route:cache — Cache routes 3. view:cache — Cache compiled views 4. search:index — Build search indexTo clear everything:Copyphp zero optimize:clearLazy Service LoadingServices are loaded lazily through the container.',
     'url' => '/docs/performance',
   ),
-  13 =>
+  18 => 
   array (
     'slug' => 'performance',
     'title' => 'Performance',
     'content' => 'A service provider is only instantiated and registered when one of its services is first requested. This means:Unused services consume zero memoryRequest time is not spent booting providers that won&#039;t be usedOnly the core routing and config systems are loaded eagerlyBest Practices1. Run php zero optimize in deployment for maximum performance 2. Keep config files minimal — only load what you need 3. Use route caching in production environments 4.',
     'url' => '/docs/performance',
   ),
-  14 =>
+  19 => 
   array (
     'slug' => 'performance',
     'title' => 'Performance',
     'content' => 'Cache views for any pages rendered more than once 5. Build the search index on deploy, not on first user request',
     'url' => '/docs/performance',
   ),
-  15 =>
+  20 => 
   array (
     'slug' => 'roadmap',
     'title' => 'Roadmap',

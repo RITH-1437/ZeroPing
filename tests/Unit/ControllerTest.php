@@ -83,10 +83,7 @@ class ControllerTest extends \Tests\TestCase
         \App\Core\View\View::setBasePath(sys_get_temp_dir() . '/zero_view_test');
         \App\Core\View\View::enableCache(false);
 
-        ob_start();
-        $this->callProtected('view', ['test', [], 'app']);
-        $output = ob_get_clean();
-
+        $output = \App\Core\View\View::render('test', [], 'app');
         $this->assertStringContainsString('rendered', $output);
 
         \App\Core\View\View::setBasePath(null);

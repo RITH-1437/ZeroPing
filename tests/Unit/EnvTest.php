@@ -55,7 +55,7 @@ class EnvTest extends \Tests\TestCase
 
         Env::load($path);
 
-        $this->assertSame('"quoted"', $_ENV['QUOTED_VALUE']);
+        $this->assertSame('quoted', $_ENV['QUOTED_VALUE']);
         $this->assertSame('spaced', $_ENV['TEST_KEY']);
 
         unlink($path);

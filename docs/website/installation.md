@@ -15,13 +15,12 @@ your environment file, generates an application key, and prepares storage.
 ## Create a new project
 
 ```bash
-composer create-project rith-1437/zeroping my-app
+composer create-project rith-1437/zero-ping my-app
 cd my-app
 ```
 
-> **Package name:** `rith-1437/zeroping` — all lowercase, one word, **no hyphen**
-> (it is the lowercase form of the GitHub repo `RITH-1437/ZeroPing`). Typing
-> `zero-ping` fails with "Could not find package".
+> **Package name:** `rith-1437/zero-ping` — all lowercase, hyphenated
+> (the GitHub repo is `RITH-1437/ZeroPing`).
 
 The `post-create-project-cmd` script runs automatically and will:
 
@@ -34,7 +33,7 @@ The `post-create-project-cmd` script runs automatically and will:
 If you are contributing to the framework, clone the repository instead:
 
 ```bash
-git clone https://github.com/RITH-1437/ZeroPing.git
+git clone https://github.com/rith-1437/zero-ping.git
 cd ZeroPing
 composer install
 cp .env.example .env

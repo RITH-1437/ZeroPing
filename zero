@@ -11,4 +11,9 @@ App::boot();
 
 $console = new Console();
 
-$console->run($argv);
+try {
+    $console->run($argv);
+} catch (\Throwable $e) {
+    fwrite(STDERR, "\033[31mError: " . $e->getMessage() . "\033[0m\n");
+    exit(1);
+}

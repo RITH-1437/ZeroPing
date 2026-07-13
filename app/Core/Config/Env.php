@@ -61,13 +61,37 @@ class Env
             );
 
             $key = trim($key);
-            $value = trim($value);
+            $value = self::normalizeValue(trim($value));
 
             $items[$key] = $value;
             $_ENV[$key] = $value;
         }
 
         self::writeCache($cacheFile, $items);
+    }
+
+    /**
+     * Normalize a raw .env value: strip matching surrounding quotes and, for
+     * unquoted values, drop trailing inline comments.
+     */
+    private static function normalizeValue(string $value): string
+    {
+        if ($value === '') {
+            return $value;
+        }
+
+        $first = $value[0];
+        $last = $value[strlen($value) - 1];
+
+        if (strlen($value) >= 2 && ($first === '"' || $first === "'") && $last === $first) {
+            $inner = substr($value, 1, -1);
+            if ($first === '"') {
+                $inner = str_replace(['\\"', '\\n', '\\r', '\\t'], ['"', "\n", "\r", "\t"], $inner);
+            }
+            return $inner;
+        }
+
+        return $value;
     }
 
     /**

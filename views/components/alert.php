@@ -2,7 +2,7 @@
 $type = $type ?? 'info';
 $message = $message ?? '';
 $map = [
-    'info' => 'border-blue-200/60 bg-blue-50/80 text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/50 dark:text-blue-200',
+    'info' => 'border-cyan-200/60 bg-cyan-50/80 text-cyan-800 dark:border-cyan-900/60 dark:bg-cyan-950/50 dark:text-cyan-200',
     'success' => 'border-emerald-200/60 bg-emerald-50/80 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/50 dark:text-emerald-200',
     'warning' => 'border-amber-200/60 bg-amber-50/80 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-200',
 ];

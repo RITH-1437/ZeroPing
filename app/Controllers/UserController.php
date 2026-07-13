@@ -6,9 +6,9 @@ use App\Core\View\Controller;
 
 class UserController extends Controller
 {
-    public function index(): void
+    public function index(): string
     {
-        $this->view('home/index');
+        return $this->view('home/index');
     }
 
     public function show(string $id): void

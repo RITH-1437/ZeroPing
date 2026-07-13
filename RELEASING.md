@@ -1,10 +1,10 @@
 # Releasing ZeroPing
 
 This guide explains how to cut a new ZeroPing release and publish it to
-[Packagist](https://packagist.org/packages/rith-1437/zeroping).
+[Packagist](https://packagist.org/packages/rith-1437/zero-ping).
 
-> **Package name:** `rith-1437/zeroping` (all lowercase, **one word, no hyphen**).
-> `composer create-project rith-1437/zero-ping` is a common typo and will fail.
+> **Package name:** `rith-1437/zero-ping` (all lowercase, hyphenated). This is the
+> canonical Packagist name used by `composer create-project rith-1437/zero-ping`.
 
 ## Versioning
 
@@ -56,7 +56,7 @@ The canonical version lives in `app/Core/Application/App.php` as
 
 7. **Verify the dist.**
    ```bash
-   composer create-project rith-1437/zeroping /tmp/verify --no-interaction
+   composer create-project rith-1437/zero-ping /tmp/verify --no-interaction
    cd /tmp/verify && php zero doctor
    ```
 

@@ -3,13 +3,13 @@ $title = $title ?? 'Terminal';
 $lines = $lines ?? [];
 ?>
 <section class="rounded-2xl border border-slate-700/50 overflow-hidden bg-slate-950 text-slate-100 shadow-lg shadow-black/10" data-terminal>
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-800 bg-slate-900/80">
+    <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-800 bg-zp-surface">
         <div class="flex items-center gap-2" aria-hidden="true">
             <span class="h-2.5 w-2.5 rounded-full bg-red-500/80"></span>
             <span class="h-2.5 w-2.5 rounded-full bg-yellow-500/80"></span>
             <span class="h-2.5 w-2.5 rounded-full bg-emerald-500/80"></span>
         </div>
-        <p class="text-xs text-slate-400"><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></p>
+        <p class="text-xs text-zp-muted"><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></p>
         <div class="w-14"></div>
     </div>
     <div class="px-4 py-5 text-sm leading-7 font-mono overflow-x-auto">

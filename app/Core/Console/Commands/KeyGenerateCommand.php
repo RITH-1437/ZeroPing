@@ -39,8 +39,17 @@ class KeyGenerateCommand extends Command
     {
         $env = file_get_contents('.env');
 
-        $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
+        if (preg_match('/^APP_KEY=.*$/m', $env)) {
+            $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
+        } else {
+            $env = rtrim($env) . PHP_EOL . 'APP_KEY=' . $key . PHP_EOL;
+        }
 
         file_put_contents('.env', $env);
+
+        // Clear cached env so subsequent commands pick up the change
+        foreach (glob(BASE_PATH . '/bootstrap/cache/env_*.php') as $cache) {
+            @unlink($cache);
+        }
     }
 }

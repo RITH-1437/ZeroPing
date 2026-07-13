@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Installation']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">Installation</h1>
-    <p class="mt-4 text-slate-600 dark:text-slate-400">Install ZeroPing and run your first app locally in a few commands.</p>
+    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-zp-white">Installation</h1>
+    <p class="mt-4 text-zp-muted">Install ZeroPing and run your first app locally in a few commands.</p>
 
     <div class="mt-6 rounded-2xl border border-blue-200/60 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/50 p-4 flex items-start gap-3 text-sm text-blue-800 dark:text-blue-200" role="status">
         <svg class="h-5 w-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -21,7 +21,7 @@
         <?php foreach ($steps as $i => $step): ?>
             <div class="relative flex gap-5 pb-8 <?= $i < count($steps) - 1 ? '' : 'pb-0' ?>" data-animate>
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 text-zp-white shadow-md shadow-cyan-500/20">
                         <?php if ($step['icon'] === 'download'): ?>
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                         <?php elseif ($step['icon'] === 'package'): ?>
@@ -33,11 +33,11 @@
                         <?php endif; ?>
                     </div>
                     <?php if ($i < count($steps) - 1): ?>
-                        <div class="flex-1 w-px bg-gradient-to-b from-blue-600/30 to-transparent dark:from-blue-400/20 mt-2"></div>
+                        <div class="flex-1 w-px bg-gradient-to-b from-cyan-500/30 to-transparent dark:from-cyan-400/20 mt-2"></div>
                     <?php endif; ?>
                 </div>
                 <div class="flex-1 min-w-0 pb-2">
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2"><?= htmlspecialchars($step['label'], ENT_QUOTES, 'UTF-8') ?></h3>
+                    <h3 class="text-sm font-semibold text-zp-white mb-2"><?= htmlspecialchars($step['label'], ENT_QUOTES, 'UTF-8') ?></h3>
                     <?php render_component('code-block', [
                         'title' => $step['label'],
                         'codeId' => 'install-step-' . $i,

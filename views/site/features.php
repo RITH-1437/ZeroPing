@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Features']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">Framework Features</h1>
-    <p class="mt-4 max-w-3xl text-slate-600 dark:text-slate-400">ZeroPing includes the modules you need to move from idea to production with a clean, predictable developer workflow.</p>
+    <h1 class="mt-6 font-display text-4xl sm:text-5xl font-bold tracking-tight text-zp-white">Framework Features</h1>
+    <p class="mt-4 max-w-3xl text-zp-muted">ZeroPing includes the modules you need to move from idea to production with a clean, predictable developer workflow.</p>
 
     <?php
     $groups = [
@@ -29,8 +29,8 @@
     ];
     $groupIdx = 0;
     foreach ($groups as $groupName => $features): $groupIdx++; ?>
-        <div class="mt-16 <?= $groupIdx > 1 ? 'pt-16 border-t border-slate-200/60 dark:border-slate-800/60' : '' ?>">
-            <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400"><?= htmlspecialchars($groupName, ENT_QUOTES, 'UTF-8') ?></h2>
+        <div class="mt-16 <?= $groupIdx > 1 ? 'pt-16 border-t border-zp-border' : '' ?>">
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-cyan-400"><?= htmlspecialchars($groupName, ENT_QUOTES, 'UTF-8') ?></h2>
             <div class="mt-5 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <?php foreach ($features as $feature) {
                     render_component('feature-card', $feature);

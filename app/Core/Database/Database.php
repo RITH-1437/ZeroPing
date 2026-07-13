@@ -3,6 +3,7 @@
 namespace App\Core\Database;
 
 use PDO;
+use PDOException;
 
 class Database
 {
@@ -29,16 +30,26 @@ class Database
                 $charset
             );
 
-            self::$connection = new PDO(
-                $dsn,
-                $user,
-                $pass,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                ]
-            );
+            try {
+                self::$connection = new PDO(
+                    $dsn,
+                    $user,
+                    $pass,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES => false,
+                    ]
+                );
+            } catch (PDOException $e) {
+                throw new \RuntimeException(
+                    "Database connection failed.\n" .
+                    "  Host: {$host}\n" .
+                    "  User: {$user}\n" .
+                    "  Error: {$e->getMessage()}\n" .
+                    "Check your .env database credentials and ensure MySQL is running."
+                );
+            }
 
             // The profiled statement class adds overhead on every query; only
             // enable it when debugging so production queries stay lean.

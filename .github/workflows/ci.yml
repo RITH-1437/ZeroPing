@@ -128,10 +128,10 @@ jobs:
           extensions: pdo_mysql
           tools: composer
 
-      - name: composer create-project rith-1437/zeroping
+      - name: composer create-project rith-1437/zero-ping
         run: |
           rm -rf /tmp/myapp
-          composer create-project rith-1437/zeroping /tmp/myapp --no-interaction
+          composer create-project rith-1437/zero-ping /tmp/myapp --no-interaction
           cd /tmp/myapp
           php zero doctor || true
 

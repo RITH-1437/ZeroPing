@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'API']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">API Overview</h1>
-    <p class="mt-4 text-slate-600 dark:text-slate-400">Core APIs that power daily framework development. Click any example to expand.</p>
+    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-zp-white">API Overview</h1>
+    <p class="mt-4 text-zp-muted">Core APIs that power daily framework development. Click any example to expand.</p>
 
     <?php
     $groups = [
@@ -27,11 +27,11 @@
     ];
     foreach ($groups as $groupName => $items): ?>
         <div class="mt-14">
-            <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400"><?= htmlspecialchars($groupName, ENT_QUOTES, 'UTF-8') ?></h2>
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-cyan-400"><?= htmlspecialchars($groupName, ENT_QUOTES, 'UTF-8') ?></h2>
             <div class="mt-4 grid md:grid-cols-2 gap-4">
                 <?php foreach ($items as $item): ?>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800/70 bg-white/80 dark:bg-slate-900/80 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-                        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3"><?= htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8') ?></h3>
+                    <div class="rounded-2xl border border-zp-border bg-zp-surface p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <h3 class="text-sm font-semibold text-zp-white mb-3"><?= htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8') ?></h3>
                         <?php render_component('code-block', [
                             'title' => $item['title'],
                             'language' => 'PHP',

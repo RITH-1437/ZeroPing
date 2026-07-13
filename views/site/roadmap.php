@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Roadmap']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">Roadmap</h1>
-    <p class="mt-4 text-slate-600 dark:text-slate-400">Our short and mid-term direction for the framework ecosystem.</p>
+    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-zp-white">Roadmap</h1>
+    <p class="mt-4 text-zp-muted">Our short and mid-term direction for the framework ecosystem.</p>
 
     <?php
     $milestones = [
@@ -64,17 +64,17 @@
             'icon' => 'check',
         ],
         'in-progress' => [
-            'border' => 'border-blue-500/40',
-            'bg' => 'bg-blue-50/80 dark:bg-blue-950/40',
-            'text' => 'text-blue-700 dark:text-blue-300',
-            'dot' => 'bg-blue-500 shadow-blue-500/30',
+            'border' => 'border-cyan-500/40',
+            'bg' => 'bg-cyan-50/80 dark:bg-cyan-950/40',
+            'text' => 'text-cyan-700 dark:text-cyan-300',
+            'dot' => 'bg-cyan-500 shadow-cyan-500/30',
             'badge' => 'In Progress',
             'icon' => 'progress',
         ],
         'planned' => [
-            'border' => 'border-slate-300/60 dark:border-slate-700/60',
-            'bg' => 'bg-slate-100/80 dark:bg-slate-800/60',
-            'text' => 'text-slate-600 dark:text-slate-400',
+            'border' => 'border-zp-border/50',
+            'bg' => 'bg-zp-surface/50',
+            'text' => 'text-zp-muted',
             'dot' => 'bg-slate-400 dark:bg-slate-500',
             'badge' => 'Planned',
             'icon' => 'planned',
@@ -102,16 +102,16 @@
                     <?php endif; ?>
                 </div>
                 <div class="flex-1 min-w-0 pb-2">
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800/70 bg-white/80 dark:bg-slate-900/80 p-6 shadow-sm">
+                    <div class="rounded-2xl border border-zp-border bg-zp-surface p-6 shadow-sm">
                         <div class="flex flex-wrap items-center gap-3 mb-4">
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100"><?= htmlspecialchars($milestone['version'], ENT_QUOTES, 'UTF-8') ?></h2>
+                            <h2 class="text-xl font-bold text-zp-white"><?= htmlspecialchars($milestone['version'], ENT_QUOTES, 'UTF-8') ?></h2>
                             <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider <?= $cfg['border'] ?> <?= $cfg['bg'] ?> <?= $cfg['text'] ?>"><?= $cfg['badge'] ?></span>
-                            <span class="text-xs text-slate-400 dark:text-slate-500"><?= htmlspecialchars($milestone['date'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="text-xs text-zp-muted"><?= htmlspecialchars($milestone['date'], ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                         <ul class="space-y-2" data-animate-stagger>
                             <?php foreach ($milestone['items'] as $item): ?>
-                                <li class="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-400">
-                                    <svg class="h-4 w-4 shrink-0 mt-0.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                <li class="flex items-start gap-2.5 text-sm text-zp-muted">
+                                    <svg class="h-4 w-4 shrink-0 mt-0.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                     <?= htmlspecialchars($item, ENT_QUOTES, 'UTF-8') ?>
                                 </li>
                             <?php endforeach; ?>

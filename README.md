@@ -1,16 +1,16 @@
 # ZeroPing Framework
 
 <p align="center">
-  <a href="https://github.com/RITH-1437/ZeroPing">
-    <img src="https://raw.githubusercontent.com/RITH-1437/ZeroPing/main/public/assets/images/logo.png" alt="ZeroPing Logo" width="200">
+  <a href="https://github.com/rith-1437/zero-ping">
+    <img src="https://raw.githubusercontent.com/rith-1437/zero-ping/main/public/assets/images/logo.png" alt="ZeroPing Logo" width="200">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/v/rith-1437/zeroping.svg?style=flat-square" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/dt/rith-1437/zeroping.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://github.com/RITH-1437/ZeroPing/actions"><img src="https://img.shields.io/github/actions/workflow/status/RITH-1437/ZeroPing/ci.yml?style=flat-square" alt="Build Status"></a>
-  <a href="https://github.com/RITH-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/RITH-1437/ZeroPing?style=flat-square" alt="License"></a>
+  <a href="https://packagist.org/packages/rith-1437/zero-ping"><img src="https://img.shields.io/packagist/v/rith-1437/zero-ping.svg?style=flat-square" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/rith-1437/zero-ping"><img src="https://img.shields.io/packagist/dt/rith-1437/zero-ping.svg?style=flat-square" alt="Total Downloads"></a>
+  <a href="https://github.com/rith-1437/zero-ping/actions"><img src="https://img.shields.io/github/actions/workflow/status/rith-1437/zero-ping/ci.yml?style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/rith-1437/zero-ping/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rith-1437/zero-ping?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
   <a href="https://github.com/devcontainers/features"><img src="https://img.shields.io/badge/Dev%20Container-ready-007ACC.svg?style=flat-square" alt="Dev Container Ready"></a>
 </p>
@@ -53,18 +53,19 @@ configuration.
 Start a new project with Composer (downloads the packaged release from Packagist):
 
 ```bash
-composer create-project rith-1437/zeroping my-app
+composer create-project rith-1437/zero-ping my-app
 cd my-app
 
 # The installer copies .env, generates your APP_KEY, and prepares storage.
 php zero serve
 ```
 
-> **Package name:** `rith-1437/zeroping` — all lowercase, **one word, no hyphen**
-> (it is the lowercase form of the GitHub repo `RITH-1437/ZeroPing`). Typing
-> `zero-ping` will fail with "Could not find package".
+> **Package name:** `rith-1437/zero-ping` — all lowercase, with a hyphen
+> (the GitHub repo is `rith-1437/zero-ping`).
 
-The `post-create-project-cmd` script runs automatically after install.
+The `post-create-project-cmd` script runs automatically after install. Prefer a
+guided setup? Run `php zero install` for an interactive wizard, or
+`php zero doctor` to verify your environment at any time.
 
 ### Option B — Docker (development environment)
 
@@ -87,7 +88,7 @@ For VS Code users, a [devcontainer](.devcontainer/devcontainer.json) configurati
 To work from the source repository instead:
 
 ```bash
-git clone https://github.com/RITH-1437/ZeroPing.git my-app
+git clone https://github.com/rith-1437/zero-ping.git my-app
 cd my-app
 
 composer install
@@ -221,9 +222,9 @@ A plan for additional example applications is available in
 ## Community
 
 - 💬 **Discussions**: ask questions and share ideas at
-  [GitHub Discussions](https://github.com/RITH-1437/ZeroPing/discussions).
+  [GitHub Discussions](https://github.com/rith-1437/zero-ping/discussions).
 - 🐞 **Issues**: report bugs and request features using the
-  [issue templates](https://github.com/RITH-1437/ZeroPing/issues/new/choose).
+  [issue templates](https://github.com/rith-1437/zero-ping/issues/new/choose).
 - 🔒 **Security**: report vulnerabilities privately via our
   [security policy](SECURITY.md).
 

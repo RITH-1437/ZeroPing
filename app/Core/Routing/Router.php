@@ -211,7 +211,10 @@ class Router
             $action = $route->action;
 
             if ($action instanceof \Closure) {
-                $action(...$params);
+                $result = $action(...$params);
+                if (is_string($result)) {
+                    echo $result;
+                }
                 return;
             }
 
@@ -257,7 +260,10 @@ class Router
             }
 
             // Execute controller with route parameters
-            $controller->$methodName(...$params);
+            $result = $controller->$methodName(...$params);
+            if (is_string($result)) {
+                echo $result;
+            }
         } catch (\Exception $e) {
             http_response_code(500);
             $title = '500 - Server Error';

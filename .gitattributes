@@ -17,6 +17,27 @@
 /storage/logs/*          export-ignore
 /bootstrap/cache/*       export-ignore
 
+# Marketing website + interactive demos are not shipped to fresh installs.
+# The repository itself keeps them; new projects fall back to a clean welcome page.
+/app/Controllers/CoffeeController.php   export-ignore
+/app/Controllers/SearchController.php   export-ignore
+/app/Controllers/TestController.php     export-ignore
+/app/Controllers/UserController.php     export-ignore
+/app/Controllers/WebsiteController.php  export-ignore
+/app/Services/CoffeeService.php         export-ignore
+/app/Services/DocsService.php           export-ignore
+/app/Services/SearchIndex.php           export-ignore
+/app/Services/TestService.php           export-ignore
+/views/site                             export-ignore
+/views/home                             export-ignore
+/views/components/hero.php              export-ignore
+/public/assets/images/*.png            export-ignore
+/public/assets/images/opensource.png   export-ignore
+/public/assets/images/sponser.png      export-ignore
+/public/assets/images/mascot.svg       export-ignore
+/public/assets/images/og-image.svg     export-ignore
+/public/assets/images/github-banner.svg export-ignore
+
 *.cache                  export-ignore
 .php-cs-fixer.dist.php   export-ignore
 phpunit.xml              export-ignore

@@ -7,9 +7,9 @@ use App\Services\DocsService;
 
 class WebsiteController extends Controller
 {
-    public function home(): void
+    public function home(): string
     {
-        $this->view('site/home', [
+        return $this->view('site/home', [
             'title' => 'ZeroPing Framework',
             'active' => 'home',
             'stats' => [
@@ -21,82 +21,81 @@ class WebsiteController extends Controller
         ], 'site');
     }
 
-    public function features(): void
+    public function features(): string
     {
-        $this->view('site/features', [
+        return $this->view('site/features', [
             'title' => 'Features - ZeroPing',
             'active' => 'features',
         ], 'site');
     }
 
-    public function documentation(): void
+    public function documentation(): string
     {
         $docs = new DocsService();
 
-        $this->view('site/documentation-index', [
+        return $this->view('site/documentation-index', [
             'title' => 'Documentation - ZeroPing',
             'active' => 'documentation',
             'documents' => $docs->documents(),
         ], 'site');
     }
 
-    public function installation(): void
+    public function installation(): string
     {
-        $this->view('site/installation', [
+        return $this->view('site/installation', [
             'title' => 'Installation - ZeroPing',
             'active' => 'installation',
         ], 'site');
     }
 
-    public function gettingStarted(): void
+    public function gettingStarted(): string
     {
-        $this->view('site/getting-started', [
+        return $this->view('site/getting-started', [
             'title' => 'Getting Started - ZeroPing',
             'active' => 'getting-started',
         ], 'site');
     }
 
-    public function api(): void
+    public function api(): string
     {
-        $this->view('site/api', [
+        return $this->view('site/api', [
             'title' => 'API - ZeroPing',
             'active' => 'api',
         ], 'site');
     }
 
-    public function roadmap(): void
+    public function roadmap(): string
     {
-        $this->view('site/roadmap', [
+        return $this->view('site/roadmap', [
             'title' => 'Roadmap - ZeroPing',
             'active' => 'roadmap',
         ], 'site');
     }
 
-    public function github(): void
+    public function github(): string
     {
-        $this->view('site/github', [
+        return $this->view('site/github', [
             'title' => 'GitHub - ZeroPing',
             'active' => 'github',
             'repositoryUrl' => 'https://github.com/RITH-1437/ZeroPing',
         ], 'site');
     }
 
-    public function docs(string $slug = 'introduction'): void
+    public function docs(string $slug = 'introduction'): string
     {
         $docs = new DocsService();
         $doc = $docs->find($slug);
 
         if (!$doc) {
             http_response_code(404);
-            $this->view('errors/404', ['title' => 'Not Found', 'active' => 'documentation'], 'site');
-            return;
+            return $this->view('errors/404', ['title' => 'Not Found', 'active' => 'documentation'], 'site');
         }
 
         $markdown = $docs->loadMarkdown($slug) ?? '# Missing document';
         $rendered = $docs->render($markdown);
         $neighbors = $docs->neighbors($slug);
 
-        $this->view('site/documentation', [
+        return $this->view('site/documentation', [
             'title' => $doc['title'] . ' - ZeroPing Docs',
             'active' => 'documentation',
             'documents' => $docs->documents(),
