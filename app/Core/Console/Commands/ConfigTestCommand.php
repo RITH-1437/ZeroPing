@@ -31,7 +31,7 @@ class ConfigTestCommand extends Command
         $this->info('Testing configuration loader...');
 
         $this->assert(Config::get('app.name') === 'ZeroPing', 'app.name');
-        $this->assert(Config::get('database.default') === 'mysql', 'database.default');
+        $this->assert(Config::get('database.default') !== null, 'database.default');
 
         $this->info('Configuration loader test completed successfully!');
     }

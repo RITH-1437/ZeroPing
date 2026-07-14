@@ -41,6 +41,7 @@ Router::get('/register', [\App\Controllers\\{$controllerName}::class, 'showRegis
 Router::post('/login', [\App\Controllers\\{$controllerName}::class, 'login']);
 Router::post('/register', [\App\Controllers\\{$controllerName}::class, 'register']);
 Router::post('/logout', [\App\Controllers\\{$controllerName}::class, 'logout']);
+
 PHP;
 
         file_put_contents(BASE_PATH . '/config/routes.php', $routes, FILE_APPEND);

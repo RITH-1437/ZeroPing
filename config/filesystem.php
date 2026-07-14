@@ -8,17 +8,18 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => BASE_PATH . '/storage',
         ],
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            'root' => BASE_PATH . '/storage/public',
             'url' => '/storage',
         ],
 
-        'null' => [
-            'driver' => 'null',
+        'cache' => [
+            'driver' => 'local',
+            'root' => BASE_PATH . '/storage/cache',
         ],
 
     ],

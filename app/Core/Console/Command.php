@@ -366,7 +366,7 @@ abstract class Command
 
     protected function parseOptions(): void
     {
-        $argv = array_slice($_SERVER['argv'], 2);
+        $argv = isset($_SERVER['argv']) ? array_slice($_SERVER['argv'], 2) : [];
 
         $count = count($argv);
 

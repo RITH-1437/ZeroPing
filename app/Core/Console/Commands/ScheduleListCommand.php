@@ -2,33 +2,19 @@
 
 namespace App\Core\Console\Commands;
 
+use App\Core\Application\App;
 use App\Core\Console\Command;
 use App\Core\Scheduling\ScheduleManager;
 
 class ScheduleListCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected string $signature = 'schedule:list';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected string $description = 'List the scheduled commands';
 
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
     public function handle(): void
     {
-        $schedule = (new ScheduleManager())->schedule();
+        $schedule = App::container()->make(ScheduleManager::class)->schedule();
 
         $this->info('Scheduled Commands:');
 

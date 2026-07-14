@@ -17,3 +17,10 @@ Router::get('/cli', [\App\Core\Console\WelcomeController::class, 'cli']);
 Router::get('/start', [\App\Core\Console\WelcomeController::class, 'start']);
 
 Router::get('/docs/{page}', fn($page) => (new \App\Core\Docs\Docs())->render($page));
+
+// Auth routes
+Router::get('/login', [\App\Controllers\AuthController::class, 'showLoginForm']);
+Router::get('/register', [\App\Controllers\AuthController::class, 'showRegisterForm']);
+Router::post('/login', [\App\Controllers\AuthController::class, 'login']);
+Router::post('/register', [\App\Controllers\AuthController::class, 'register']);
+Router::post('/logout', [\App\Controllers\AuthController::class, 'logout']);

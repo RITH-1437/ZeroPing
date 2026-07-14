@@ -101,7 +101,7 @@ PHP;
         $test = <<<PHP
 <?php
 
-namespace {$namespace}Tests;
+namespace {$ns}\Tests;
 
 use PHPUnit\Framework\TestCase;
 

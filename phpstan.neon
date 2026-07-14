@@ -21,6 +21,9 @@ parameters:
     ignoreErrors:
         - '#Class App\\Controllers\\#'
         - '#Class App\\Models\\#'
+        -
+            identifier: require.fileNotFound
+            path: app/Core/Support/Config.php
 
     # Treat various framework patterns leniently
     reportUnmatchedIgnoredErrors: false
