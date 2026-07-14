@@ -63,7 +63,7 @@ class FilesystemRepository
         return $this->driver->url($path);
     }
 
-    public function download(string $path, string $name = null, array $headers = [])
+    public function download(string $path, ?string $name = null, array $headers = [])
     {
         return $this->driver->download($path, $name, $headers);
     }

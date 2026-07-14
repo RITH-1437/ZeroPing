@@ -15,7 +15,7 @@ class FilesystemManager
         // Drivers are resolved lazily via resolve() → create*Driver() methods
     }
 
-    public function disk(string $name = null): FilesystemRepository
+    public function disk(?string $name = null): FilesystemRepository
     {
         $name = $name ?: $this->getDefaultDriver();
 

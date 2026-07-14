@@ -115,7 +115,7 @@ class Banner
      * every glyph row shares one horizontal center and the banner never
      * looks jagged.
      */
-    public static function logo(int $width = null): string
+    public static function logo(?int $width = null): string
     {
         $width ??= Terminal::width();
         $lines = self::logoLines();

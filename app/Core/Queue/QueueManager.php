@@ -17,7 +17,7 @@ class QueueManager
         // Drivers are resolved via create*Driver() methods in resolve()
     }
 
-    public function connection(string $name = null): QueueRepository
+    public function connection(?string $name = null): QueueRepository
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -30,7 +30,7 @@ class QueueManager
         return $this->connections[$name] = $this->resolve($name, $config);
     }
 
-    public function driver(string $driver = null): QueueRepository
+    public function driver(?string $driver = null): QueueRepository
     {
         return $this->connection($driver);
     }

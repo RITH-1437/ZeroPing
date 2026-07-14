@@ -15,7 +15,7 @@ class Worker
 
     public function run(
         string $connection,
-        string $queue = null,
+        ?string $queue = null,
         int $delay = 0,
         int $sleep = 3,
         int $maxTries = 1
@@ -35,7 +35,7 @@ class Worker
         }
     }
 
-    protected function getNextJob(string $connection, string $queue = null): ?Job
+    protected function getNextJob(string $connection, ?string $queue = null): ?Job
     {
         return $this->manager->connection($connection)->pop($queue);
     }

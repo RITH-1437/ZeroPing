@@ -7,24 +7,6 @@ parameters:
 			path: app/Core/Application/App.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Config/ConfigLoader.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$width \(int\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Console/Banner.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Command.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:flush\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -67,34 +49,10 @@ parameters:
 			path: app/Core/Console/Commands/CacheTestCommand.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/ConfigCacheCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/ConfigClearCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/DbSeedCommand.php
-
-		-
 			message: '#^Access to constant VERSION on an unknown class Composer\\Composer\.$#'
 			identifier: class.notFound
 			count: 1
 			path: app/Core/Console/Commands/DoctorCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/KeyGenerateCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Mail\\Mail\:\:raw\(\)\.$#'
@@ -103,100 +61,10 @@ parameters:
 			path: app/Core/Console/Commands/MailTestCommand.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeCommandCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeControllerCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: app/Core/Console/Commands/MakeMailCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeMiddlewareCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeMigrationCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeModelCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakePolicyCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeProviderCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeRepositoryCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeRequestCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeSeederCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeServiceCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MakeTestCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/MonitorCommand.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Console\\Commands\\NewCommand\:\:\$descriptions\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Core/Console/Commands/NewCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/OptimizeClearCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\User\:\:first\(\)\.$#'
@@ -211,46 +79,10 @@ parameters:
 			path: app/Core/Console/Commands/OrmTestCommand.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Core/Console/Commands/PackageCreateCommand.php
-
-		-
 			message: '#^Undefined variable\: \$namespace$#'
 			identifier: variable.undefined
 			count: 1
 			path: app/Core/Console/Commands/PackageCreateCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Core/Console/Commands/PackageDisableCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Core/Console/Commands/PackageEnableCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Core/Console/Commands/PackageInstallCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: app/Core/Console/Commands/PackageListCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: app/Core/Console/Commands/PackageRemoveCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:forever\(\)\.$#'
@@ -259,20 +91,8 @@ parameters:
 			path: app/Core/Console/Commands/QueueRestartCommand.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/RouteCacheCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/RouteClearCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
+			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/config/routes\.php" is not a file or it does not exist\.$#'
+			identifier: require.fileNotFound
 			count: 1
 			path: app/Core/Console/Commands/RouteListCommand.php
 
@@ -281,12 +101,6 @@ parameters:
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Core/Console/Commands/ScheduleClearCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/StarterInstallCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Filesystem\\Storage\:\:disk\(\)\.$#'
@@ -355,66 +169,6 @@ parameters:
 			path: app/Core/Console/Commands/StorageTestCommand.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: app/Core/Console/Commands/TestCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Commands/ViewCacheCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Core/Console/Generators/MakeAuthCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeEnumCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeEventCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeFactoryCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeJobCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeListenerCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Console/Generators/MakeNotificationCommand.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Database/MigrationRunner.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Database\\Model\:\:addGlobalScope\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -433,64 +187,10 @@ parameters:
 			path: app/Core/Database/Model.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
+			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/views/errors/500\.php" is not a file or it does not exist\.$#'
+			identifier: require.fileNotFound
 			count: 1
 			path: app/Core/Debug/ExceptionHandler.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/Drivers/LocalDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$directory \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 2
-			path: app/Core/Filesystem/Drivers/NullDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/Drivers/NullDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/FilesystemManager.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/FilesystemRepository.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$disk \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/UploadedFile.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/UploadedFile.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$disk \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Filesystem/UploadedFile.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -505,33 +205,9 @@ parameters:
 			path: app/Core/Http/Resources/JsonResource.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: app/Core/Logging/FileLogger.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$driver \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Mail/MailManager.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Mail/MailManager.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Filesystem\\Storage\:\:get\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
-			path: app/Core/Mail/Mailable.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 6
 			path: app/Core/Mail/Mailable.php
 
 		-
@@ -539,18 +215,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Core/Mail/Mailer.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Mail/Mailer.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Mail/Message.php
 
 		-
 			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:data_get\(\)\.$#'
@@ -607,136 +271,10 @@ parameters:
 			path: app/Core/ORM/Model.php
 
 		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/ArrayDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/ArrayDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/ArrayDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/DatabaseDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/DatabaseDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/DatabaseDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/NullDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/NullDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/NullDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/QueueDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/QueueDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/QueueDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/SyncDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/SyncDriver.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/Drivers/SyncDriver.php
-
-		-
 			message: '#^Class App\\Core\\Queue\\Drivers\\DatabaseDriver constructor invoked with 1 parameter, 0 required\.$#'
 			identifier: arguments.count
 			count: 1
 			path: app/Core/Queue/QueueManager.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$driver \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/QueueManager.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$name \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/QueueManager.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/QueueRepository.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/QueueRepository.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Queue/QueueRepository.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$queue \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 2
-			path: app/Core/Queue/Worker.php
 
 		-
 			message: '#^Variable \$frameworkPath might not be defined\.$#'
@@ -793,79 +331,13 @@ parameters:
 			path: app/Core/Security/RateLimiter.php
 
 		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
+			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/bootstrap/cache/config\.php" is not a file or it does not exist\.$#'
+			identifier: require.fileNotFound
 			count: 1
-			path: app/Core/Support/Log.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$data \(array\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Testing/HTTP/TestResponse.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$uri \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 2
-			path: app/Core/Testing/HTTP/TestResponse.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$message \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 9
-			path: app/Core/Validation/FieldRuleBuilder.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$column \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 2
-			path: app/Core/Validation/FieldRuleBuilder.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$message \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 8
-			path: app/Core/Validation/FieldRuleBuilder.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$except \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Validation/FieldRuleBuilder.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$message \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Validation/FieldRuleBuilder.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#4 \$idColumn \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Core/Validation/FieldRuleBuilder.php
+			path: app/Core/Support/Config.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
 			path: app/Core/Validation/Validator.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 4
-			path: app/Helpers/helpers.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: config/cache.php
-
-		-
-			message: '#^Constant BASE_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: config/logging.php

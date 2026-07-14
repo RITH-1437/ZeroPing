@@ -13,17 +13,17 @@ class QueueRepository
         $this->driver = $driver;
     }
 
-    public function push(Job $job, string $queue = null): void
+    public function push(Job $job, ?string $queue = null): void
     {
         $this->driver->push($job, $queue);
     }
 
-    public function later(int $delay, Job $job, string $queue = null): void
+    public function later(int $delay, Job $job, ?string $queue = null): void
     {
         $this->driver->later($delay, $job, $queue);
     }
 
-    public function pop(string $queue = null): ?Job
+    public function pop(?string $queue = null): ?Job
     {
         return $this->driver->pop($queue);
     }

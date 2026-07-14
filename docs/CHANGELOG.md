@@ -1,5 +1,53 @@
 # Changelog
 
+## v2.0.0 (2026-07-14)
+
+ZeroPing 2.0 stable — the **Enterprise Framework Foundation** is production-ready.
+All 20 subsystems are built, tested, and hardened. This release resolves all known
+issues from the beta and ships every adoption-critical helper, code-quality gate,
+and documentation page.
+
+### What's New Since v2.0.0-beta
+
+- **`asset()` / `url()` global helpers** — developers no longer need to construct
+  URLs manually (`helpers.php`).
+- **`env()` fallback** — now reads from `getenv()` and `$_SERVER` in addition to `$_ENV`.
+- **`make:auth` scaffolding** — `php zero make:auth` generates a complete
+  authentication controller, login/register views, and auth routes.
+- **`doctor` env validation** — warns when required env keys (`APP_KEY`, `DB_CONNECTION`) are missing.
+- **Scheduler hardened** — `CronExpression` parser, real `isDue()` (was always-true stub),
+  and mutex support via `CacheRepository` (was no-op) to prevent overlapping events.
+- **Console testing** — `ConsoleAssertions::artisan()` now dispatches through the real Console
+  (was stub returning exit code 0) — integration tests can assert on real command output.
+- **HTTP test client** — `TestRequest::send()` dispatches through the full HTTP Kernel
+  (was stub capturing empty buffer) — feature tests can now exercise the full middleware + router stack.
+- **Production error pages** — `ExceptionHandler` renders the proper `views/errors/500.php`
+  view instead of raw `<h1>500</h1>`. The error view no longer leaks exception messages in production.
+- **Security config** — `config/security.php`'s `key` now reads from `$_ENV['APP_KEY']` (was hardcoded).
+- **Queue config added** — `config/queue.php` shipped (was only in `stubs/publish/`).
+- **Constants deduplicated** — removed duplicate `define()` calls from `App::bootstrap()`;
+  `config/constants.php` is the single source of truth.
+- **`ray()` helper** — no longer a no-op; forwards to `Dumper` for debugging.
+- **Composer suggest entries** — `ext-pdo_sqlite`, `ext-pdo_pgsql`, `ext-redis`, `ext-bcmath` recommended.
+
+### Documentation
+- **`deployment.md`** — production deployment guide (env, caching, queues, scheduler, Nginx).
+- **`error-handling.md`** — debug vs production modes, error views, ExceptionHandler, logging.
+- **`routing.md`** and **`testing.md`** already existed in `resources/docs/`.
+- **README** rewritten "What's New" section for v2.0.0.
+- **`docs/project.md`** roadmap — Phases 19-21 (Validation, Error Handling, Logging) marked complete.
+- **`docs/SCOPE.md`** — Project Generator and Documentation marked done.
+- **`docs/RELEASE_READINESS.md`** — fully refreshed for v2.0.0 status.
+
+### Quality & Developer Experience
+- **PHPDoc added** to all 20 core public API classes (`@param`/`@return` annotations).
+- **PHPStan static analysis** integrated at level 1 with a baseline of 103 captured
+  errors (down from 233 at integration). CI step: `phpstan analyse`.
+- **29 PHP 8.5 deprecation warnings eliminated** — all `?Type` nullable hints made
+  explicit across 24 files (Filesystem, Mail, Queue, Validation, Testing, Console).
+- **Full QA** — phpcs 0 errors / 0 warnings; phpunit **375 tests, 901 assertions, 0 failures**;
+  phpstan 0 errors against the baseline.
+
 ## v2.0.0-beta (2026-07-14)
 
 Beta of the **Enterprise Framework Foundation** (Phases G+H) — the framework is now

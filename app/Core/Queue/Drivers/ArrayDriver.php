@@ -8,17 +8,17 @@ class ArrayDriver implements QueueDriver
 {
     protected array $jobs = [];
 
-    public function push(Job $job, string $queue = null): void
+    public function push(Job $job, ?string $queue = null): void
     {
         $this->jobs[$queue][] = $job;
     }
 
-    public function later(int $delay, Job $job, string $queue = null): void
+    public function later(int $delay, Job $job, ?string $queue = null): void
     {
         $this->jobs[$queue][] = $job;
     }
 
-    public function pop(string $queue = null): ?Job
+    public function pop(?string $queue = null): ?Job
     {
         return array_shift($this->jobs[$queue]);
     }

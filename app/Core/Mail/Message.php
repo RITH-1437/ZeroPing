@@ -7,7 +7,7 @@ class Message
     public array $to = [];
     public string $subject = '';
 
-    public function to(string $address, string $name = null): self
+    public function to(string $address, ?string $name = null): self
     {
         $this->to[] = new Address($address, $name);
         return $this;

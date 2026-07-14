@@ -54,17 +54,17 @@ class NullDriver implements FilesystemDriver
         return '';
     }
 
-    public function download(string $path, string $name = null, array $headers = [])
+    public function download(string $path, ?string $name = null, array $headers = [])
     {
         //
     }
 
-    public function files(string $directory = null, bool $recursive = false): array
+    public function files(?string $directory = null, bool $recursive = false): array
     {
         return [];
     }
 
-    public function directories(string $directory = null, bool $recursive = false): array
+    public function directories(?string $directory = null, bool $recursive = false): array
     {
         return [];
     }

@@ -19,7 +19,7 @@ class UploadedFile
         $this->size = $file['size'];
     }
 
-    public function move(string $directory, string $name = null): bool
+    public function move(string $directory, ?string $name = null): bool
     {
         $name = $name ?: $this->name;
         $path = $directory . '/' . $name;
@@ -27,14 +27,14 @@ class UploadedFile
         return move_uploaded_file($this->tmpName, $path);
     }
 
-    public function store(string $path, string $disk = null): string|false
+    public function store(string $path, ?string $disk = null): string|false
     {
         $name = $this->hashName();
 
         return $this->storeAs($path, $name, $disk);
     }
 
-    public function storeAs(string $path, string $name, string $disk = null): string|false
+    public function storeAs(string $path, string $name, ?string $disk = null): string|false
     {
         $disk = storage($disk);
 

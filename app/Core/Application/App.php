@@ -10,7 +10,7 @@ class App
     /**
      * The current ZeroPing Framework version.
      */
-    public const VERSION = '2.0.0-beta';
+    public const VERSION = '2.0.0';
 
     protected string $basePath;
 

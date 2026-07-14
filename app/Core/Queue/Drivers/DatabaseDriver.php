@@ -14,7 +14,7 @@ class DatabaseDriver implements QueueDriver
         $this->db = Database::connect();
     }
 
-    public function push(Job $job, string $queue = null): void
+    public function push(Job $job, ?string $queue = null): void
     {
         $this->db->prepare(
             "INSERT INTO jobs (queue, payload, attempts, reserved_at, available_at, created_at)
@@ -29,7 +29,7 @@ class DatabaseDriver implements QueueDriver
         ]);
     }
 
-    public function later(int $delay, Job $job, string $queue = null): void
+    public function later(int $delay, Job $job, ?string $queue = null): void
     {
         $this->db->prepare(
             "INSERT INTO jobs (queue, payload, attempts, reserved_at, available_at, created_at)
@@ -44,7 +44,7 @@ class DatabaseDriver implements QueueDriver
         ]);
     }
 
-    public function pop(string $queue = null): ?Job
+    public function pop(?string $queue = null): ?Job
     {
         $this->db->beginTransaction();
 

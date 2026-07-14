@@ -40,7 +40,7 @@ class TestResponse
      * @param string|null $uri
      * @return self
      */
-    public function assertRedirect(string $uri = null): self
+    public function assertRedirect(?string $uri = null): self
     {
         assert($this->isRedirect($uri), "Expected redirect" . ($uri ? " to {$uri}" : ''));
         return $this;
@@ -53,7 +53,7 @@ class TestResponse
      * @param bool $strict
      * @return self
      */
-    public function assertJson(array $data = null, bool $strict = false): self
+    public function assertJson(?array $data = null, bool $strict = false): self
     {
         $decoded = json_decode($this->content, true);
         assert($decoded === $data, "JSON response did not match expected data");
@@ -95,7 +95,7 @@ class TestResponse
         return $this;
     }
 
-    protected function isRedirect(string $uri = null): bool
+    protected function isRedirect(?string $uri = null): bool
     {
         if (is_null($uri)) {
             return $this->status >= 300 && $this->status < 400;

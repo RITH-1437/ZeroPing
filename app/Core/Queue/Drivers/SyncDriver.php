@@ -6,18 +6,18 @@ use App\Core\Queue\Job;
 
 class SyncDriver implements QueueDriver
 {
-    public function push(Job $job, string $queue = null): void
+    public function push(Job $job, ?string $queue = null): void
     {
         $job->handle();
     }
 
-    public function later(int $delay, Job $job, string $queue = null): void
+    public function later(int $delay, Job $job, ?string $queue = null): void
     {
         sleep($delay);
         $this->push($job, $queue);
     }
 
-    public function pop(string $queue = null): ?Job
+    public function pop(?string $queue = null): ?Job
     {
         return null;
     }

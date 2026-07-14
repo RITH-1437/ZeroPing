@@ -87,7 +87,7 @@ class LocalDriver implements FilesystemDriver
         return '/storage/' . $path;
     }
 
-    public function download(string $path, string $name = null, array $headers = [])
+    public function download(string $path, ?string $name = null, array $headers = [])
     {
         $location = $this->applyPathPrefix($path);
         $name = $name ?: basename($location);

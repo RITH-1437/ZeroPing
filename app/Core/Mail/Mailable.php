@@ -18,35 +18,35 @@ abstract class Mailable
     protected bool $isHtml = false;
     protected array $attachments = [];
 
-    public function to(string $address, string $name = null): self
+    public function to(string $address, ?string $name = null): self
     {
         $this->to[] = new Address($address, $name);
 
         return $this;
     }
 
-    public function cc(string $address, string $name = null): self
+    public function cc(string $address, ?string $name = null): self
     {
         $this->cc[] = new Address($address, $name);
 
         return $this;
     }
 
-    public function bcc(string $address, string $name = null): self
+    public function bcc(string $address, ?string $name = null): self
     {
         $this->bcc[] = new Address($address, $name);
 
         return $this;
     }
 
-    public function from(string $address, string $name = null): self
+    public function from(string $address, ?string $name = null): self
     {
         $this->from[] = new Address($address, $name);
 
         return $this;
     }
 
-    public function replyTo(string $address, string $name = null): self
+    public function replyTo(string $address, ?string $name = null): self
     {
         $this->replyTo[] = new Address($address, $name);
 
@@ -99,7 +99,7 @@ abstract class Mailable
         return $this;
     }
 
-    public function attachFromStorage(string $path, string $name = null, array $options = []): self
+    public function attachFromStorage(string $path, ?string $name = null, array $options = []): self
     {
         $contents = Storage::get($path);
 

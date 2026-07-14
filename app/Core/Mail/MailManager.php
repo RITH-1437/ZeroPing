@@ -17,7 +17,7 @@ class MailManager
         // Drivers are resolved lazily via resolve() → create*Driver() methods
     }
 
-    public function mailer(string $name = null): Mailer
+    public function mailer(?string $name = null): Mailer
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -30,7 +30,7 @@ class MailManager
         return $this->mailers[$name] = $this->resolve($name, $config);
     }
 
-    public function driver(string $driver = null): Mailer
+    public function driver(?string $driver = null): Mailer
     {
         return $this->mailer($driver);
     }

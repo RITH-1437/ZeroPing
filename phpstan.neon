@@ -3,12 +3,15 @@ includes:
 
 parameters:
     level: 1
+    bootstrapFiles:
+        - phpstan-bootstrap.php
     paths:
         - app/Core
         - app/Helpers
         - config
     scanFiles:
         - bootstrap/app.php
+        - config/config.php
     scanDirectories:
         - app/Core
     excludePaths:
