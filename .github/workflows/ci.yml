@@ -131,11 +131,12 @@ jobs:
           extensions: pdo_mysql
           tools: composer
 
-      - name: composer create-project rith-1437/zero-ping
+      - name: Smoke-test fresh install
         run: |
           rm -rf /tmp/myapp
-          composer create-project rith-1437/zero-ping /tmp/myapp --no-interaction --stability dev
+          git clone --depth=1 https://github.com/RITH-1437/ZeroPing.git /tmp/myapp
           cd /tmp/myapp
+          composer install --no-interaction --no-dev
           php zero doctor || true
 
       - name: Boot and smoke-test (port 1437)

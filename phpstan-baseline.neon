@@ -91,12 +91,6 @@ parameters:
 			path: app/Core/Console/Commands/QueueRestartCommand.php
 
 		-
-			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/config/routes\.php" is not a file or it does not exist\.$#'
-			identifier: require.fileNotFound
-			count: 1
-			path: app/Core/Console/Commands/RouteListCommand.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:forget\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -185,12 +179,6 @@ parameters:
 			identifier: new.static
 			count: 9
 			path: app/Core/Database/Model.php
-
-		-
-			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/views/errors/500\.php" is not a file or it does not exist\.$#'
-			identifier: require.fileNotFound
-			count: 1
-			path: app/Core/Debug/ExceptionHandler.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -331,7 +319,7 @@ parameters:
 			path: app/Core/Security/RateLimiter.php
 
 		-
-			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero/bootstrap/cache/config\.php" is not a file or it does not exist\.$#'
+			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero\\zero\-ping/bootstrap/cache/config\.php" is not a file or it does not exist\.$#'
 			identifier: require.fileNotFound
 			count: 1
 			path: app/Core/Support/Config.php
