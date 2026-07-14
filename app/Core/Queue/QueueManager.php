@@ -25,7 +25,7 @@ class QueueManager
             return $this->connections[$name];
         }
 
-        $config = Config::get("queue.connections.{$name}");
+        $config = Config::get("queue.connections.{$name}") ?? [];
 
         return $this->connections[$name] = $this->resolve($name, $config);
     }
@@ -68,7 +68,7 @@ class QueueManager
 
     public function getDefaultDriver(): string
     {
-        return Config::get('queue.default');
+        return Config::get('queue.default') ?? 'sync';
     }
 
     public function __call(string $method, array $parameters)

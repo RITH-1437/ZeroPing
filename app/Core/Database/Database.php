@@ -2,84 +2,108 @@
 
 namespace App\Core\Database;
 
+use App\Core\Database\Drivers\DriverInterface;
 use PDO;
 use PDOException;
 
+/**
+ * Backwards-compatible facade over the DatabaseManager.
+ *
+ * Older code (and third-party providers) still call Database::connect(),
+ * Database::getSchemaBuilder(), Database::addLog() and Database::getLog().
+ * Those now resolve through the multi-driver DatabaseManager so the whole
+ * framework benefits from SQLite / MySQL / MariaDB / PostgreSQL support
+ * without call-site changes.
+ */
 class Database
 {
-    private static ?PDO $connection = null;
+    private static ?DatabaseManager $manager = null;
+
+    /** @var array<string, array{query:string, bindings:array, time:float}> */
     private static array $log = [];
 
-    public static function connect(): PDO
+    public static function manager(): DatabaseManager
     {
-        if (self::$connection === null) {
-            $configPath = dirname(__FILE__, 3) . '/config/database.php';
-            $dbConfig = file_exists($configPath) ? require $configPath : [];
-            $host = $dbConfig['host'] ?? (defined('DB_HOST') ? DB_HOST : '127.0.0.1');
-            $dbname = $dbConfig['database'] ?? (defined('DB_NAME') ? DB_NAME : '');
-            $user = $dbConfig['username'] ?? (defined('DB_USER') ? DB_USER : '');
-            $pass = $dbConfig['password'] ?? (defined('DB_PASS') ? DB_PASS : '');
-            $charset = $dbConfig['charset'] ?? (defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4');
-            $port = $dbConfig['port'] ?? (defined('DB_PORT') ? DB_PORT : 3306);
-
-            $dsn = sprintf(
-                "mysql:host=%s;dbname=%s;port=%s;charset=%s",
-                $host,
-                $dbname,
-                $port,
-                $charset
-            );
-
-            try {
-                self::$connection = new PDO(
-                    $dsn,
-                    $user,
-                    $pass,
-                    [
-                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        PDO::ATTR_EMULATE_PREPARES => false,
-                    ]
-                );
-            } catch (PDOException $e) {
-                throw new \RuntimeException(
-                    "Database connection failed.\n" .
-                    "  Host: {$host}\n" .
-                    "  User: {$user}\n" .
-                    "  Error: {$e->getMessage()}\n" .
-                    "Check your .env database credentials and ensure MySQL is running."
-                );
-            }
-
-            // The profiled statement class adds overhead on every query; only
-            // enable it when debugging so production queries stay lean.
-            if (defined('APP_DEBUG') && APP_DEBUG === true) {
-                self::$connection->setAttribute(
-                    PDO::ATTR_STATEMENT_CLASS,
-                    [ProfiledStatement::class, [self::$connection]]
-                );
-            }
+        if (self::$manager === null) {
+            self::$manager = new DatabaseManager();
         }
 
-        return self::$connection;
+        return self::$manager;
+    }
+
+    public static function setManager(DatabaseManager $manager): void
+    {
+        self::$manager = $manager;
+    }
+
+    /**
+     * Return the PDO for the default (or named) connection.
+     */
+    public static function connect(?string $name = null): PDO
+    {
+        $connection = self::manager()->connection($name);
+
+        $pdo = $connection->pdo();
+
+        // Profiling adds per-statement overhead; only enable it while debugging.
+        if (defined('APP_DEBUG') && APP_DEBUG === true && !defined('ZEROPING_DB_PROFILE')) {
+            $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, [ProfiledStatement::class, [$pdo]]);
+            define('ZEROPING_DB_PROFILE', true);
+        }
+
+        return $pdo;
+    }
+
+    public static function connection(?string $name = null): Connection
+    {
+        return self::manager()->connection($name);
+    }
+
+    /**
+     * Inject a connection (used by tests to swap in an in-memory DB).
+     */
+    public static function setConnection(string $name, Connection $connection): void
+    {
+        self::manager()->setConnection($name, $connection);
+    }
+
+    public static function getConnection(?string $name = null): Connection
+    {
+        return self::manager()->connection($name);
     }
 
     public static function getSchemaBuilder(): Schema
     {
-        return new Schema(self::connect());
+        return new Schema(self::connection());
     }
 
+    public static function getDriverName(?string $name = null): string
+    {
+        return self::connection($name)->driver()->getName();
+    }
+
+    /**
+     * @internal used by ProfiledStatement
+     */
     public static function addLog(string $query, array $bindings, float $time): void
     {
         self::$log[] = [
-            'query' => $query,
+            'query'    => $query,
             'bindings' => $bindings,
-            'time' => $time,
+            'time'     => $time,
         ];
     }
 
     public static function getLog(): array
     {
         return self::$log;
+    }
+
+    /**
+     * Resolve the driver instance for the (default) connection.
+     */
+    public static function driver(?string $name = null): DriverInterface
+    {
+        return self::connection($name)->driver();
     }
 }

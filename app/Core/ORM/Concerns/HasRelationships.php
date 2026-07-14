@@ -77,8 +77,12 @@ trait HasRelationships
      * @param  string|null  $relatedPivotKey
      * @return \App\Core\ORM\Relations\BelongsToMany
      */
-    public function belongsToMany(string $related, ?string $table = null, ?string $foreignPivotKey = null, ?string $relatedPivotKey = null): BelongsToMany
-    {
+    public function belongsToMany(
+        string $related,
+        ?string $table = null,
+        ?string $foreignPivotKey = null,
+        ?string $relatedPivotKey = null
+    ): BelongsToMany {
         $instance = new $related();
         $table = $table ?: $this->getJoinTable($instance);
         $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
@@ -94,7 +98,8 @@ trait HasRelationships
      */
     public function getForeignKey(): string
     {
-        return strtolower(basename(str_replace('\\', '/', static::class))) . '_id';
+        return strtolower(basename(str_replace('\\', '/', static::class)))
+            . '_id';
     }
 
     /**

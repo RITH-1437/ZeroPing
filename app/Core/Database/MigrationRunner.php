@@ -2,20 +2,66 @@
 
 namespace App\Core\Database;
 
+use App\Core\Database\Grammar\Grammar;
 use PDO;
-use PDOException;
 
+/**
+ * Runs the database migrations.
+ *
+ * All SQL this runner produces is compiled through the active Grammar, so the
+ * same migrations run on SQLite, MySQL, MariaDB and PostgreSQL without
+ * modification.
+ */
 class MigrationRunner
 {
-    private PDO $db;
+    /**
+     * Package migration directories pushed in by service providers via
+     * loadMigrationsFrom() (see Zeroping\Support\Foundation\MigrationLoader).
+     *
+     * @var string[]
+     */
+    private static array $extraPaths = [];
 
-    private string $migrationPath;
+    private Connection $connection;
 
-    public function __construct()
+    /**
+     * @var string[]
+     */
+    private array $migrationPaths;
+
+    public function __construct(?Connection $connection = null)
     {
-        $this->db = Database::connect();
+        $this->connection = $connection ?? Database::connection();
 
-        $this->migrationPath = BASE_PATH . '/database/migrations';
+        $paths = [BASE_PATH . '/database/migrations'];
+
+        foreach (self::$extraPaths as $path) {
+            if (!in_array($path, $paths, true)) {
+                $paths[] = $path;
+            }
+        }
+
+        $this->migrationPaths = $paths;
+    }
+
+    /**
+     * Register an additional migration directory (called by package providers).
+     */
+    public static function addPath(string $path): void
+    {
+        $path = rtrim($path, '/');
+
+        if (!in_array($path, self::$extraPaths, true)) {
+            self::$extraPaths[] = $path;
+        }
+    }
+
+    /**
+     * Clear the registered package paths (used by tests / optimize:clear).
+     */
+    public static function clearPaths(): void
+    {
+        self::$extraPaths = [];
     }
 
     public function run(): void
@@ -31,22 +77,18 @@ class MigrationRunner
         }
 
         $executed = $this->executedMigrations();
-
         $batch = $this->nextBatch();
 
         foreach ($files as $file) {
             $migrationName = basename($file);
 
-            if (in_array($migrationName, $executed)) {
+            if (in_array($migrationName, $executed, true)) {
                 echo "⏩ {$migrationName}\n";
-
                 continue;
             }
 
             echo "🚀 {$migrationName} ... ";
-
             $this->runUp($file, $batch);
-
             echo "Done ✅\n";
         }
 
@@ -54,8 +96,6 @@ class MigrationRunner
     }
 
     /**
-     * Return the list of migration files that have not yet been executed.
-     *
      * @return string[]
      */
     public function pendingMigrationFiles(): array
@@ -63,7 +103,6 @@ class MigrationRunner
         $this->createMigrationTable();
 
         $executed = $this->executedMigrations();
-
         $pending = [];
 
         foreach ($this->migrationFiles() as $file) {
@@ -75,35 +114,24 @@ class MigrationRunner
         return $pending;
     }
 
-    /**
-     * Run the "up" step of a single migration file and record it.
-     */
     public function runUp(string $file, int $batch): void
     {
         $migrationName = basename($file);
-
-        /** @var Migration|string $migration */
         $migration = require $file;
 
         try {
             if ($migration instanceof Migration) {
                 $migration->up();
             } elseif (is_string($migration)) {
-                // Raw SQL migration
                 foreach (array_filter(array_map('trim', explode(';', $migration))) as $sql) {
-                    $this->db->exec($sql);
+                    $this->connection->statement($sql);
                 }
             }
 
-            $stmt = $this->db->prepare("
-                INSERT INTO migrations (migration, batch)
-                VALUES (?, ?)
-            ");
-
-            $stmt->execute([
-                $migrationName,
-                $batch
-            ]);
+            $this->connection->statement(
+                $this->connection->grammar()->compileInsertMigration(),
+                [$migrationName, $batch]
+            );
         } catch (\Throwable $e) {
             throw $e;
         }
@@ -111,57 +139,74 @@ class MigrationRunner
 
     private function createMigrationTable(): void
     {
-        $this->db->exec("
-            CREATE TABLE IF NOT EXISTS migrations (
-
-                id INT AUTO_INCREMENT PRIMARY KEY,
-
-                migration VARCHAR(255) UNIQUE,
-
-                batch INT,
-
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-            )
-        ");
+        $sql = $this->connection->grammar()->compileMigrationTable();
+        $this->connection->statement($sql);
     }
 
+    /**
+     * @return string[]
+     */
     private function migrationFiles(): array
     {
-        return glob($this->migrationPath . '/*.php');
+        $files = [];
+
+        foreach ($this->migrationPaths as $path) {
+            foreach (glob($path . '/*.php') ?: [] as $file) {
+                $files[] = $file;
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * Locate a migration file by name across all registered paths.
+     */
+    private function findMigrationFile(string $name): ?string
+    {
+        foreach ($this->migrationPaths as $path) {
+            $file = $path . '/' . $name;
+
+            if (file_exists($file)) {
+                return $file;
+            }
+        }
+
+        return null;
     }
 
     private function executedMigrations(): array
     {
-        $stmt = $this->db->query("
-            SELECT migration
-            FROM migrations
-        ");
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return array_map(
+            static fn ($row) => array_values($row)[0],
+            $this->connection->select($this->connection->grammar()->selectExecutedMigrations())
+        );
     }
 
     public function nextBatch(): int
     {
-        $stmt = $this->db->query("
-            SELECT MAX(batch)
-            FROM migrations
-        ");
+        $rows = $this->connection->select($this->connection->grammar()->selectMaxBatch());
+        $first = $rows[0] ?? [0];
 
-        return (int)$stmt->fetchColumn() + 1;
+        return ((int) (reset($first))) + 1;
     }
 
     private function lastBatch(): int
     {
-        $stmt = $this->db->query("SELECT MAX(batch) FROM migrations");
-        return (int) $stmt->fetchColumn();
+        $rows = $this->connection->select($this->connection->grammar()->selectMaxBatch());
+        $first = $rows[0] ?? [0];
+
+        return (int) (reset($first));
     }
 
     private function getMigrationsInBatch(int $batch): array
     {
-        $stmt = $this->db->prepare("SELECT migration FROM migrations WHERE batch = ? ORDER BY id ASC");
-        $stmt->execute([$batch]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $rows = $this->connection->select(
+            $this->connection->grammar()->selectMigrationsInBatch(),
+            [$batch]
+        );
+
+        return array_map(static fn ($row) => array_values($row)[0], $rows);
     }
 
     public function getMigrations(): array
@@ -178,45 +223,13 @@ class MigrationRunner
     {
         $this->createMigrationTable();
 
-        // Rollback all batches from highest to lowest
         $maxBatch = $this->lastBatch();
 
         if ($maxBatch === 0) {
             echo "Nothing to rollback, running migrations...\n\n";
         } else {
             echo "⬇️  Rolling back all migrations...\n\n";
-
-            for ($batch = $maxBatch; $batch >= 1; $batch--) {
-                $migrations = array_reverse($this->getMigrationsInBatch($batch));
-
-                foreach ($migrations as $migrationName) {
-                    $file = $this->migrationPath . '/' . $migrationName;
-
-                    if (!file_exists($file)) {
-                        echo "⚠️  File not found: {$migrationName}\n";
-                        continue;
-                    }
-
-                    $migration = require $file;
-
-                    if (!$migration instanceof Migration) {
-                        echo "⚠️  Skipping {$migrationName} (no down() method)\n";
-                    } else {
-                        echo "⬇️  {$migrationName} ... ";
-                        try {
-                            $migration->down();
-                            echo "Done ✅\n";
-                        } catch (\Throwable $e) {
-                            echo "Failed ❌\n";
-                            throw $e;
-                        }
-                    }
-
-                    $stmt = $this->db->prepare("DELETE FROM migrations WHERE migration = ?");
-                    $stmt->execute([$migrationName]);
-                }
-            }
-
+            $this->rollbackBatches($maxBatch);
             echo PHP_EOL . "🔄 Re-running all migrations..." . PHP_EOL . PHP_EOL;
         }
 
@@ -231,39 +244,11 @@ class MigrationRunner
 
         if (!$lastBatch) {
             echo "Nothing to rollback.\n";
+
             return;
         }
 
-        $migrations = array_reverse($this->getMigrationsInBatch($lastBatch));
-
-        foreach ($migrations as $migrationName) {
-            $file = $this->migrationPath . '/' . $migrationName;
-
-            if (!file_exists($file)) {
-                echo "⚠️  File not found: {$migrationName}\n";
-                continue;
-            }
-
-            $migration = require $file;
-
-            if (!$migration instanceof Migration) {
-                echo "⚠️  Skipping {$migrationName} (no down() method)\n";
-            } else {
-                echo "⬇️  {$migrationName} ... ";
-
-                try {
-                    $migration->down();
-                    echo "Done ✅\n";
-                } catch (\Throwable $e) {
-                    echo "Failed ❌\n";
-                    throw $e;
-                }
-            }
-
-            $stmt = $this->db->prepare("DELETE FROM migrations WHERE migration = ?");
-            $stmt->execute([$migrationName]);
-        }
-
+        $this->rollbackBatches($lastBatch);
         echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
     }
 
@@ -275,18 +260,28 @@ class MigrationRunner
 
         if ($maxBatch === 0) {
             echo "Nothing to rollback.\n";
+
             return;
         }
 
         echo "⬇️  Rolling back all migrations...\n\n";
+        $this->rollbackBatches($maxBatch);
+        echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
+    }
 
+    /**
+     * Roll back batches from $maxBatch down to 1, running each migration's
+     * down() method and removing its tracking row.
+     */
+    private function rollbackBatches(int $maxBatch): void
+    {
         for ($batch = $maxBatch; $batch >= 1; $batch--) {
             $migrations = array_reverse($this->getMigrationsInBatch($batch));
 
             foreach ($migrations as $migrationName) {
-                $file = $this->migrationPath . '/' . $migrationName;
+                $file = $this->findMigrationFile($migrationName);
 
-                if (!file_exists($file)) {
+                if ($file === null || !file_exists($file)) {
                     echo "⚠️  File not found: {$migrationName}\n";
                     continue;
                 }
@@ -306,32 +301,53 @@ class MigrationRunner
                     }
                 }
 
-                $stmt = $this->db->prepare("DELETE FROM migrations WHERE migration = ?");
-                $stmt->execute([$migrationName]);
+                $this->connection->statement(
+                    $this->connection->grammar()->compileDeleteMigration(),
+                    [$migrationName]
+                );
             }
         }
-
-        echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
     }
 
     public function fresh(): void
     {
         $this->createMigrationTable();
 
-        // Drop all tables in the database (disable FK checks first)
-        $this->db->exec("SET FOREIGN_KEY_CHECKS = 0");
+        $tables = $this->connection->listTables();
 
-        $tables = $this->db->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
-
-        foreach ($tables as $table) {
-            $this->db->exec("DROP TABLE IF EXISTS `{$table}`");
-            echo "🗑️  Dropped table: {$table}\n";
+        if ($tables !== []) {
+            $this->disableForeignKeys();
+            foreach ($tables as $table) {
+                $this->connection->statement($this->connection->grammar()->compileDrop($table));
+                echo "🗑️  Dropped table: {$table}\n";
+            }
+            $this->enableForeignKeys();
         }
 
-        $this->db->exec("SET FOREIGN_KEY_CHECKS = 1");
-
         echo PHP_EOL . "🔄 Re-running all migrations..." . PHP_EOL . PHP_EOL;
-
         $this->run();
+    }
+
+    // ── Grammar helpers ──────────────────────────────────────────────────
+
+    private function grammar(): Grammar
+    {
+        return $this->connection->grammar();
+    }
+
+    private function disableForeignKeys(): void
+    {
+        $sql = $this->connection->grammar()->disableForeignKeys();
+        if ($sql !== '') {
+            $this->connection->statement($sql);
+        }
+    }
+
+    private function enableForeignKeys(): void
+    {
+        $sql = $this->connection->grammar()->enableForeignKeys();
+        if ($sql !== '') {
+            $this->connection->statement($sql);
+        }
     }
 }

@@ -2,60 +2,95 @@
 
 namespace App\Core\Database;
 
+/**
+ * A portable description of a single table column.
+ *
+ * Unlike the previous class this one does NOT emit SQL. It only records the
+ * column's intent (type, length, modifiers). The active Grammar turns it
+ * into engine-specific SQL — so the same migration works on SQLite, MySQL,
+ * MariaDB and PostgreSQL.
+ */
 class ColumnDefinition
 {
-    private string $sql;
-    private bool $isNullable = false;
-    private bool $hasDefault = false;
-    private mixed $defaultValue = null;
-    private bool $useCurrentDefault = false;
-
-    public function __construct(string $sql)
-    {
-        $this->sql = $sql;
+    public function __construct(
+        public string $name,
+        public string $type,
+        public ?int $length = null,
+        public bool $unsigned = false,
+        public bool $nullable = false,
+        public bool $unique = false,
+        public mixed $default = null,
+        public bool $useCurrent = false,
+        public array $values = [],
+        public bool $primaryKey = false
+    ) {
     }
 
-    public function nullable(): static
+    // ── Fluent modifiers (return $this for chaining) ──────────────────────
+
+    public function nullable(bool $value = true): static
     {
-        $this->isNullable = true;
+        $this->nullable = $value;
+
+        return $this;
+    }
+
+    public function unsigned(bool $value = true): static
+    {
+        $this->unsigned = $value;
+
+        return $this;
+    }
+
+    public function unique(bool $value = true): static
+    {
+        $this->unique = $value;
+
         return $this;
     }
 
     public function default(mixed $value): static
     {
-        $this->hasDefault = true;
-        $this->defaultValue = $value;
+        $this->default = $value;
+
         return $this;
     }
 
     public function useCurrent(): static
     {
-        $this->useCurrentDefault = true;
+        $this->useCurrent = true;
+
         return $this;
     }
 
-    public function unsigned(): static
+    /**
+     * For enum() columns — the allowed values.
+     *
+     * @param  array<int, string>  $values
+     */
+    public function values(array $values): static
     {
-        $this->sql .= ' UNSIGNED';
+        $this->values = $values;
+
         return $this;
     }
 
-    public function toSql(): string
+    /**
+     * @return array{name:string,type:string,length:?int,unsigned:bool,nullable:bool,unique:bool,default:mixed,useCurrent:bool,values:array}
+     */
+    public function toArray(): array
     {
-        $sql = $this->sql;
-
-        if ($this->isNullable) {
-            $sql .= ' NULL';
-        } else {
-            $sql .= ' NOT NULL';
-        }
-
-        if ($this->useCurrentDefault) {
-            $sql .= ' DEFAULT CURRENT_TIMESTAMP';
-        } elseif ($this->hasDefault) {
-            $sql .= ' DEFAULT ' . (is_null($this->defaultValue) ? 'NULL' : "'" . $this->defaultValue . "'");
-        }
-
-        return $sql;
+        return [
+            'name'       => $this->name,
+            'type'       => $this->type,
+            'length'     => $this->length,
+            'unsigned'   => $this->unsigned,
+            'nullable'   => $this->nullable,
+            'unique'     => $this->unique,
+            'default'    => $this->default,
+            'useCurrent' => $this->useCurrent,
+            'values'     => $this->values,
+            'primaryKey' => $this->primaryKey,
+        ];
     }
 }

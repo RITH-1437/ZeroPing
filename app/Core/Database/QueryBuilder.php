@@ -406,16 +406,23 @@ class QueryBuilder
     |--------------------------------------------------------------------------
     */
 
-    public function withTrashed(): static
+    public function softDeletes(): static
     {
         $this->softDeletes = true;
 
         return $this;
     }
 
+    public function withTrashed(): static
+    {
+        $this->softDeletes = false;
+
+        return $this;
+    }
+
     public function onlyTrashed(): static
     {
-        $this->softDeletes = true;
+        $this->softDeletes = false;
 
         $this->where[] = "deleted_at IS NOT NULL";
 
@@ -447,7 +454,7 @@ class QueryBuilder
     {
         $sql = "SELECT " . implode(', ', $this->columns) . " FROM {$this->table}";
 
-        if ($this->softDeletes === false) {
+        if ($this->softDeletes === true) {
             $this->where[] = "deleted_at IS NULL";
         }
 

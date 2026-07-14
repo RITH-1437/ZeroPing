@@ -63,7 +63,9 @@ class CacheRepository
             return $this->local[$key];
         }
 
-        $value = $this->driver->forever($key, $callback());
+        $value = $callback();
+
+        $this->driver->forever($key, $value);
 
         $this->local[$key] = $value;
 

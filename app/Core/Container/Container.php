@@ -15,6 +15,20 @@ class Container
     protected array $instances = [];
 
     /**
+     * Contextual bindings keyed by [consumer][abstract] => concrete.
+     *
+     * @var array<string, array<string, class-string|Closure>>
+     */
+    protected array $contextual = [];
+
+    /**
+     * Resolving callbacks keyed by abstract (or '*' for any).
+     *
+     * @var array<string, array<int, Closure>>
+     */
+    protected array $resolvingCallbacks = [];
+
+    /**
      * ReflectionClass cache keyed by class name.
      * Building a ReflectionClass is the dominant cost of make(); caching it
      * removes that cost for every subsequent resolution of the same class.
@@ -41,8 +55,55 @@ class Container
     {
         $this->bindings[$abstract] = [
             'concrete' => $concrete,
-            'shared' => true,
+            'shared'   => true,
         ];
+    }
+
+    /**
+     * Begin a contextual binding for the given consumer class.
+     */
+    public function when(string $concrete): ContextualBindingBuilder
+    {
+        return new ContextualBindingBuilder($this, $concrete);
+    }
+
+    public function addContextualBinding(string $consumer, string $abstract, Closure|string $concrete): void
+    {
+        $this->contextual[$consumer][$abstract] = $concrete;
+    }
+
+    public function getContextualBinding(string $consumer, string $abstract): Closure|string|null
+    {
+        return $this->contextual[$consumer][$abstract] ?? null;
+    }
+
+    /**
+     * Register a callback fired after an abstract is resolved.
+     *
+     * Used to boot deferred service providers on first use.
+     */
+    public function resolving(string $abstract, Closure $callback): void
+    {
+        $this->resolvingCallbacks[$abstract][] = $callback;
+    }
+
+    protected function fireResolving(string $abstract, object $object): void
+    {
+        foreach ($this->resolvingCallbacks['*'] ?? [] as $callback) {
+            $callback($object, $this);
+        }
+
+        foreach ($this->resolvingCallbacks[$abstract] ?? [] as $callback) {
+            $callback($object, $this);
+        }
+    }
+
+    /**
+     * Whether an abstract is already bound or instantiated.
+     */
+    public function bound(string $abstract): bool
+    {
+        return isset($this->instances[$abstract]) || isset($this->bindings[$abstract]);
     }
 
     /**
@@ -54,15 +115,25 @@ class Container
     }
 
     /**
-     * Resolve a class.
+     * Resolve a class (alias: make()).
      */
     public function make(string $abstract): object
     {
-        if (isset($this->instances[$abstract])) {
-            return $this->instances[$abstract];
-        }
+        return $this->resolve($abstract);
+    }
 
-        if (isset($this->bindings[$abstract])) {
+    /**
+     * Resolve a class from the container.
+     *
+     * Supports concrete classes, interface bindings, contextual bindings
+     * and convention-based auto-discovery of interface implementations
+     * (e.g. Foo\BarInterface -> Foo\Bar).
+     */
+    public function resolve(string $abstract): object
+    {
+        if (isset($this->instances[$abstract])) {
+            $object = $this->instances[$abstract];
+        } elseif (isset($this->bindings[$abstract])) {
             $binding = $this->bindings[$abstract];
 
             $concrete = $binding['concrete'];
@@ -74,11 +145,41 @@ class Container
             if ($binding['shared']) {
                 $this->instances[$abstract] = $object;
             }
+        } elseif (interface_exists($abstract)) {
+            // Auto-discover an implementation for an unbound interface.
+            $discovered = $this->discoverImplementation($abstract);
 
-            return $object;
+            if ($discovered !== null) {
+                $this->bind($abstract, $discovered);
+
+                return $this->resolve($abstract);
+            }
+
+            $object = $this->build($abstract);
+        } else {
+            $object = $this->build($abstract);
         }
 
-        return $this->build($abstract);
+        $this->fireResolving($abstract, $object);
+
+        return $object;
+    }
+
+    /**
+     * Convention-based implementation discovery for interfaces:
+     * Foo\BarInterface resolves to Foo\Bar when that class exists.
+     */
+    protected function discoverImplementation(string $interface): ?string
+    {
+        if (str_ends_with($interface, 'Interface')) {
+            $candidate = substr($interface, 0, -strlen('Interface'));
+
+            if (class_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -133,6 +234,20 @@ class Container
             );
         }
 
-        return $this->make($type->getName());
+        $typeName = $type->getName();
+
+        // Honour a contextual binding declared for the consuming class.
+        $declaring = $parameter->getDeclaringClass();
+        if ($declaring !== null) {
+            $contextual = $this->getContextualBinding($declaring->getName(), $typeName);
+
+            if ($contextual !== null) {
+                return is_string($contextual)
+                    ? $this->resolve($contextual)
+                    : $contextual($this);
+            }
+        }
+
+        return $this->resolve($typeName);
     }
 }

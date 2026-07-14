@@ -26,7 +26,7 @@ class QueryBuilderTest extends \Tests\TestCase
         $sql = $qb->toSql();
 
         $this->assertStringContainsString('SELECT * FROM users', $sql);
-        $this->assertStringContainsString('deleted_at IS NULL', $sql);
+        $this->assertStringNotContainsString('deleted_at IS NULL', $sql);
     }
 
     public function testSelectSpecificColumns(): void
@@ -255,16 +255,20 @@ class QueryBuilderTest extends \Tests\TestCase
         $this->assertStringNotContainsString('ORDER BY', $sql2);
     }
 
-    public function testWithTrashedRemovesDeletedAtFilter(): void
+    public function testSoftDeletesAreOptIn(): void
     {
         $qb = $this->createQueryBuilderWithoutDb();
 
-        $sqlWithoutSoftDelete = $qb->toSql();
-        $this->assertStringContainsString('deleted_at IS NULL', $sqlWithoutSoftDelete);
+        $this->assertStringNotContainsString('deleted_at IS NULL', $qb->toSql());
 
         $qb->reset();
-        $sqlWithTrashed = $qb->withTrashed()->toSql();
-        $this->assertStringNotContainsString('deleted_at IS NULL', $sqlWithTrashed);
+        $this->assertStringContainsString('deleted_at IS NULL', $qb->softDeletes()->toSql());
+
+        $qb->reset();
+        $this->assertStringNotContainsString('deleted_at IS NULL', $qb->withTrashed()->toSql());
+
+        $qb->reset();
+        $this->assertStringContainsString('deleted_at IS NOT NULL', $qb->onlyTrashed()->toSql());
     }
 
     public function testOnlyTrashedFiltersDeletedRows(): void

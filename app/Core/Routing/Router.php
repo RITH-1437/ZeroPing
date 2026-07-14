@@ -12,6 +12,14 @@ class Router
     private static array $groupMiddleware = [];
 
     /**
+     * Named middleware groups (e.g. "web", "api"), referenced by
+     * name from a route's middleware list.
+     *
+     * @var array<string, array<int, class-string|string>>
+     */
+    private static array $middlewareGroups = [];
+
+    /**
      * Compiled regex patterns, cached per "METHOD|uri" so dynamic route
      * matching does not recompile the same pattern on every request.
      *
@@ -99,6 +107,40 @@ class Router
     public static function routes(): array
     {
         return self::$routes;
+    }
+
+    /**
+     * Register a named middleware group (e.g. "web", "api").
+     */
+    public static function middlewareGroup(string $name, array $middleware): void
+    {
+        self::$middlewareGroups[$name] = $middleware;
+    }
+
+    /**
+     * Expand group names in a middleware list into their members.
+     *
+     * @param array<int, class-string|string> $list
+     * @return array<int, class-string|string>
+     */
+    public static function expandMiddleware(array $list): array
+    {
+        $expanded = [];
+
+        foreach ($list as $item) {
+            if (isset(self::$middlewareGroups[$item])) {
+                $expanded = array_merge(
+                    $expanded,
+                    self::expandMiddleware(self::$middlewareGroups[$item])
+                );
+
+                continue;
+            }
+
+            $expanded[] = $item;
+        }
+
+        return $expanded;
     }
 
     /**
@@ -198,13 +240,7 @@ class Router
             self::$current = $route;
 
             if (!$route) {
-                http_response_code(404);
-                $title = '404 - Page Not Found';
-                $active = '';
-                ob_start();
-                require $frameworkPath . '/views/errors/404.php';
-                $content = ob_get_clean();
-                require $frameworkPath . '/views/layouts/site.php';
+                self::renderError($frameworkPath, 404, null);
                 return;
             }
 
@@ -212,16 +248,14 @@ class Router
 
             if ($action instanceof \Closure) {
                 $result = $action(...$params);
-                if (is_string($result)) {
-                    echo $result;
-                }
+                self::sendResult($result);
                 return;
             }
 
             [$controllerName, $methodName] = $action;
 
             // Execute middleware (resolved class name cached per short name)
-            foreach ($route->middleware as $middleware) {
+            foreach (self::expandMiddleware($route->middleware) as $middleware) {
                 if (!isset(self::$middlewareClasses[$middleware])) {
                     $class = "App\\Http\\Middleware\\" . ucfirst($middleware) . "Middleware";
 
@@ -261,20 +295,94 @@ class Router
 
             // Execute controller with route parameters
             $result = $controller->$methodName(...$params);
-            if (is_string($result)) {
-                echo $result;
-            }
-        } catch (\Exception $e) {
-            http_response_code(500);
-            $title = '500 - Server Error';
-            $message = $e->getMessage();
-            $trace = $e->getTrace();
-            $debug = function_exists('config') ? (bool) config('app.debug', false) : false;
+            self::sendResult($result);
+        } catch (\Throwable $e) {
+            $code = in_array($e->getCode(), [403, 404, 419], true)
+                ? $e->getCode()
+                : 500;
 
-            ob_start();
-            require dirname(__DIR__, 3) . '/views/errors/500.php';
-            $content = ob_get_clean();
-            require dirname(__DIR__, 3) . '/views/layouts/site.php';
+            self::renderError($frameworkPath, $code, $e);
         }
+    }
+
+    /**
+     * Render a framework error page wrapped in the site layout.
+     *
+     * Passes a rich debug context so the development view can show the
+     * exception, file, line, stack trace, request and environment while
+     * the production view stays minimal.
+     */
+    /**
+     * Send a route/controller result as the HTTP response.
+     *
+     * Supports: App\Core\Http\Response objects, objects exposing toResponse(),
+     * and plain strings (echoed as-is).
+     */
+    protected static function sendResult(mixed $result): void
+    {
+        if ($result instanceof \App\Core\Http\Response) {
+            $result->send();
+            return;
+        }
+
+        if (is_object($result) && method_exists($result, 'toResponse')) {
+            $response = $result->toResponse();
+
+            if ($response instanceof \App\Core\Http\Response) {
+                $response->send();
+                return;
+            }
+
+            echo (string) $response;
+            return;
+        }
+
+        if (is_string($result)) {
+            echo $result;
+        }
+    }
+
+    public static function renderError(string $frameworkPath, int $code, ?\Throwable $e): void
+    {
+        $titles = [
+            403 => '403 - Forbidden',
+            404 => '404 - Page Not Found',
+            419 => '419 - Page Expired',
+            500 => '500 - Server Error',
+        ];
+
+        http_response_code($code);
+
+        $title      = $titles[$code] ?? '500 - Server Error';
+        $message    = $e !== null ? $e->getMessage() : '';
+        $exception  = $e !== null ? get_class($e) : '';
+        $file       = $e !== null ? $e->getFile() : '';
+        $line       = $e !== null ? $e->getLine() : 0;
+        $trace      = $e !== null ? $e->getTrace() : [];
+        $requestUrl = $_SERVER['REQUEST_URI'] ?? '/';
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $environment = $_ENV['APP_ENV'] ?? 'local';
+        $debug      = function_exists('config') ? (bool) config('app.debug', false) : false;
+        $active     = '';
+
+        $view = $frameworkPath . '/views/errors/' . $code . '.php';
+
+        if (!file_exists($view)) {
+            $view = $frameworkPath . '/views/errors/500.php';
+        }
+
+        if (file_exists($view)) {
+            ob_start();
+            require $view;
+            $content = ob_get_clean();
+
+            require $frameworkPath . '/views/layouts/site.php';
+
+            return;
+        }
+
+        // Last-resort fallback so an error never itself fatals.
+        http_response_code($code);
+        echo htmlspecialchars($title, ENT_QUOTES) . ': ' . htmlspecialchars($message, ENT_QUOTES);
     }
 }

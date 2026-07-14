@@ -75,6 +75,10 @@ PHP;
 
     private function guessTable(string $name): string
     {
+        if (preg_match('/^create_(.+?)_table$/i', $name, $matches)) {
+            return $matches[1];
+        }
+
         if (preg_match('/Create(.+)Table/i', $name, $matches)) {
             return strtolower($matches[1]);
         }

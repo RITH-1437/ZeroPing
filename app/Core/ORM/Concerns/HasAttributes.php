@@ -187,4 +187,26 @@ trait HasAttributes
     {
         $this->setAttribute($key, $value);
     }
+
+    /**
+     * Get the raw underlying attributes (as stored, pre-cast).
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Convert the model instance to a plain array, applying casts/accessors.
+     */
+    public function toArray(): array
+    {
+        $result = [];
+
+        foreach (array_keys($this->attributes) as $key) {
+            $result[$key] = $this->getAttribute($key);
+        }
+
+        return $result;
+    }
 }

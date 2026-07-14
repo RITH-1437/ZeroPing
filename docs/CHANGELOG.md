@@ -1,5 +1,77 @@
 # Changelog
 
+## v2.0.0-beta (2026-07-14)
+
+Beta of the **Enterprise Framework Foundation** (Phases G+H) — the framework is now
+production-shaped: a zero-dependency, fully-tested PHP core with 20 integrated
+subsystems. This release hardens the foundation ahead of the stable `2.0.0` cut.
+
+### Features
+- **Dependency Injection** container with automatic resolution and **Service Providers**.
+- **HTTP Kernel**, **API Resources** (JSON resources + collections) and a full **Response system**.
+- **Validation**, **Localization** (translator + `lang/` files + helpers), **Cache**, **Session** and **File Storage** drivers.
+- **Testing harness** compatible with PHPUnit: HTTP client, database assertions and fluent `TestResponse` assertions.
+- **Benchmark** and **Profiler** for performance measurement.
+- **Debug Toolbar** wiring to the framework's collectors.
+- **Security** (hashing, encryption, secure random), **Logging** and **Error Handling** (exception handler + pretty pages).
+- **Markdown documentation subsystem** (`app/Core/Docs`) serving the `/docs/{page}` route from `resources/docs`.
+- **Router** error pages now emit the correct HTTP status code (404/500) instead of always `200`.
+
+### Bug Fixes
+- **ORM soft deletes are now opt-in** — `QueryBuilder` no longer appended `deleted_at IS NULL` to every query.
+- **`Router::renderError()`** calls `http_response_code($code)` so error responses carry the right status.
+- **`Docs::normalize()`** preserves dots in slugs (e.g. `release-2.0.0-beta`) so versioned doc pages resolve.
+
+### Testing & Quality
+- Full suite green: **375 tests, 901 assertions, 0 failures**.
+- `phpcs` (PSR-12): **0 errors, 0 warnings** across `app/`, `config/`, `tests/`, `scripts/` and `public/`
+  (generated cache, CLI command tables and test fixtures are carve-outs).
+
+## v1.3.0 (2026-07-14)
+
+This release is all about **developer experience** — a polished console, a richer
+`about` screen, clearer error pages, and a `publish` command so projects can
+override framework assets without editing vendor code.
+
+### ✨ Features
+
+- **Console branding** — a gradient ASCII `zero` logo and tagline now greet you on
+  `php zero`, `php zero about`, and at the end of the interactive installer.
+- **Grouped, colorized command table** — `php zero` lists commands organized into
+  logical groups (Project, Database & Migrations, Generators, Routes, Config &
+  Cache, Queue & Schedule, Storage & Search, Security & Keys, Testing &
+  Diagnostics, Utilities) instead of one flat list.
+- **Rich `php zero about`** — now reports framework version, PHP version, Composer
+  version, environment, database driver, application name, timezone, and the
+  cache/session/queue drivers, plus quick links to the docs and GitHub.
+- **Better error pages** — added dedicated `403` (Forbidden) and `419` (Page
+  Expired / CSRF) screens. The development `404` and `500` pages now show request
+  URL/method, environment, and a full stack trace; production shows a clean,
+  minimal page. All error views support both `APP_DEBUG` modes.
+- **`php zero publish`** — copies framework-supplied assets (config files, error
+  views, language files, `public/robots.txt`) into your project so they can be
+  customized. Use `--group=config|views|lang|public|all`; existing files are
+  never overwritten.
+- **Per-command help** — every command supports `php zero <command> --help`
+  (including `php zero help <command>`), showing usage, arguments, options,
+  examples, and notes.
+- **Environment validation on install** — `php zero install` now prompts for a
+  timezone and validates the generated `.env` (required keys present, valid
+  timezone, sane `APP_URL`/debug flags) before finishing.
+- **Improved `php zero route:list`** — adds a `Name` column for named routes and
+  color-codes HTTP methods (GET green, POST blue, PUT/PATCH yellow, DELETE red).
+
+### 📚 Documentation
+
+- README now highlights the v1.3.0 developer-experience improvements.
+- CLI Reference documents the new `publish` command and per-command `--help`.
+- Roadmap updated: the friendlier development error screen (previously near-term)
+  shipped in v1.3.0.
+
+### 🧪 Testing
+
+- Full suite remains green (274 tests, 603 assertions) after the v1.3.0 changes.
+
 ## v1.2.0 (2026-07-12)
 
 This release focuses on making ZeroPing a polished, publicly installable PHP

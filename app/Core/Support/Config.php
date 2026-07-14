@@ -87,4 +87,30 @@ class Config
     {
         static::$items = $items;
     }
+
+    /**
+     * Set a config value using "dot" notation, merging into the loaded items.
+     *
+     * Used by package service providers' mergeConfigFrom() so that merged
+     * package defaults are readable through the global config() helper.
+     */
+    public static function set(string $key, $value): void
+    {
+        if (empty(static::$items)) {
+            static::load();
+        }
+
+        $segments = explode('.', $key);
+        $config =& static::$items;
+
+        foreach ($segments as $segment) {
+            if (!isset($config[$segment]) || !is_array($config[$segment])) {
+                $config[$segment] = [];
+            }
+
+            $config =& $config[$segment];
+        }
+
+        $config = $value;
+    }
 }

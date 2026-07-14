@@ -2,9 +2,8 @@
 
 namespace Zeroping\Support;
 
-use App\Core\Config\Config;
-use App\Core\Config\ConfigRepository;
 use App\Core\Container\Container;
+use App\Core\Support\Config;
 use App\Providers\ServiceProvider as BaseServiceProvider;
 use Zeroping\Support\Console\CommandRegistry;
 use Zeroping\Support\Foundation\MigrationLoader;
@@ -23,8 +22,25 @@ abstract class ServiceProvider extends BaseServiceProvider
     protected array $publishGroups = [];
 
     /**
-     * Merge a package config file into the host config repository without
+     * Aggregated publish groups across every booted provider.
+     *
+     * @var array<string, array<string, string>>
+     */
+    protected static array $published = [];
+
+    /**
+     * Custom notification channels declared by packages, keyed by channel name.
+     *
+     * @var array<string, class-string<\App\Core\Notifications\Channels\Channel>>
+     */
+    protected static array $channelClasses = [];
+
+    /**
+     * Merge a package config file into the host config store without
      * overwriting values the host app already set.
+     *
+     * Writes into App\Core\Support\Config so that the global config()
+     * helper (and everything reading from it) sees the merged values.
      */
     protected function mergeConfigFrom(string $path, string $key): void
     {
@@ -33,23 +49,16 @@ abstract class ServiceProvider extends BaseServiceProvider
         }
 
         $defaults = require $path;
-        $existing  = Config::get($key, []);
 
-        $merged = is_array($defaults) && is_array($existing)
-            ? array_replace_recursive($defaults, $existing)
-            : $existing;
-
-        if (class_exists(ConfigRepository::class)) {
-            // Prefer mutating the live repository when available.
-            $repo = $this->resolveRepository();
-            if ($repo !== null) {
-                $repo->set([$key => $merged]);
-                return;
-            }
+        if (!is_array($defaults)) {
+            return;
         }
 
-        // Fallback: framework has Config::get only; host should re-read merged
-        // values via config($key) after this runs.
+        $existing = Config::get($key, []);
+        $existing = is_array($existing) ? $existing : [];
+
+        $merged = array_replace_recursive($defaults, $existing);
+
         Config::set($key, $merged);
     }
 
@@ -105,6 +114,7 @@ abstract class ServiceProvider extends BaseServiceProvider
     {
         foreach ($paths as $from => $to) {
             $this->publishGroups[$group][$from] = $to;
+            self::$published[$group][$from]      = $to;
         }
     }
 
@@ -113,10 +123,33 @@ abstract class ServiceProvider extends BaseServiceProvider
         return $this->publishGroups[$group] ?? [];
     }
 
-    private function resolveRepository(): ?ConfigRepository
+    /**
+     * All publish groups declared by every booted provider.
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function allPublished(): array
     {
-        // The live repository is not exposed by Config today; this hook exists
-        // so support works once Config exposes setRepository()/getRepository().
-        return null;
+        return self::$published;
+    }
+
+    /**
+     * Declare custom notification channels for this package.
+     *
+     * @param array<string, class-string<\App\Core\Notifications\Channels\Channel>> $channels
+     */
+    protected function channels(array $channels): void
+    {
+        foreach ($channels as $name => $class) {
+            self::$channelClasses[$name] = $class;
+        }
+    }
+
+    /**
+     * @return array<string, class-string<\App\Core\Notifications\Channels\Channel>>
+     */
+    public static function allChannels(): array
+    {
+        return self::$channelClasses;
     }
 }

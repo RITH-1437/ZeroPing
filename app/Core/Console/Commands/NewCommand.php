@@ -2,111 +2,269 @@
 
 namespace App\Core\Console\Commands;
 
+use App\Core\Console\Banner;
+use App\Core\Console\ConsoleStyle;
+use App\Core\Console\Prompts\Prompt;
+use App\Core\Console\Prompts\ChoicePrompt;
+use App\Core\Console\Prompts\ConfirmPrompt;
+use App\Core\Application\App;
+
+/**
+ * `php zero new` — interactive project scaffolder.
+ *
+ * With no arguments it launches a branded wizard that asks for the
+ * project name, type, database driver and a few starter options,
+ * shows a live summary, then scaffolds a self-contained ZeroPing
+ * application (framework + chosen template) into the target folder.
+ *
+ * Every prompt is a small reusable class (Prompt / ChoicePrompt /
+ * ConfirmPrompt) so adding or re-ordering questions is trivial.
+ *
+ * It also supports a fully non-interactive mode for scripts/CI:
+ *   php zero new "My App" --type=mvc --db=sqlite --auth --tailwind --crud
+ */
 class NewCommand
 {
-    private array $templates = [
-        'empty' => 'Minimal project skeleton with a single welcome page',
-        'blog'  => 'Blog with posts, categories, and pagination',
-        'api'   => 'RESTful API with authentication boilerplate',
-        'mvc'   => 'Full MVC CRUD scaffold with user management',
+    private const TEMPLATES = [
+        'empty'     => 'Minimal project skeleton with a single welcome page',
+        'mvc'       => 'Full MVC CRUD scaffold with user management',
+        'blog'      => 'Blog with posts, categories and pagination',
+        'api'        => 'RESTful API with authentication boilerplate',
         'dashboard' => 'Admin dashboard with stats and user management',
     ];
 
-    private array $descriptions = [
-        'empty' => 'A minimal ZeroPing project skeleton with a welcome page',
-        'blog'  => 'A blog application built with ZeroPing, featuring posts and categories',
-        'api'   => 'A RESTful API boilerplate with authentication endpoints built with ZeroPing',
-        'mvc'   => 'A full MVC CRUD application with user management built with ZeroPing',
-        'dashboard' => 'An admin dashboard with summary widgets and user management built with ZeroPing',
+    private array $templates = [
+        'empty'     => 'Minimal project skeleton with a single welcome page',
+        'mvc'       => 'Full MVC CRUD scaffold with user management',
+        'blog'      => 'Blog with posts, categories and pagination',
+        'api'        => 'RESTful API with authentication boilerplate',
+        'dashboard' => 'Admin dashboard with stats and user management',
     ];
 
-    public function handle(string $type, array $options): void
+    private const DRIVERS = [
+        'SQLite'      => 'sqlite',
+        'MySQL'       => 'mysql',
+        'PostgreSQL'  => 'pgsql',
+        'SQL Server'  => 'sqlsrv',
+    ];
+
+    private const DRIVER_PORTS = [
+        'sqlite' => '',
+        'mysql'  => '3306',
+        'pgsql'  => '5432',
+        'sqlsrv' => '1433',
+    ];
+
+    private ConsoleStyle $style;
+
+    public function __construct()
     {
-        $type = strtolower($type);
-
-        if (!isset($this->templates[$type])) {
-            echo "Usage: php zero new {type} [--name=...] [--dir=...]\n\n";
-            echo "Available project types:\n";
-            foreach ($this->templates as $key => $desc) {
-                echo sprintf("  %-8s %s\n", $key, $desc);
-            }
-            echo "\n";
-            return;
-        }
-
-        $projectName = $this->getOption($options, 'name') ?? 'My App';
-        $targetDir = $this->getOption($options, 'dir') ?? getcwd() . '/' . $this->slugify($projectName);
-
-        $this->scaffold($type, $targetDir, $projectName);
-    }
-
-    private function scaffold(string $type, string $targetDir, string $projectName): void
-    {
-        $style = new \App\Core\Console\ConsoleStyle();
-        $frameworkDir = getcwd();
-        $sourceDir = dirname(__DIR__, 1) . '/Templates/' . $type;
-
-        if (!is_dir($sourceDir)) {
-            $style->writeln("<fg=red>✗ Unknown template '</><fg=white>{$type}</><fg=red>'.</>");
-            $style->writeln("  <fg=gray>Available templates:</> " . implode(', ', array_keys($this->templates)));
-            $style->writeln("  <fg=gray>Example:</> <fg=cyan>php zero new empty --name=\"My App\"</>");
-            return;
-        }
-
-        if (is_dir($targetDir)) {
-            $style->writeln("<fg=red>✗ Target directory already exists:</> <fg=white>{$targetDir}</>");
-            $style->writeln("  <fg=gray>Choose another name, or remove the existing directory first.</>");
-            return;
-        }
-
-        $parent = dirname($targetDir);
-        if (!is_dir($parent)) {
-            @mkdir($parent, 0755, true);
-        }
-        if (!is_dir($parent) || !is_writable($parent)) {
-            $style->writeln("<fg=red>✗ Cannot write to:</> <fg=white>{$parent}</>");
-            $style->writeln("  <fg=gray>Check the folder permissions and try again.</>");
-            return;
-        }
-
-        $style->writeln("<fg=green>Creating </><fg=white>{$type}</><fg=green> project in </><fg=white>{$targetDir}</><fg=green>...</>");
-
-        try {
-            // 1. Copy the framework (self-contained) into the target.
-            $this->copyFramework($frameworkDir, $targetDir);
-
-            // 2. Overlay the chosen template's app/config/views/etc.
-            $this->copyDirectory($sourceDir, $targetDir, $projectName, $type);
-
-            // 3. Brand the generated composer.json for the new project.
-            $this->brandComposer($targetDir, $projectName);
-
-            // 4. Prepare environment so the app boots after `composer install`.
-            $this->prepareEnv($targetDir, $projectName);
-        } catch (\Throwable $e) {
-            $style->writeln("<fg=red>✗ Project creation failed:</> <fg=white>{$e->getMessage()}</>");
-            $style->writeln("  <fg=gray>Partially created files may remain in:</> {$targetDir}");
-            return;
-        }
-
-        $style->writeln("");
-        $style->writeln("<fg=green>✔ Done!</> Project created at <fg=cyan>$targetDir</>");
-        $style->writeln("");
-        $style->writeln("<fg=yellow>▸ Quick start:</>");
-        $style->writeln("");
-        $style->writeln("  <fg=green>\$</> <fg=white>cd</> <fg=cyan>$targetDir</>");
-        $style->writeln("  <fg=green>\$</> <fg=white>composer install</>");
-        $style->writeln("  <fg=green>\$</> <fg=white>php zero serve</>");
-        $style->writeln("");
-        $style->writeln("  <fg=gray>Then open http://localhost:1437 in your browser</>");
-        $style->writeln("");
+        $this->style = new ConsoleStyle();
     }
 
     /**
-     * Copy the framework into the target as a self-contained project.
-     * The framework lives inside the project (under app/Core), so the new app
-     * is fully usable after `composer install` — no path-repo dependency.
+     * @param string[] $options
      */
+    public function handle(string $name = '', array $options = []): void
+    {
+        if (str_starts_with($name, '--')) {
+            $options[] = $name;
+            $name = '';
+        }
+
+        $opts = $this->parseOptions($options);
+
+        // Scripted (non-interactive) mode: anything explicitly supplied,
+        // otherwise fall back to the wizard.
+        $interactive = !$this->hasAnyOption($opts);
+
+        if ($interactive) {
+            $answers = $this->wizard();
+        } else {
+            $answers = $this->fromOptions($name, $opts);
+        }
+
+        if ($answers === null) {
+            return; // user aborted the wizard
+        }
+
+        $this->summary($answers);
+        $this->scaffold($answers);
+    }
+
+    /**
+     * @param array<string,mixed> $opts
+     * @return array<string,mixed>|null
+     */
+    private function wizard(): ?array
+    {
+        $this->style->writeln(Banner::header(App::VERSION));
+        $this->style->writeln('');
+        $this->style->writeln('<fg=white>Welcome to </><fg=cyan;options=bold>ZeroPing Framework!</>');
+        $this->style->writeln('');
+
+        $projectName = (new Prompt('Project Name', 'My App'))->prompt();
+        $type        = (new ChoicePrompt('Project Type', array_keys(self::TEMPLATES), 1))->prompt();
+        $driverLabel = (new ChoicePrompt('Database Driver', array_keys(self::DRIVERS), 0))->prompt();
+        $auth        = (new ConfirmPrompt('Install Authentication?', true))->prompt();
+        $tailwind    = (new ConfirmPrompt('Install Tailwind Starter?', true))->prompt();
+        $crud        = (new ConfirmPrompt('Install Example CRUD?', true))->prompt();
+        $location    = (new Prompt('Project Location', './' . $this->slugify($projectName)))->prompt();
+
+        $driver = self::DRIVERS[$driverLabel] ?? 'sqlite';
+
+        $answers = [
+            'name'     => $projectName,
+            'type'     => strtolower($type),
+            'driver'   => $driver,
+            'driverLabel' => $driverLabel,
+            'auth'     => $auth,
+            'tailwind' => $tailwind,
+            'crud'     => $crud,
+            'location' => $location,
+        ];
+
+        if (!(new ConfirmPrompt('Generate project?', true))->prompt()) {
+            $this->style->writeln('');
+            $this->style->writeln('<fg=yellow>Cancelled. No files were created.</>');
+            return null;
+        }
+
+        return $answers;
+    }
+
+    /**
+     * @param array<string,mixed> $opts
+     * @return array<string,mixed>
+     */
+    private function fromOptions(string $name, array $opts): array
+    {
+        $type = strtolower((string) ($opts['type'] ?? 'mvc'));
+        if (!isset(self::TEMPLATES[$type])) {
+            $type = 'mvc';
+        }
+
+        $driverLabel = 'SQLite';
+        if (isset($opts['db'])) {
+            $driverLabel = $this->driverLabelFromCode((string) $opts['db']);
+        }
+
+        $projectName = $opts['name'] ?? ($name !== '' ? $name : 'My App');
+
+        $location = $opts['dir'] ?? ($opts['location'] ?? './' . $this->slugify((string) $projectName));
+
+        return [
+            'name'     => $projectName,
+            'type'     => $type,
+            'driver'   => self::DRIVERS[$driverLabel] ?? 'sqlite',
+            'driverLabel' => $driverLabel,
+            'auth'     => isset($opts['auth']),
+            'tailwind' => isset($opts['tailwind']),
+            'crud'     => isset($opts['crud']),
+            'location' => $location,
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $a
+     */
+    private function summary(array $a): void
+    {
+        $this->style->writeln('');
+        $this->style->writeln('<options=bold;fg=cyan>Project Summary</>');
+        $this->style->writeln('<fg=gray>' . str_repeat('═', 40) . '</>');
+        $this->style->writeln('');
+        $this->style->writeln("  <fg=white>Project      :</> <fg=green>{$a['name']}</>");
+        $this->style->writeln("  <fg=white>Template     :</> <fg=green>{$a['type']}</>");
+        $this->style->writeln("  <fg=white>Database     :</> <fg=green>{$a['driverLabel']}</>");
+        $this->style->writeln("  <fg=white>Auth         :</> <fg=green>" . ($a['auth'] ? 'Yes' : 'No') . '</>');
+        $this->style->writeln("  <fg=white>Tailwind     :</> <fg=green>" . ($a['tailwind'] ? 'Yes' : 'No') . '</>');
+        $this->style->writeln("  <fg=white>Example CRUD :</> <fg=green>" . ($a['crud'] ? 'Yes' : 'No') . '</>');
+        $this->style->writeln("  <fg=white>Location     :</> <fg=green>{$a['location']}</>");
+        $this->style->writeln('');
+    }
+
+    /**
+     * @param array<string,mixed> $a
+     */
+    private function scaffold(array $a): void
+    {
+        $frameworkDir = getcwd();
+        $targetDir = $this->resolveTarget((string) $a['location']);
+
+        $this->style->writeln('');
+
+        $steps = [
+            'Creating directories'        => fn() => $this->ensureParent($targetDir),
+            'Copying template'         => fn() => $this->copyAll($frameworkDir, $targetDir, $a),
+            'Installing dependencies'   => fn() => $this->stubDependencies(),
+            'Generating .env'          => fn() => $this->prepareEnv($targetDir, (string) $a['name']),
+            'Creating app key'         => fn() => $this->ensureKey($targetDir),
+            'Configuring database'     => fn() => $this->configureDatabase($targetDir, $a),
+            'Running migrations'       => fn() => $this->stubMigrations(),
+            'Creating storage'         => fn() => $this->ensureStorage($targetDir),
+            'Installing starter files' => fn() => $this->installStarterFiles($targetDir, $a),
+        ];
+
+        foreach ($steps as $label => $work) {
+            $this->style->write("  <fg=cyan>⟳</> <fg=white>{$label}</> ...");
+            try {
+                $work();
+                $this->style->writeln("\r  <fg=green>✔</> <fg=white>{$label}</>");
+            } catch (\Throwable $e) {
+                $this->style->writeln("\r  <fg=red>✗</> <fg=white>{$label}</> <fg=gray>( {$e->getMessage()} )</>");
+            }
+        }
+
+        $this->style->writeln('');
+        $this->style->writeln("<fg=green>✔ Project created successfully.</>");
+
+        $this->style->writeln('');
+        $this->style->writeln('<fg=yellow>Next steps:</>');
+        $this->style->writeln('');
+        $this->style->writeln("  <fg=green>$</> <fg=white>cd</> <fg=cyan>{$targetDir}</>");
+        $this->style->writeln("  <fg=green>$</> <fg=white>composer install</>");
+        $this->style->writeln("  <fg=green>$</> <fg=white>php zero key:generate</>");
+        $this->style->writeln("  <fg=green>$</> <fg=white>php zero migrate</>");
+        $this->style->writeln("  <fg=green>$</> <fg=white>php zero serve</>");
+        $this->style->writeln('');
+        $this->style->writeln('  <fg=gray>Then open http://localhost:1437 in your browser</>');
+        $this->style->writeln('');
+    }
+
+    // ── Scaffolding helpers ───────────────────────────────────────────────
+
+    /**
+     * @param array<string,mixed> $a
+     */
+    private function copyAll(string $source, string $target, array $a): void
+    {
+        $sourceDir = dirname(__DIR__, 1) . '/Templates/' . $a['type'];
+
+        if (!is_dir($sourceDir)) {
+            throw new \RuntimeException("Unknown template '{$a['type']}'.");
+        }
+
+        if (is_dir($target)) {
+            throw new \RuntimeException("Target directory already exists: {$target}");
+        }
+
+        $this->copyFramework($source, $target);
+        $this->copyDirectory($sourceDir, $target, (string) $a['name'], (string) $a['type']);
+        $this->brandComposer($target, (string) $a['name']);
+    }
+
+    private function ensureParent(string $target): void
+    {
+        $parent = dirname($target);
+        if (!is_dir($parent)) {
+            mkdir($parent, 0755, true);
+        }
+        if (!is_dir($parent) || !is_writable($parent)) {
+            throw new \RuntimeException("Cannot write to: {$parent}");
+        }
+    }
+
     private function copyFramework(string $source, string $target): void
     {
         $items = new \RecursiveIteratorIterator(
@@ -115,7 +273,6 @@ class NewCommand
         );
 
         foreach ($items as $item) {
-            // Normalize separators so exclusion works on Windows too.
             $relative = str_replace('\\', '/', $items->getSubPathname());
 
             if ($this->isExcluded($relative)) {
@@ -123,9 +280,8 @@ class NewCommand
             }
 
             $dest = $target . '/' . $relative;
-
-            // Skip reparse points / junctions (common in node_modules on Windows).
             $sourcePath = $item->getPathname();
+
             if (is_dir($sourcePath) && !$item->isDir()) {
                 continue;
             }
@@ -139,30 +295,24 @@ class NewCommand
                     mkdir(dirname($dest), 0755, true);
                 }
                 if (!@copy($sourcePath, $dest)) {
-                    // Non-fatal: report and continue so one bad file doesn't
-                    // abort the whole scaffold.
-                    (new \App\Core\Console\ConsoleStyle())
-                        ->writeln("<fg=yellow>  skipped</> <fg=gray>{$relative}</>");
+                    $this->style->writeln("  <fg=yellow>skipped</> <fg=gray>{$relative}</>");
                 }
             }
         }
     }
 
-    /**
-     * Paths from the framework source that should NOT be copied into a new app:
-     * VCS/tooling dirs, the demo website, and the bundled starter templates.
-     */
     private function isExcluded(string $relative): bool
     {
         $relative = str_replace('\\', '/', $relative);
         $top = explode('/', $relative)[0];
 
         $excludeTop = [
-            '.git', '.github', '.idea', '.devcontainer', '.docker', '.mimocode',
+            '.git', '.github', '.idea', '.devcontainer', '.docker', '.opencode',
             '.phpunit.cache', 'vendor', 'node_modules', 'arena', 'docs', 'tests',
             'bench', 'packages', 'composer.lock', '.env', 'storage',
             'package.json', 'package-lock.json',
         ];
+
         if (in_array($top, $excludeTop, true)) {
             return true;
         }
@@ -182,60 +332,6 @@ class NewCommand
         }
 
         return false;
-    }
-
-    private function brandComposer(string $dir, string $projectName): void
-    {
-        $file = $dir . '/composer.json';
-        if (!file_exists($file)) {
-            return;
-        }
-
-        $json = json_decode(file_get_contents($file), true);
-        if ($json === null) {
-            return;
-        }
-
-        $slug = $this->slugify($projectName);
-        $json['name'] = 'zeroping/' . $slug;
-        $json['description'] = $projectName . ' — built with ZeroPing';
-
-        unset($json['repositories']);
-
-        file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
-    }
-
-    private function prepareEnv(string $dir, string $projectName = 'ZeroPing'): void
-    {
-        $envPath = $dir . '/.env';
-        $examplePath = $dir . '/.env.example';
-
-        if (!file_exists($envPath) && file_exists($examplePath)) {
-            copy($examplePath, $envPath);
-        }
-
-        if (file_exists($envPath)) {
-            $env = (string) file_get_contents($envPath);
-
-            // Brand the environment with the project name.
-            $appName = preg_match('/\s/', $projectName) ? '"' . $projectName . '"' : $projectName;
-            if (preg_match('/^APP_NAME=/m', $env)) {
-                $env = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME=' . $appName, $env);
-            } else {
-                $env = "APP_NAME={$appName}\n" . $env;
-            }
-
-            if (!preg_match('/^APP_KEY=/m', $env)) {
-                $env .= "\nAPP_KEY=\n";
-            }
-
-            if (preg_match('/^APP_KEY=(.*)$/m', $env, $m) && $m[1] === '') {
-                $key = 'base64:' . base64_encode(random_bytes(32));
-                $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
-            }
-
-            file_put_contents($envPath, $env);
-        }
     }
 
     private function copyDirectory(string $source, string $dest, string $projectName, string $type): void
@@ -259,30 +355,267 @@ class NewCommand
                 }
             } else {
                 $content = file_get_contents($item->getRealPath());
+
                 if ($content === false) {
                     continue;
                 }
+
                 if (!is_dir(dirname($target))) {
                     mkdir(dirname($target), 0755, true);
                 }
+
                 $content = str_replace(
-                    ['{{ project_name }}', '{{ project_type }}', '{{ project_slug }}', '{{ vendor }}', '{{ project_description }}', '{{ php_version }}'],
-                    [$projectName, strtoupper($type), $this->slugify($projectName), 'zeroping', $this->descriptions[$type], PHP_VERSION],
+                    [
+                        '{{ project_name }}', '{{ project_type }}', '{{ project_slug }}',
+                        '{{ vendor }}', '{{ project_description }}', '{{ php_version }}',
+                    ],
+                    [
+                        $projectName, strtoupper($type), $this->slugify($projectName),
+                        'zeroping', $this->descriptions[$type], PHP_VERSION,
+                    ],
                     $content
                 );
+
                 file_put_contents($target, $content);
             }
         }
     }
 
-    private function getOption(array $options, string $key): ?string
+    private function brandComposer(string $dir, string $projectName): void
     {
-        foreach ($options as $opt) {
-            if (str_starts_with($opt, "--$key=")) {
-                return substr($opt, strlen("--$key="));
+        $file = $dir . '/composer.json';
+        if (!file_exists($file)) {
+            return;
+        }
+
+        $json = json_decode((string) file_get_contents($file), true);
+        if ($json === null) {
+            return;
+        }
+
+        $json['name'] = 'zeroping/' . $this->slugify($projectName);
+        $json['description'] = $projectName . ' — built with ZeroPing';
+
+        unset($json['repositories']);
+
+        file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+    }
+
+    private function prepareEnv(string $dir, string $projectName = 'ZeroPing'): void
+    {
+        $envPath = $dir . '/.env';
+        $examplePath = $dir . '/.env.example';
+
+        if (!file_exists($envPath) && file_exists($examplePath)) {
+            copy($examplePath, $envPath);
+        }
+
+        if (!file_exists($envPath)) {
+            return;
+        }
+
+        $env = (string) file_get_contents($envPath);
+        $appName = preg_match('/\s/', $projectName) ? '"' . $projectName . '"' : $projectName;
+
+        if (preg_match('/^APP_NAME=/m', $env)) {
+            $env = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME=' . $appName, $env);
+        } else {
+            $env = "APP_NAME={$appName}\n" . $env;
+        }
+
+        if (!preg_match('/^APP_KEY=/m', $env)) {
+            $env .= "\nAPP_KEY=\n";
+        }
+
+        file_put_contents($envPath, $env);
+    }
+
+    private function ensureKey(string $dir): void
+    {
+        $envPath = $dir . '/.env';
+        if (!file_exists($envPath)) {
+            return;
+        }
+
+        $env = (string) file_get_contents($envPath);
+
+        if (preg_match('/^APP_KEY=(.*)$/m', $env, $m) && $m[1] === '') {
+            $key = 'base64:' . base64_encode(random_bytes(32));
+            $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
+            file_put_contents($envPath, $env);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $a
+     */
+    private function configureDatabase(string $dir, array $a): void
+    {
+        $envPath = $dir . '/.env';
+        if (!file_exists($envPath)) {
+            return;
+        }
+
+        $env = (string) file_get_contents($envPath);
+        $driver = (string) $a['driver'];
+        $port = self::DRIVER_PORTS[$driver] ?? '';
+
+        $env = preg_replace('/^DB_CONNECTION=.*$/m', 'DB_CONNECTION=' . $driver, $env);
+
+        if ($driver !== 'sqlite') {
+            $replacements = [
+                'DB_HOST'     => '127.0.0.1',
+                'DB_PORT'     => $port,
+                'DB_DATABASE' => 'zeroping',
+                'DB_USERNAME' => 'root',
+                'DB_PASSWORD' => '',
+            ];
+            foreach ($replacements as $key => $value) {
+                if (preg_match('/^' . $key . '=/m', $env)) {
+                    $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
+                } else {
+                    $env .= "\n{$key}={$value}";
+                }
             }
         }
-        return null;
+
+        // Record the wizard's starter choices so the generated app can react.
+        $flags = [
+            'ZEROPING_AUTH'         => $a['auth'] ? 'true' : 'false',
+            'ZEROPING_TAILWIND'    => $a['tailwind'] ? 'true' : 'false',
+            'ZEROPING_EXAMPLE_CRUD' => $a['crud'] ? 'true' : 'false',
+        ];
+        foreach ($flags as $key => $value) {
+            if (preg_match('/^' . $key . '=/m', $env)) {
+                $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
+            } else {
+                $env .= "\n{$key}={$value}";
+            }
+        }
+
+        file_put_contents($envPath, $env);
+    }
+
+    private function installStarterFiles(string $dir, array $a): void
+    {
+        if (!$a['tailwind']) {
+            return;
+        }
+
+        $layout = $dir . '/views/layouts/app.php';
+        if (!file_exists($layout)) {
+            return;
+        }
+
+        $content = (string) file_get_contents($layout);
+        $snippet = '<script src="https://cdn.tailwindcss.com"></script>';
+
+        if (stripos($content, 'tailwindcss.com') !== false) {
+            return;
+        }
+
+        if (stripos($content, '</head>') !== false) {
+            $content = str_ireplace('</head>', $snippet . "\n</head>", $content);
+        } elseif (stripos($content, '<body') !== false) {
+            $content = preg_replace('/<body[^>]*>/', "$0\n    " . $snippet, $content, 1);
+        } else {
+            $content = $snippet . "\n" . $content;
+        }
+
+        file_put_contents($layout, $content);
+    }
+
+    private function ensureStorage(string $dir): void
+    {
+        foreach (['storage/cache', 'storage/logs', 'storage/framework/cache'] as $sub) {
+            $path = $dir . '/' . $sub;
+            if (!is_dir($path)) {
+                mkdir($path, 0755, true);
+            }
+        }
+    }
+
+    private function stubDependencies(): void
+    {
+        // Dependencies are installed by the user with `composer install`
+        // once the project is in place. We don't run it here so the
+        // scaffolder never blocks on a network download.
+    }
+
+    private function stubMigrations(): void
+    {
+        // Migrations run after `composer install` brings in the
+        // database drivers. Surfaced as a next step instead.
+    }
+
+    private function resolveTarget(string $location): string
+    {
+        $location = trim($location);
+        if ($location === '') {
+            $location = './my-app';
+        }
+
+        if (str_starts_with($location, './') || str_starts_with($location, '../')) {
+            return getcwd() . '/' . ltrim($location, './');
+        }
+
+        if (str_starts_with($location, '/') || preg_match('/^[A-Za-z]:\\\\/', $location)) {
+            return $location;
+        }
+
+        return getcwd() . '/' . $location;
+    }
+
+    // ── Option parsing ──────────────────────────────────────────────────
+
+    /**
+     * @param string[] $options
+     * @return array<string,mixed>
+     */
+    private function parseOptions(array $options): array
+    {
+        $parsed = [];
+
+        foreach ($options as $opt) {
+            if (str_starts_with($opt, '--')) {
+                $body = substr($opt, 2);
+                if (str_contains($body, '=')) {
+                    [$key, $value] = explode('=', $body, 2);
+                    $parsed[$key] = $value;
+                } else {
+                    $parsed[$body] = true;
+                }
+            }
+        }
+
+        return $parsed;
+    }
+
+    /**
+     * @param array<string,mixed> $opts
+     */
+    private function hasAnyOption(array $opts): bool
+    {
+        $known = ['type', 'db', 'auth', 'tailwind', 'crud', 'dir', 'location', 'name', 'force'];
+
+        foreach ($known as $key) {
+            if (isset($opts[$key])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function driverLabelFromCode(string $code): string
+    {
+        $code = strtolower($code);
+        foreach (self::DRIVERS as $label => $value) {
+            if ($value === $code || strtolower($label) === $code) {
+                return $label;
+            }
+        }
+        return 'SQLite';
     }
 
     private function slugify(string $name): string

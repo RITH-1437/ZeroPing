@@ -16,7 +16,7 @@ class MakeControllerCommand extends Command
     public function handle(string $name): void
     {
         if (empty($name)) {
-            echo "Usage: php zero make:controller ControllerName\n";
+            echo "Usage: php zero make:controller ControllerName [--resource]\n";
 
             return;
         }
@@ -25,8 +25,10 @@ class MakeControllerCommand extends Command
             $name .= 'Controller';
         }
 
+        $stub = $this->option('resource') ? 'controller.resource.stub' : 'controller.stub';
+
         $content = $this->replace(
-            $this->stub('controller.stub'),
+            $this->stub($stub),
             [
 
                 'class' => $name

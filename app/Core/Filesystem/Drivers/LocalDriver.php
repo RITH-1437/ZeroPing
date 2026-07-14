@@ -172,12 +172,21 @@ class LocalDriver implements FilesystemDriver
     {
         $location = $this->applyPathPrefix($path);
 
-        if (is_dir($location)) {
-            Log::info("Directory deleted: {$path}");
-            return rmdir($location);
+        if (!is_dir($location)) {
+            return false;
         }
 
-        return false;
+        foreach (array_diff(scandir($location), ['.', '..']) as $item) {
+            $itemPath = $location . '/' . $item;
+
+            is_dir($itemPath)
+                ? $this->deleteDirectory($path . '/' . $item)
+                : unlink($itemPath);
+        }
+
+        Log::info("Directory deleted: {$path}");
+
+        return rmdir($location);
     }
 
     protected function applyPathPrefix(string $path): string

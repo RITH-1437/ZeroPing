@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Notifications;
+
+use App\Core\Mail\Mailable;
+use App\Core\Notifications\Notification;
+
+class {{ class }} extends Notification
+{
+    public function __construct(
+        // public mixed $notifiable,
+    ) {
+    }
+
+    public function via(object $notifiable): array
+    {
+        return ['mail', 'database'];
+    }
+
+    public function toMail(object $notifiable): Mailable
+    {
+        return (new Mailable())
+            ->subject('Notification')
+            ->view('emails.notification');
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [];
+    }
+}

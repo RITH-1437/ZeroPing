@@ -16,7 +16,7 @@ class MakeModelCommand extends Command
     public function handle(string $name): void
     {
         if (empty($name)) {
-            echo "Usage: php zero make:model ModelName\n";
+            echo "Usage: php zero make:model ModelName [--all|--migration|--factory|--seeder|--controller|--resource]\n";
 
             return;
         }
@@ -37,5 +37,35 @@ class MakeModelCommand extends Command
         $file = BASE_PATH . "/app/Models/{$name}.php";
 
         $this->writeGenerated($file, $content, 'Model');
+
+        $all = (bool) $this->option('all');
+
+        $withMigration = $all || $this->option('migration') !== null;
+        $withFactory = $all || $this->option('factory') !== null;
+        $withSeeder = $all || $this->option('seeder') !== null;
+        $withController = $all || $this->option('controller') !== null;
+        $withResource = $withController && ($all || $this->option('resource') !== null);
+
+        if ($withMigration) {
+            $this->call('make:migration', ['create_' . $table . '_table']);
+        }
+
+        if ($withFactory) {
+            $this->call('make:factory', [$name . 'Factory', '--model=' . $name]);
+        }
+
+        if ($withSeeder) {
+            $this->call('make:seeder', [$name . 'Seeder']);
+        }
+
+        if ($withController) {
+            $controllerArgs = [$name . 'Controller'];
+
+            if ($withResource) {
+                $controllerArgs[] = '--resource';
+            }
+
+            $this->call('make:controller', $controllerArgs);
+        }
     }
 }

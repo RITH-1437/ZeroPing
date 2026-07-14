@@ -28,4 +28,9 @@ class Performance
     {
         return static::$timers;
     }
+
+    public static function reset(): void
+    {
+        static::$timers = [];
+    }
 }

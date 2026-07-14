@@ -6,6 +6,8 @@ use App\Core\Config\Config;
 use App\Core\Debug\Dumper;
 use App\Core\Debug\Performance;
 use App\Core\Filesystem\FilesystemManager;
+use App\Core\Http\ResponseFactory;
+use App\Core\Localization\Translator;
 use App\Core\Queue\Dispatcher;
 use App\Core\Queue\Job;
 use App\Core\Routing\Router;
@@ -36,7 +38,7 @@ if (!function_exists('config')) {
         mixed $default = null
     ): mixed {
 
-        return Config::get(
+        return \App\Core\Support\Config::get(
             $key,
             $default
         );
@@ -69,7 +71,7 @@ if (!function_exists('cache')) {
 }
 
 if (!function_exists('storage')) {
-    function storage(string $disk = null)
+    function storage(?string $disk = null)
     {
         return App::container()->make(FilesystemManager::class)->disk($disk);
     }
@@ -79,6 +81,13 @@ if (!function_exists('storage_path')) {
     function storage_path(string $path = ''): string
     {
         return BASE_PATH . '/storage' . ($path ? '/' . $path : '');
+    }
+}
+
+if (!function_exists('database_path')) {
+    function database_path(string $path = ''): string
+    {
+        return BASE_PATH . '/database' . ($path ? '/' . $path : '');
     }
 }
 
@@ -96,6 +105,46 @@ if (!function_exists('view')) {
     }
 }
 
+if (!function_exists('response')) {
+    /**
+     * Get a response factory, or build a response directly.
+     *
+     *   response()                 -> ResponseFactory
+     *   response($content, 200)   -> Response
+     */
+    function response(mixed $content = null, int $status = 200, array $headers = []): mixed
+    {
+        $factory = new ResponseFactory();
+
+        if (func_num_args() === 0) {
+            return $factory;
+        }
+
+        return $factory->make($content, $status, $headers);
+    }
+}
+
+if (!function_exists('redirect')) {
+    function redirect(string $to, int $status = 302): \App\Core\Http\Response
+    {
+        return (new ResponseFactory())->redirect($to, $status);
+    }
+}
+
+if (!function_exists('trans')) {
+    function trans(string $key, array $replace = [], ?string $locale = null): string
+    {
+        return app(Translator::class)->get($key, $replace, $locale);
+    }
+}
+
+if (!function_exists('__')) {
+    function __(string $key, array $replace = [], ?string $locale = null): string
+    {
+        return trans($key, $replace, $locale);
+    }
+}
+
 if (!function_exists('dispatch')) {
     function dispatch(Job $job): void
     {
@@ -104,13 +153,16 @@ if (!function_exists('dispatch')) {
 }
 
 if (!function_exists('route')) {
-    function route(string $name, array $parameters = [], bool $absolute = true, int $expiration = null): string
+    function route(string $name, array $parameters = [], bool $absolute = true, ?int $expiration = null): string
     {
         $router = App::container()->make(Router::class);
         $url = $router->route($name, $parameters);
 
         if ($absolute) {
-            $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}" . $url;
+            $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            ? 'https'
+            : 'http';
+            $url = $scheme . "://{$_SERVER['HTTP_HOST']}" . $url;
         }
 
         if ($expiration) {
@@ -159,7 +211,7 @@ if (!function_exists('ray')) {
 }
 
 if (!function_exists('logger')) {
-    function logger(string $message = null, array $context = [])
+    function logger(?string $message = null, array $context = [])
     {
         if (is_null($message)) {
             return app(Log::class);

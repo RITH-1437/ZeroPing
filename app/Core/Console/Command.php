@@ -343,6 +343,13 @@ abstract class Command
         return $file;
     }
 
+    protected function autoDiscoverEnabled(): bool
+    {
+        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?? 'true';
+
+        return $flag !== 'false' && $flag !== '0';
+    }
+
     // ── Metadata ─────────────────────────────────────────────────────────────
 
     public function getDescription(): string
@@ -390,6 +397,14 @@ abstract class Command
     protected function call(string $command, array $arguments = []): void
     {
         $argv = array_merge(['zero', $command], $arguments);
-        (new Console())->run($argv);
+
+        $previous = $_SERVER['argv'] ?? [];
+        $_SERVER['argv'] = $argv;
+
+        try {
+            (new Console())->run($argv);
+        } finally {
+            $_SERVER['argv'] = $previous;
+        }
     }
 }

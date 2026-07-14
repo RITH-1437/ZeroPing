@@ -40,6 +40,25 @@ configuration.
 - **Blazing-fast CLI** (`php zero`) for scaffolding, migrations, and maintenance.
 - **Zero external runtime dependencies** beyond PHP itself.
 
+## What's New in v1.3.0
+
+The v1.3.0 release focuses on **developer experience**:
+
+- **Polished console** — a gradient `zero` logo and a grouped, colorized command
+  table. Run `php zero` to see it.
+- **Richer `php zero about`** — framework version, PHP/Composer versions,
+  database driver, timezone, and your cache/session/queue drivers at a glance.
+- **Per-command help** — every command supports `--help` (or `php zero help <command>`),
+  showing usage, arguments, options, and examples.
+- **Better error pages** — dedicated `403`/`419` screens and development `404`/`500`
+  pages with request details and a full stack trace; production shows clean pages.
+- **`php zero publish`** — copy framework config, views, language files, and
+  `public/robots.txt` into your project so you can customize them safely
+  (`--group=config|views|lang|public|all`).
+- **Improved `php zero route:list`** — named routes shown plus color-coded methods.
+- **Install-time validation** — `php zero install` prompts for a timezone and
+  validates your `.env` before finishing.
+
 ## Requirements
 
 - PHP >= 8.1
@@ -115,7 +134,8 @@ php zero make:controller BlogController
 php zero make:model Post
 php zero migrate        # run pending migrations
 php zero test           # run the test suite
-php zero --help         # list all available commands
+php zero about          # framework, PHP, and environment info
+php zero --help         # list all available commands (grouped & colorized)
 ```
 
 ## Quick Start
@@ -195,8 +215,14 @@ ZeroPing includes a batteries-included CLI. The most common commands:
 ```bash
 php zero serve              # start the development server
 php zero migrate            # run database migrations
-php zero make:controller   # scaffold a controller
-php zero make:model        # scaffold a model
+php zero make:controller   # scaffold a controller (--resource for CRUD)
+php zero make:model        # scaffold a model (--all for the full stack)
+php zero make:job          # scaffold a queue job
+php zero make:event        # scaffold an event
+php zero make:listener     # scaffold an event listener (--event=)
+php zero make:notification # scaffold a notification
+php zero make:factory      # scaffold a model factory (--model=)
+php zero make:enum         # scaffold a string-backed enum
 php zero route:list        # list registered routes
 php zero doctor            # verify your installation
 php zero --help             # full command reference

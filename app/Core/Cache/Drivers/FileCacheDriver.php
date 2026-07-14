@@ -115,7 +115,18 @@ class FileCacheDriver implements CacheDriver
         $current = $this->get($key);
         $new = $current + $value;
 
-        $this->put($key, $new, 0);
+        // Preserve the item's remaining TTL rather than expiring it.
+        $file   = $this->path . '/' . sha1($key);
+        $expire = 999999999;
+
+        if (file_exists($file)) {
+            $data = json_decode(file_get_contents($file), true);
+            if (isset($data['expire'])) {
+                $expire = $data['expire'];
+            }
+        }
+
+        $this->put($key, $new, max(0, $expire - time()));
 
         return $new;
     }

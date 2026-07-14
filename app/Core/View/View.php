@@ -8,6 +8,14 @@ class View
     private static ?string $basePath = null;
 
     /**
+     * Namespaced view paths registered by packages via
+     * ServiceProvider::loadViewsFrom(). Resolved as "namespace::view".
+     *
+     * @var array<string, string>
+     */
+    private static array $namespaces = [];
+
+    /**
      * Resolved view/layout paths, cached so repeated renders of the same view
      * (e.g. inside a loop) skip the file_exists() scan.
      *
@@ -83,6 +91,20 @@ class View
             return self::$pathCache[$view];
         }
 
+        // Namespaced view: "namespace::view"
+        if (str_contains($view, '::')) {
+            [$ns, $name] = explode('::', $view, 2);
+
+            if (isset(self::$namespaces[$ns])) {
+                $file = self::$namespaces[$ns] . '/' . str_replace('.', '/', $name) . '.php';
+                if (file_exists($file)) {
+                    return self::$pathCache[$view] = $file;
+                }
+            }
+
+            return null;
+        }
+
         $path = self::basePath() . "/views/" . str_replace('.', '/', $view) . ".php";
         if (file_exists($path)) {
             return self::$pathCache[$view] = $path;
@@ -121,6 +143,22 @@ class View
     public static function cachePath(): string
     {
         return self::basePath() . '/storage/cache/views';
+    }
+
+    /**
+     * Register a namespaced view path (used by ServiceProvider::loadViewsFrom).
+     */
+    public static function addNamespace(string $namespace, string $path): void
+    {
+        self::$namespaces[$namespace] = rtrim($path, '/');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function namespaces(): array
+    {
+        return self::$namespaces;
     }
 
     public static function cacheEnabled(): bool

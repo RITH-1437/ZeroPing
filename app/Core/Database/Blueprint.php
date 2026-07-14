@@ -2,179 +2,239 @@
 
 namespace App\Core\Database;
 
+use App\Core\Database\Grammar\Grammar;
+
+/**
+ * A fluent schema blueprint.
+ *
+ * Blueprint records what a table should look like (columns, primary key,
+ * foreign keys, drops). It does NOT know how to write SQL — that is the
+ * Grammar's job. This is what lets a single migration run unchanged on
+ * SQLite, MySQL, MariaDB and PostgreSQL.
+ */
 class Blueprint
 {
-    protected string $table;
+    private string $table;
 
-    /** @var array<string|ColumnDefinition> */
-    protected array $columns = [];
+    /** @var ColumnDefinition[] */
+    private array $columns = [];
 
-    /** @var array<string> */
-    protected array $dropped = [];
+    /** @var array<int, array{name:string, ...}> */
+    private array $commands = [];
 
-    public function __construct(string $table)
+    /** @var string[] */
+    private array $dropped = [];
+
+    private ?string $primaryKey = null;
+
+    private Grammar $grammar;
+
+    public function __construct(string $table, ?Grammar $grammar = null)
     {
         $this->table = $table;
+        $this->grammar = $grammar ?? (new \App\Core\Database\Grammar\MySqlGrammar());
     }
+
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    /**
+     * @return ColumnDefinition[]
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    /**
+     * @return array<int, array{name:string, ...}>
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDropped(): array
+    {
+        return $this->dropped;
+    }
+
+    public function getPrimaryKey(): ?string
+    {
+        return $this->primaryKey;
+    }
+
+    public function grammar(): Grammar
+    {
+        return $this->grammar;
+    }
+
+    // ── Column definitions ───────────────────────────────────────────────
 
     public function id(): static
     {
-        $this->columns[] = "id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY";
+        $this->primaryKey = 'id';
+        $this->columns[] = new ColumnDefinition('id', 'id', primaryKey: true);
+
         return $this;
     }
 
     public function string(string $name, int $length = 255): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} VARCHAR({$length})");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('string', $name, $length);
+    }
+
+    public function char(string $name, int $length = 255): ColumnDefinition
+    {
+        return $this->addColumn('char', $name, $length);
     }
 
     public function text(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} TEXT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('text', $name);
     }
 
     public function longText(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} LONGTEXT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('longText', $name);
     }
 
     public function mediumText(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} MEDIUMTEXT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('mediumText', $name);
     }
 
     public function integer(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} INT");
-        $this->columns[] = $col;
-        return $col;
-    }
-
-    public function unsignedInteger(string $name): ColumnDefinition
-    {
-        $col = new ColumnDefinition("{$name} INT UNSIGNED");
-        $this->columns[] = $col;
-        return $col;
-    }
-
-    public function unsignedBigInteger(string $name): ColumnDefinition
-    {
-        $col = new ColumnDefinition("{$name} BIGINT UNSIGNED");
-        $this->columns[] = $col;
-        return $col;
-    }
-
-    public function unsignedTinyInteger(string $name): ColumnDefinition
-    {
-        $col = new ColumnDefinition("{$name} TINYINT UNSIGNED");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('integer', $name);
     }
 
     public function bigInteger(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} BIGINT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('bigInteger', $name);
     }
 
     public function tinyInteger(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} TINYINT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('tinyInteger', $name);
+    }
+
+    public function unsignedInteger(string $name): ColumnDefinition
+    {
+        return $this->addColumn('unsignedInteger', $name);
+    }
+
+    public function unsignedBigInteger(string $name): ColumnDefinition
+    {
+        return $this->addColumn('unsignedBigInteger', $name);
+    }
+
+    public function unsignedTinyInteger(string $name): ColumnDefinition
+    {
+        return $this->addColumn('unsignedTinyInteger', $name);
     }
 
     public function boolean(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} TINYINT(1)");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('boolean', $name);
     }
 
     public function decimal(string $name, int $precision = 8, int $scale = 2): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} DECIMAL({$precision},{$scale})");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('decimal', $name, (int) ($precision . $scale));
     }
 
     public function float(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} FLOAT");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('float', $name);
     }
 
     public function double(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} DOUBLE");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('double', $name);
     }
 
     public function date(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} DATE");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('date', $name);
     }
 
     public function dateTime(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} DATETIME");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('dateTime', $name);
     }
 
     public function timestamp(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} TIMESTAMP");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('timestamp', $name);
     }
 
     public function json(string $name): ColumnDefinition
     {
-        $col = new ColumnDefinition("{$name} JSON");
-        $this->columns[] = $col;
-        return $col;
+        return $this->addColumn('json', $name);
     }
 
+    /**
+     * @param  array<int, string>  $values
+     */
     public function enum(string $name, array $values): ColumnDefinition
     {
-        $list = implode("','", $values);
-        $col = new ColumnDefinition("{$name} ENUM('{$list}')");
-        $this->columns[] = $col;
-        return $col;
+        $column = $this->addColumn('enum', $name);
+        $column->values($values);
+
+        return $column;
     }
 
     public function timestamps(): static
     {
-        $this->columns[] = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
-        $this->columns[] = "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+        $this->columns[] = new ColumnDefinition('created_at', 'timestamp', useCurrent: true);
+        $this->columns[] = new ColumnDefinition('updated_at', 'timestamp', nullable: true);
+
         return $this;
     }
 
     public function softDeletes(): static
     {
-        $this->columns[] = "deleted_at TIMESTAMP NULL DEFAULT NULL";
+        $this->columns[] = new ColumnDefinition('deleted_at', 'timestamp', nullable: true);
+
         return $this;
     }
 
-    public function foreign(string $name): ColumnDefinition
+    public function foreign(string $name): ForeignDefinition
     {
-        $col = new ColumnDefinition("{$name} BIGINT UNSIGNED");
-        $this->columns[] = $col;
-        return $col;
+        $this->addColumn('unsignedBigInteger', $name);
+
+        $this->commands[] = [
+            'name'             => 'foreign',
+            'table'            => $this->table,
+            'column'           => $name,
+            'referencesTable'  => null,
+            'referencesColumn' => null,
+            'index'            => $this->table . '_' . $name . '_foreign',
+        ];
+
+        return new ForeignDefinition($this, $name);
+    }
+
+    /**
+     * @internal used by ForeignDefinition to record command attributes.
+     */
+    public function addForeignCommand(string $column, string $key, mixed $value): void
+    {
+        $reversed = array_reverse($this->commands, true);
+
+        foreach ($reversed as $index => $command) {
+            if (($command['name'] ?? null) === 'foreign' && ($command['column'] ?? null) === $column) {
+                $this->commands[$index][$key] = $value;
+
+                return;
+            }
+        }
     }
 
     public function dropColumn(string ...$names): static
@@ -186,39 +246,41 @@ class Blueprint
         return $this;
     }
 
-    public function build(): string
-    {
-        $parts = [];
-        foreach ($this->columns as $col) {
-            $parts[] = $col instanceof ColumnDefinition ? $col->toSql() : $col;
-        }
-        return implode(",\n    ", $parts);
-    }
+    // ── Compilation (delegated to the Grammar) ─────────────────────────
 
+    /**
+     * @return string[]
+     */
     public function toSql(): array
     {
-        return [
-            "CREATE TABLE IF NOT EXISTS `{$this->table}` (\n    " . $this->build() . "\n)"
-        ];
+        return [$this->grammar->compileCreate($this)];
     }
 
+    /**
+     * @return string[]
+     */
     public function toAlterSql(): array
     {
         $queries = [];
 
         if (!empty($this->columns)) {
-            $parts = [];
-            foreach ($this->columns as $col) {
-                $parts[] = 'ADD COLUMN ' . ($col instanceof ColumnDefinition ? $col->toSql() : $col);
-            }
-            $queries[] = "ALTER TABLE `{$this->table}`\n    " . implode(",\n    ", $parts);
+            $queries = array_merge($queries, $this->grammar->compileAdd($this));
         }
 
         if (!empty($this->dropped)) {
-            $cols = array_map(fn(string $name): string => "`{$name}`", $this->dropped);
-            $queries[] = "ALTER TABLE `{$this->table}` DROP COLUMN " . implode(', ', $cols);
+            $queries[] = $this->grammar->compileDropColumn($this, $this->dropped);
         }
 
         return $queries;
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+
+    private function addColumn(string $type, string $name, ?int $length = null): ColumnDefinition
+    {
+        $column = new ColumnDefinition($name, $type, $length);
+        $this->columns[] = $column;
+
+        return $column;
     }
 }

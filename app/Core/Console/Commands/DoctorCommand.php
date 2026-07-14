@@ -2,7 +2,9 @@
 
 namespace App\Core\Console\Commands;
 
+use App\Core\Console\Banner;
 use App\Core\Console\Command;
+use App\Core\Application\App;
 
 class DoctorCommand extends Command
 {
@@ -34,7 +36,8 @@ class DoctorCommand extends Command
 
     public function handle(): void
     {
-        $this->title('ZeroPing Doctor');
+        $this->line(Banner::header(App::VERSION));
+        $this->line('');
         $this->line('<fg=gray>Diagnosing your installation and environment...</>');
 
         $this->section('Runtime');
@@ -96,15 +99,11 @@ class DoctorCommand extends Command
             $this->errors[] = 'Enable these PHP extensions in php.ini: ' . implode(', ', $missing);
         }
 
-        if (!extension_loaded('pdo_mysql') && !extension_loaded('pdo_sqlite')) {
-            $this->warnCheck('Database driver', 'no pdo_mysql or pdo_sqlite');
-            $this->warnings[] = 'Install a PDO driver (pdo_mysql or pdo_sqlite) to use a database.';
+        if (!extension_loaded('pdo')) {
+            $this->fail('PDO', 'pdo extension not loaded');
+            $this->errors[] = 'Enable the pdo extension to use any database.';
         } else {
-            $drivers = array_values(array_filter(
-                ['pdo_mysql', 'pdo_sqlite', 'pdo_pgsql'],
-                static fn ($d) => extension_loaded($d)
-            ));
-            $this->pass('Database driver', implode(', ', $drivers));
+            $this->pass('PDO', 'available');
         }
     }
 
@@ -259,31 +258,128 @@ class DoctorCommand extends Command
 
     // ── Service checks ─────────────────────────────────────────────────────────
 
+    /**
+     * @var array<string, array{pdo: string, dsn: string, charset: string}>
+     */
+    private const DATABASE_DRIVERS = [
+        'sqlite'  => ['pdo' => 'pdo_sqlite',  'dsn' => 'sqlite',            'charset' => 'utf8'],
+        'mysql'   => ['pdo' => 'pdo_mysql',   'dsn' => 'mysql',             'charset' => 'utf8mb4'],
+        'mariadb' => ['pdo' => 'pdo_mysql',   'dsn' => 'mysql',             'charset' => 'utf8mb4'],
+        'pgsql'   => ['pdo' => 'pdo_pgsql',   'dsn' => 'pgsql',             'charset' => 'utf8'],
+    ];
+
     private function checkDatabase(): void
     {
-        $connection = $_ENV['DB_CONNECTION'] ?? ($_SERVER['DB_CONNECTION'] ?? 'mysql');
+        $connection = strtolower((string) ($_ENV['DB_CONNECTION'] ?? ($_SERVER['DB_CONNECTION'] ?? 'sqlite')));
         $host = $_ENV['DB_HOST'] ?? ($_SERVER['DB_HOST'] ?? '127.0.0.1');
-        $port = $_ENV['DB_PORT'] ?? ($_SERVER['DB_PORT'] ?? 3306);
+        $port = $_ENV['DB_PORT'] ?? ($_SERVER['DB_PORT'] ?? (
+            $connection === 'pgsql' ? 5432 : 3306
+        ));
         $name = $_ENV['DB_NAME'] ?? ($_SERVER['DB_NAME'] ?? '');
         $user = $_ENV['DB_USER'] ?? ($_SERVER['DB_USER'] ?? 'root');
         $pass = $_ENV['DB_PASS'] ?? ($_SERVER['DB_PASS'] ?? '');
 
-        try {
-            if ($connection === 'sqlite') {
-                $database = $name !== '' ? $name : $this->path('database/database.sqlite');
-                new \PDO('sqlite:' . $database);
-            } else {
-                new \PDO(
-                    "mysql:host={$host};port={$port};charset=utf8mb4",
-                    $user,
-                    (string) $pass,
-                    [\PDO::ATTR_TIMEOUT => 3]
-                );
+        if (!array_key_exists($connection, self::DATABASE_DRIVERS)) {
+            $this->fail('Database driver', "unknown driver '{$connection}'");
+            $this->errors[] = 'Set DB_CONNECTION to one of: ' . implode(', ', array_keys(self::DATABASE_DRIVERS));
+            return;
+        }
+
+        $driver = self::DATABASE_DRIVERS[$connection];
+        $this->pass('Database driver', $connection);
+
+        // Only diagnose the configured driver's PDO extension.
+        if (!extension_loaded($driver['pdo'])) {
+            $this->fail('PDO extension', "{$driver['pdo']} not loaded");
+            $this->errors[] = "Enable the {$driver['pdo']} PHP extension to use {$connection}.";
+            return;
+        }
+
+        if ($connection === 'sqlite') {
+            $database = $name !== '' ? $name : $this->path('database/database.sqlite');
+
+            if (!file_exists($database)) {
+                $this->warnCheck('SQLite database', 'file does not exist yet');
+                $this->warnings[] = "The SQLite file '{$database}' will be created on first connection (run: php zero migrate).";
+                return;
             }
+
+            $this->pass('SQLite database', $database);
+
+            try {
+                $pdo = new \PDO('sqlite:' . $database);
+            } catch (\Throwable $e) {
+                $this->warnCheck('Database connection', 'unavailable');
+                $this->warnings[] = 'Could not open the SQLite database: ' . $e->getMessage();
+                return;
+            }
+
             $this->pass('Database connection', 'connected');
+            $this->checkMigrations($pdo);
+            return;
+        }
+
+        // MySQL / MariaDB / PostgreSQL
+        $this->pass('Database credentials', "{$user}@{$host}:{$port}/{$name}");
+
+        try {
+            $pdo = new \PDO(
+                sprintf(
+                    '%s:host=%s;port=%s;charset=%s',
+                    $driver['dsn'],
+                    $host,
+                    $port,
+                    $driver['charset']
+                ),
+                $user,
+                (string) $pass,
+                [\PDO::ATTR_TIMEOUT => 3]
+            );
         } catch (\Throwable $e) {
             $this->warnCheck('Database connection', 'unavailable');
-            $this->warnings[] = 'Could not connect to the database. Update DB_* values in .env, or defer this until you need it.';
+            $this->warnings[] = 'Could not connect to the database. Check DB_HOST/DB_PORT/DB_USER/DB_PASS in .env.';
+            return;
+        }
+
+        $this->pass('Database connection', 'connected');
+        $this->checkMigrations($pdo);
+    }
+
+    /**
+     * Report migration status against an already-open connection.
+     *
+     * A single "Migrations" line is emitted so the output can never show both
+     * "file missing" and "connected", or contradict itself.
+     */
+    private function checkMigrations(\PDO $pdo): void
+    {
+        $idColumn = match ($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME)) {
+            'sqlite'                                => 'id INTEGER PRIMARY KEY AUTOINCREMENT',
+            'mysql'                                => 'id INT AUTO_INCREMENT PRIMARY KEY',
+            'pgsql'                                => 'id SERIAL PRIMARY KEY',
+            default                                => 'id INT PRIMARY KEY',
+        };
+
+        try {
+            $pdo->exec(
+                'CREATE TABLE IF NOT EXISTS migrations ('
+                . $idColumn . ', '
+                . 'migration VARCHAR(255) NOT NULL, '
+                . 'batch INTEGER NOT NULL, '
+                . 'created_at TIMESTAMP)'
+            );
+            $count = (int) $pdo->query('SELECT COUNT(*) FROM migrations')->fetchColumn();
+        } catch (\Throwable $e) {
+            $this->warnCheck('Migrations', 'status unknown');
+            $this->warnings[] = 'Could not read the migrations table: ' . $e->getMessage();
+            return;
+        }
+
+        if ($count === 0) {
+            $this->warnCheck('Migrations', 'none have been run yet');
+            $this->warnings[] = 'Run your database migrations: php zero migrate';
+        } else {
+            $this->pass('Migrations', $count . ' migration(s) applied');
         }
     }
 

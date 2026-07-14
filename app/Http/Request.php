@@ -80,7 +80,11 @@ class Request extends \App\Core\Http\Request
 
     public static function url(): string
     {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            ? 'https'
+            : 'http';
+
+        return $scheme . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
     }
 
     public static function ip(): string

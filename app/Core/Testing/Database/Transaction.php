@@ -8,11 +8,11 @@ trait Transaction
 {
     public function beginDatabaseTransaction(): void
     {
-        Database::connect()->beginTransaction();
+        Database::connection()->beginTransaction();
     }
 
     public function rollbackDatabaseTransaction(): void
     {
-        Database::connect()->rollBack();
+        Database::connection()->rollBack();
     }
 }

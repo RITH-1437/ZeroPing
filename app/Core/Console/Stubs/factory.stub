@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Factories;
+{{ model_import }}
+class {{ class }}
+{
+{{ model_prop }}
+
+    public function definition(): array
+    {
+        return [
+            // 'column' => 'value',
+        ];
+    }
+}

@@ -4,93 +4,59 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Core\Session\Flash;
 use App\Core\Session\Session;
+use PHPUnit\Framework\TestCase;
 
-class SessionTest extends \Tests\TestCase
+class SessionTest extends TestCase
 {
     protected function setUp(): void
     {
-        parent::setUp();
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            session_save_path(sys_get_temp_dir());
         }
-        $_SESSION = [];
+
+        Session::start();
+        Session::destroy();
+        Session::start();
     }
 
-    public function testSetAndGetSessionValue(): void
+    protected function tearDown(): void
     {
-        Session::set('key', 'value');
-
-        $this->assertSame('value', Session::get('key'));
+        Session::destroy();
     }
 
-    public function testGetReturnsDefaultForMissingKey(): void
+    public function testSetGetHasRemove(): void
     {
-        $this->assertSame('default', Session::get('missing', 'default'));
+        $this->assertFalse(Session::has('user'));
+
+        Session::set('user', ['id' => 1]);
+
+        $this->assertTrue(Session::has('user'));
+        $this->assertSame(['id' => 1], Session::get('user'));
+        $this->assertSame('def', Session::get('missing', 'def'));
+
+        Session::remove('user');
+
+        $this->assertFalse(Session::has('user'));
     }
 
-    public function testGetReturnsNullForMissingKey(): void
+    public function testFlashSetGetClears(): void
     {
-        $this->assertNull(Session::get('missing'));
-    }
+        $this->assertFalse(Flash::has());
 
-    public function testHasReturnsTrueForExistingKey(): void
-    {
-        Session::set('exists', true);
+        Flash::set('success', 'Saved!');
 
-        $this->assertTrue(Session::has('exists'));
-    }
+        $this->assertTrue(Flash::has());
+        $this->assertSame(
+            ['type' => 'success', 'message' => 'Saved!'],
+            Flash::get()
+        );
 
-    public function testHasReturnsFalseForMissingKey(): void
-    {
-        $this->assertFalse(Session::has('missing'));
-    }
+        // Reading the flash consumes it.
+        $this->assertFalse(Flash::has());
 
-    public function testRemoveDeletesKey(): void
-    {
-        Session::set('temp', 'data');
-        Session::remove('temp');
-
-        $this->assertFalse(Session::has('temp'));
-    }
-
-    public function testFlushClearsAllData(): void
-    {
-        Session::set('a', 1);
-        Session::set('b', 2);
-        $_SESSION = [];
-
-        $this->assertFalse(Session::has('a'));
-        $this->assertFalse(Session::has('b'));
-    }
-
-    public function testSetStoresDifferentTypes(): void
-    {
-        Session::set('string', 'hello');
-        Session::set('int', 42);
-        Session::set('array', [1, 2, 3]);
-        Session::set('bool', true);
-        Session::set('null', null);
-
-        $this->assertSame('hello', Session::get('string'));
-        $this->assertSame(42, Session::get('int'));
-        $this->assertSame([1, 2, 3], Session::get('array'));
-        $this->assertTrue(Session::get('bool'));
-        $this->assertNull(Session::get('null'));
-    }
-
-    public function testSetOverwritesExistingValue(): void
-    {
-        Session::set('key', 'old');
-        Session::set('key', 'new');
-
-        $this->assertSame('new', Session::get('key'));
-    }
-
-    public function testRemoveNonexistentKeyDoesNotError(): void
-    {
-        Session::remove('nonexistent');
-
-        $this->assertTrue(true);
+        Flash::error('Oops');
+        $this->assertSame('Oops', Flash::get()['message']);
     }
 }

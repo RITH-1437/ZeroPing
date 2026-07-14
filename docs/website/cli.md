@@ -1,29 +1,58 @@
 # CLI Reference
 
 ZeroPing ships with a powerful CLI (`php zero`) for managing your application.
-Run `php zero` or `php zero help` to list every available command.
+Run `php zero` or `php zero help` to list every available command, colorized and
+grouped by purpose. **Every command also supports `--help`** (e.g.
+`php zero make:model --help`, or `php zero help make:model`) for usage,
+arguments, options, and examples.
 
 ## General Commands
 
 | Command | Description |
 |---|---|
-| `php zero` | Display the command list |
-| `php zero about` | Display framework, PHP, and environment information |
+| `php zero` | Display the grouped, colorized command list |
+| `php zero about` | Display framework, PHP, Composer, environment, and driver info |
 | `php zero version` | Show the framework version |
 | `php zero doctor` | Verify the installation (PHP, extensions, env, key, database) |
+| `php zero publish` | Publish framework assets (config, views, lang, public) into your project |
 | `php zero serve [port]` | Start the development server (defaults to `1437`) |
 
 ## Project Scaffolding
 
 | Command | Description |
 |---|---|
-| `php zero new {type}` | Create a new project from a template |
+| `php zero new` | Launch the interactive project wizard (name, type, DB, starters) |
+| `php zero new {type}` | Create a new project from a template (non-interactive) |
 
 Types: `empty`, `blog`, `api`, `mvc`, `dashboard`
 
+With no arguments, `php zero new` asks a few questions and shows a live summary
+before scaffolding a self-contained ZeroPing application (framework + chosen
+template) into the target folder. Every prompt is a small reusable class, so the
+wizard is easy to extend.
+
+For scripts and CI, pass flags to skip the questions:
+
 ```bash
-php zero new blog --name="My Blog" --dir=./my-blog
+# Interactive wizard
+php zero new
+
+# Non-interactive
+php zero new blog --name="My Blog" --dir=./my-blog --db=sqlite --auth --tailwind --crud
 ```
+
+Options for `php zero new`:
+
+| Option | Description |
+|---|---|
+| `--type={type}` | `empty`, `mvc`, `blog`, `api`, or `dashboard` |
+| `--name={name}` | Project name (used for `composer.json` / folder slug) |
+| `--db={driver}` | `sqlite`, `mysql`, `pgsql`, or `sqlsrv` |
+| `--dir={path}` / `--name={name}` | Where to create the project |
+| `--auth` / `--no-auth` | Include authentication scaffolding |
+| `--tailwind` / `--no-tailwind` | Include the Tailwind starter |
+| `--crud` / `--no-crud` | Include the example CRUD module |
+| `--force` | Overwrite an existing target directory |
 
 ## Search
 
@@ -46,8 +75,14 @@ php zero new blog --name="My Blog" --dir=./my-blog
 
 | Command | Description |
 |---|---|
-| `php zero make:model {name}` | Create a new model |
-| `php zero make:controller {name}` | Create a new controller |
+| `php zero make:model {name}` | Create a new model (use `--all` to scaffold the whole set) |
+| `php zero make:controller {name}` | Create a new controller (`--resource` for CRUD methods) |
+| `php zero make:job {name}` | Create a new queue job (extends `App\Core\Queue\Job`) |
+| `php zero make:event {name}` | Create a new event (extends `App\Core\Events\Event`) |
+| `php zero make:listener {name}` | Create a new listener (`--event=` to bind a type) |
+| `php zero make:notification {name}` | Create a notification class |
+| `php zero make:factory {name}` | Create a model factory (`--model=` to bind a model) |
+| `php zero make:enum {name}` | Create a string-backed enum in `app/Enums` |
 | `php zero make:service {name}` | Create a new service class |
 | `php zero make:repository {name}` | Create a new repository |
 | `php zero make:migration {name}` | Create a new migration |
@@ -60,11 +95,30 @@ php zero new blog --name="My Blog" --dir=./my-blog
 | `php zero make:command {name}` | Create a new console command |
 | `php zero make:test {name}` | Create a unit test (`--feature` for a feature test) |
 
+All `make:*` commands accept `--force` to overwrite existing files.
+
+`make:model` can scaffold the full CRUD stack in one go:
+
+```bash
+php zero make:model Post --all
+# also creates: create_posts_table migration, PostFactory, PostSeeder, PostController (resource)
+
+php zero make:model Post --migration --factory --controller --resource
+```
+
+`make:listener` and `make:factory` accept a related type so the generated code
+is already wired up:
+
+```bash
+php zero make:listener LogUserRegistered --event=UserRegistered
+php zero make:factory PostFactory --model=Post
+```
+
 ## Routes
 
 | Command | Description |
 |---|---|
-| `php zero route:list` | Display all registered routes |
+| `php zero route:list` | Display all registered routes (with names, color-coded methods) |
 | `php zero route:cache` | Cache routes for faster resolution |
 | `php zero route:clear` | Clear the route cache |
 

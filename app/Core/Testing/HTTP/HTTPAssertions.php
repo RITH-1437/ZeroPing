@@ -29,8 +29,15 @@ trait HTTPAssertions
         return $this->call('PATCH', $uri, $data, [], [], $headers);
     }
 
-    public function call(string $method, string $uri, array $parameters = [], array $cookies = [], array $files = [], array $server = [], string $content = ''): TestResponse
-    {
+    public function call(
+        string $method,
+        string $uri,
+        array $parameters = [],
+        array $cookies = [],
+        array $files = [],
+        array $server = [],
+        string $content = ''
+    ): TestResponse {
         $request = new TestRequest($method, $uri, $parameters, $cookies, $files, $server, $content);
         return $request->send();
     }

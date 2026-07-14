@@ -16,7 +16,7 @@ class CacheManager
         // Drivers are resolved via create*Driver() methods in resolve()
     }
 
-    public function store(string $name = null): CacheRepository
+    public function store(?string $name = null): CacheRepository
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -29,7 +29,7 @@ class CacheManager
         return $this->stores[$name] = $this->resolve($name, $config);
     }
 
-    public function driver(string $driver = null): CacheRepository
+    public function driver(?string $driver = null): CacheRepository
     {
         return $this->store($driver);
     }

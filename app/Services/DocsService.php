@@ -158,7 +158,8 @@ class DocsService
             }
 
             $text = implode(' ', array_map('trim', $paragraph));
-            $html .= '<p class="mt-4 text-slate-700 dark:text-slate-300 leading-7">' . self::inline($text) . '</p>';
+            $html .= '<p class="mt-4 text-slate-700 dark:text-slate-300 leading-7">'
+                . self::inline($text) . '</p>';
             $paragraph = [];
         };
 
@@ -167,7 +168,8 @@ class DocsService
                 return;
             }
 
-            $html .= '<ul class="mt-4 list-disc pl-6 space-y-2 text-slate-700 dark:text-slate-300">';
+            $html .= '<ul class="mt-4 list-disc pl-6 space-y-2 '
+                . 'text-slate-700 dark:text-slate-300">';
             foreach ($listItems as $item) {
                 $html .= '<li>' . self::inline($item) . '</li>';
             }
@@ -190,13 +192,21 @@ class DocsService
                     $inCode = false;
                     $codeIndex++;
 
-                    $langClass = $codeLang !== '' ? 'language-' . preg_replace('/[^a-z0-9_-]/i', '', $codeLang) : 'language-txt';
+                    $langClass = $codeLang !== ''
+                        ? 'language-' . preg_replace('/[^a-z0-9_-]/i', '', $codeLang)
+                        : 'language-txt';
                     $codeId = 'doc-code-' . $codeIndex;
                     $code = htmlspecialchars(implode("\n", $codeLines), ENT_QUOTES, 'UTF-8');
 
                     $html .= '<div class="relative group mt-6">';
-                    $html .= '<button type="button" class="copy-code-btn absolute top-3 right-3 text-xs px-2 py-1 rounded-md bg-slate-900 text-white/90 dark:bg-white dark:text-slate-900" data-copy-target="' . $codeId . '" aria-label="Copy code">Copy</button>';
-                    $html .= '<pre class="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-950 p-4 text-slate-100 dark:border-slate-700"><code id="' . $codeId . '" class="' . $langClass . '">' . $code . '</code></pre>';
+                    $html .= '<button type="button" class="copy-code-btn absolute top-3 right-3 '
+                        . 'text-xs px-2 py-1 rounded-md bg-slate-900 text-white/90 dark:bg-white '
+                        . 'dark:text-slate-900" data-copy-target="' . $codeId
+                        . '" aria-label="Copy code">Copy</button>';
+                    $html .= '<pre class="overflow-x-auto rounded-2xl border border-slate-200 '
+                        . 'bg-slate-950 p-4 text-slate-100 dark:border-slate-700">'
+                        . '<code id="' . $codeId . '" class="' . $langClass . '">' . $code
+                        . '</code></pre>';
                     $html .= '</div>';
                 }
 
@@ -215,7 +225,11 @@ class DocsService
                 $level = strlen($matches[1]);
                 $title = trim($matches[2]);
                 $id = self::slug($title);
-                $escaped = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+                $escaped = htmlspecialchars(
+                    $title,
+                    ENT_QUOTES,
+                    'UTF-8'
+                );
 
                 if ($level >= 2) {
                     $toc[] = [
@@ -231,7 +245,8 @@ class DocsService
                         ? 'mt-10 text-2xl font-semibold text-slate-900 dark:text-white'
                         : 'mt-8 text-xl font-semibold text-slate-900 dark:text-white');
 
-                $html .= '<h' . $level . ' id="' . $id . '" class="' . $class . '">' . $escaped . '</h' . $level . '>';
+                $html .= '<h' . $level . ' id="' . $id . '" class="' . $class . '">'
+                    . $escaped . '</h' . $level . '>';
                 continue;
             }
 
@@ -259,10 +274,20 @@ class DocsService
     private static function inline(string $text): string
     {
         $escaped = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-        $escaped = preg_replace('/`([^`]+)`/', '<code class="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-sm">$1</code>', $escaped);
+        $escaped = preg_replace(
+            '/`([^`]+)`/',
+            '<code class="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-sm">$1</code>',
+            $escaped
+        );
         $escaped = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $escaped);
         $escaped = preg_replace('/\*([^*]+)\*/', '<em>$1</em>', $escaped);
-        $escaped = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" class="text-blue-700 dark:text-blue-400 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">$1</a>', $escaped);
+        $escaped = preg_replace(
+            '/\[(.*?)\]\((.*?)\)/',
+            '<a href="$2" class="text-blue-700 dark:text-blue-400 hover:underline '
+                . 'focus-visible:outline-none focus-visible:ring-2 '
+                . 'focus-visible:ring-blue-500 rounded-sm">$1</a>',
+            $escaped
+        );
 
         return (string) $escaped;
     }

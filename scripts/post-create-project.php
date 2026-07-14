@@ -40,9 +40,9 @@ $c = function (string $text, string $code) use ($supportsColor): string {
 };
 
 $line   = static fn (string $m = '') => print($m . PHP_EOL);
-$ok     = static fn (string $m) => print("  " . $GLOBALS['c']('✔', '32') . " {$m}" . PHP_EOL);
+$ok     = static fn (string $m) => print("  " . $GLOBALS['c']('âœ”', '32') . " {$m}" . PHP_EOL);
 $warnFn = static fn (string $m) => print("  " . $GLOBALS['c']('!', '33') . " {$m}" . PHP_EOL);
-$errFn  = static fn (string $m) => print("  " . $GLOBALS['c']('✗', '31') . " {$m}" . PHP_EOL);
+$errFn  = static fn (string $m) => print("  " . $GLOBALS['c']('âœ—', '31') . " {$m}" . PHP_EOL);
 
 $warnings = [];
 $errors   = [];
@@ -52,18 +52,18 @@ $errors   = [];
  */
 $line('');
 $line($c('  ZeroPing installer', '1;36'));
-$line($c('  ─────────────────', '90'));
+$line($c('  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€', '90'));
 $line('');
 
-/* ── 1. Verify PHP version ─────────────────────────────────────────────── */
+/* â”€â”€ 1. Verify PHP version â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
     $ok('PHP ' . PHP_VERSION);
 } else {
-    $errFn('PHP ' . PHP_VERSION . ' detected — ZeroPing requires PHP 8.1 or higher.');
+    $errFn('PHP ' . PHP_VERSION . ' detected â€” ZeroPing requires PHP 8.1 or higher.');
     $errors[] = 'Upgrade PHP to 8.1+ and re-run: composer create-project rith-1437/zero-ping';
 }
 
-/* ── 2. Verify required extensions ─────────────────────────────────────── */
+/* â”€â”€ 2. Verify required extensions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 $required = ['pdo', 'mbstring', 'json', 'ctype', 'tokenizer', 'fileinfo', 'openssl', 'hash'];
 $missing  = array_values(array_filter($required, static fn ($ext) => !extension_loaded($ext)));
 
@@ -79,20 +79,20 @@ if (!extension_loaded('pdo_mysql') && !extension_loaded('pdo_sqlite')) {
     $warnings[] = 'Install a PDO driver before connecting to a database.';
 }
 
-/* ── 3. Verify Composer version ────────────────────────────────────────── */
+/* â”€â”€ 3. Verify Composer version â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 $composerVer = defined('Composer\\Composer::VERSION') ? \Composer\Composer::VERSION : null;
 if ($composerVer !== null && $composerVer !== '@package_version@') {
     if (version_compare($composerVer, '2.0.0', '>=')) {
         $ok('Composer ' . $composerVer);
     } else {
-        $warnFn('Composer ' . $composerVer . ' detected — Composer 2.x is recommended.');
+        $warnFn('Composer ' . $composerVer . ' detected â€” Composer 2.x is recommended.');
         $warnings[] = 'Upgrade Composer: composer self-update';
     }
 } else {
     $ok('Composer detected');
 }
 
-/* ── 4. Create writable runtime directories ────────────────────────────── */
+/* â”€â”€ 4. Create writable runtime directories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 $dirs = [
     'storage/cache',
     'storage/cache/views',
@@ -117,7 +117,7 @@ if ($dirOk) {
     $ok('Runtime directories are writable');
 }
 
-/* ── 5. Create .env from .env.example ──────────────────────────────────── */
+/* â”€â”€ 5. Create .env from .env.example â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 $envPath     = $root . '/.env';
 $examplePath = $root . '/.env.example';
 
@@ -135,7 +135,7 @@ if (!file_exists($envPath) && file_exists($examplePath)) {
     $warnings[] = 'Create a .env file before running the application.';
 }
 
-/* ── 6. Generate the application key ───────────────────────────────────── */
+/* â”€â”€ 6. Generate the application key â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 if (file_exists($envPath)) {
     $env = (string) file_get_contents($envPath);
 
@@ -162,13 +162,45 @@ if (file_exists($envPath)) {
     }
 }
 
-/* ── Summary ───────────────────────────────────────────────────────────── */
+/* 7. Create the SQLite database file (default engine) */
+$dbDir  = $root . '/database';
+$dbFile = $dbDir . '/database.sqlite';
+
+if (file_exists($dbFile)) {
+    $ok('SQLite database already exists');
+} elseif (!extension_loaded('pdo_sqlite')) {
+    $warnFn('Skipped SQLite database creation (pdo_sqlite not loaded).');
+    $warnings[] = 'Enable pdo_sqlite, then run: php zero install';
+} else {
+    if (!is_dir($dbDir)) {
+        @mkdir($dbDir, 0775, true);
+    }
+    if (@touch($dbFile)) {
+        $ok('Created database/database.sqlite');
+    } else {
+        $warnFn('Could not create database/database.sqlite');
+        $warnings[] = 'Create database/database.sqlite (or run: php zero install).';
+    }
+}
+
+/* 8. Optimise the Composer autoloader */
+$composerBin = (PHP_OS_FAMILY === 'Windows') ? 'composer.bat' : 'composer';
+$result = @shell_exec(escapeshellcmd($composerBin) . ' dump-autoload --no-interaction 2>&1');
+
+if ($result !== null && (str_contains($result, 'Generated') || str_contains($result, 'autoload'))) {
+    $ok('Autoloader optimised');
+} else {
+    $warnFn('Could not optimise the autoloader automatically.');
+    $warnings[] = 'Run: composer dump-autoload';
+}
+
+/* â”€â”€ Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 $line('');
 
 if ($errors !== []) {
     $line($c('  Installation completed with errors:', '1;31'));
     foreach (array_unique($errors) as $e) {
-        $line('    • ' . $e);
+        $line('    â€¢ ' . $e);
     }
     $line('');
     $line('  Run ' . $c('php zero doctor', '36') . ' after resolving the issues above.');
@@ -177,14 +209,14 @@ if ($errors !== []) {
 }
 
 if ($warnings !== []) {
-    $line($c('  Installation complete — with a few notes:', '1;33'));
+    $line($c('  Installation complete â€” with a few notes:', '1;33'));
     foreach (array_unique($warnings) as $w) {
-        $line('    • ' . $w);
+        $line('    â€¢ ' . $w);
     }
     $line('');
 }
 
-$line($c('  ✔ ZeroPing is ready!', '1;32'));
+$line($c('  âœ” ZeroPing is ready!', '1;32'));
 $line('');
 $line('  Next steps:');
 $line('    ' . $c('php zero serve', '36') . '     Start the development server');

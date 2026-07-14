@@ -1,7 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Testing;
 
+use PHPUnit\Framework\Assert;
+
+/**
+ * Fluent value expectations (expect($value)->toBe(...)) backed by
+ * PHPUnit's assertion library so they integrate with the test runner.
+ */
 class Expect
 {
     protected $value;
@@ -13,36 +21,36 @@ class Expect
 
     public function toBe($expected): void
     {
-        (new TestCase())->assertEquals($expected, $this->value);
+        Assert::assertEquals($expected, $this->value);
     }
 
     public function toBeNull(): void
     {
-        (new TestCase())->assertNull($this->value);
+        Assert::assertNull($this->value);
     }
 
     public function toBeTrue(): void
     {
-        (new TestCase())->assertTrue($this->value);
+        Assert::assertTrue($this->value);
     }
 
     public function toBeFalse(): void
     {
-        (new TestCase())->assertFalse($this->value);
+        Assert::assertFalse($this->value);
     }
 
     public function toContain($needle): void
     {
-        (new TestCase())->assertContains($needle, $this->value);
+        Assert::assertContains($needle, $this->value);
     }
 
     public function toHaveCount(int $count): void
     {
-        (new TestCase())->assertCount($count, $this->value);
+        Assert::assertCount($count, $this->value);
     }
 
     public function toBeInstanceOf(string $class): void
     {
-        (new TestCase())->assertInstanceOf($class, $this->value);
+        Assert::assertInstanceOf($class, $this->value);
     }
 }

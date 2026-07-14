@@ -13,6 +13,11 @@ class Mailer
         $this->driver = $driver;
     }
 
+    public function getDriver(): MailDriver
+    {
+        return $this->driver;
+    }
+
     public function to(string $address, string $name = null): self
     {
         $this->to[] = new Address($address, $name);

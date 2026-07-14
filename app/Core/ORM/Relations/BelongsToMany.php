@@ -38,15 +38,25 @@ class BelongsToMany extends Relation
      * @param  string  $relatedPivotKey
      * @return void
      */
-    public function __construct(Model $parent, Model $related, string $table, string $foreignPivotKey, string $relatedPivotKey)
-    {
+    public function __construct(
+        Model $parent,
+        Model $related,
+        string $table,
+        string $foreignPivotKey,
+        string $relatedPivotKey
+    ) {
         $this->table = $table;
         $this->foreignPivotKey = $foreignPivotKey;
         $this->relatedPivotKey = $relatedPivotKey;
 
         parent::__construct($parent, $related);
 
-        $this->query->join($this->table, $this->related->getTable() . '.id', '=', $this->table . '.' . $this->relatedPivotKey)
+        $this->query->join(
+            $this->table,
+            $this->related->getTable() . '.id',
+            '=',
+            $this->table . '.' . $this->relatedPivotKey
+        )
             ->where($this->table . '.' . $this->foreignPivotKey, '=', $this->parent->id);
     }
 

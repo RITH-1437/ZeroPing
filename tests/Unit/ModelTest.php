@@ -12,14 +12,18 @@ class ModelTest extends \Tests\TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $ref = new \ReflectionProperty(\App\Core\Database\Database::class, 'connection');
-        $ref->setValue(null, $this->createStub(\PDO::class));
+        \App\Core\Database\Database::setConnection(
+            'sqlite',
+            new \App\Core\Database\Connection(
+                new \App\Core\Database\Drivers\SQLiteDriver(),
+                $this->createStub(\PDO::class)
+            )
+        );
     }
 
     protected function tearDown(): void
     {
-        $ref = new \ReflectionProperty(\App\Core\Database\Database::class, 'connection');
-        $ref->setValue(null, null);
+        \App\Core\Database\Database::manager()->purge('sqlite');
         parent::tearDown();
     }
 

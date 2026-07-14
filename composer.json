@@ -1,6 +1,6 @@
 {
   "name": "rith-1437/zero-ping",
-  "description": "ZeroPing is a lightweight, modern PHP framework with a clean MVC architecture, dependency injection, ORM, validation, caching, queues, a task scheduler, and batteries-included CLI tooling. Install it to build production applications.",
+  "description": "ZeroPing is a lightweight, modern PHP framework with a clean MVC architecture, dependency injection, multi-driver ORM, validation, caching, queues, a task scheduler, and batteries-included CLI tooling. New projects run on SQLite with zero configuration.",
   "type": "project",
   "license": "MIT",
   "keywords": [
@@ -15,6 +15,9 @@
     "scheduler",
     "cache",
     "cli",
+    "sqlite",
+    "mysql",
+    "postgresql",
     "zeroping"
   ],
   "homepage": "https://github.com/RITH-1437/ZeroPing",
@@ -22,16 +25,18 @@
     {
       "name": "Rin Nairith",
       "email": "nairithrin143@gmail.com",
-      "role": "Creator"
+      "role": "Creator & Maintainer"
     }
   ],
   "support": {
     "issues": "https://github.com/RITH-1437/ZeroPing/issues",
     "source": "https://github.com/RITH-1437/ZeroPing",
-    "docs": "https://github.com/RITH-1437/ZeroPing/tree/main/docs"
+    "docs": "https://github.com/RITH-1437/ZeroPing/tree/main/docs",
+    "chat": "https://github.com/RITH-1437/ZeroPing/discussions"
   },
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.1 <8.6",
+    "composer-runtime-api": "^2.0",
     "ext-pdo": "*",
     "ext-pdo_mysql": "*",
     "ext-mbstring": "*",
@@ -42,11 +47,16 @@
     "ext-openssl": "*",
     "ext-hash": "*"
   },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/"
-    }
-  },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Zeroping\\Support\\": "packages/zeroping/support/src",
+            "Zeroping\\Queue\\": "packages/zeroping/queue/src"
+        },
+        "files": [
+            "app/Helpers/helpers.php"
+        ]
+    },
   "autoload-dev": {
     "psr-4": {
       "Tests\\": "tests/"
@@ -55,10 +65,13 @@
   "bin": [
     "zero"
   ],
-  "scripts": {
-    "post-create-project-cmd": [
-      "@php scripts/post-create-project.php"
-    ],
+    "scripts": {
+        "post-create-project-cmd": [
+            "@php scripts/post-create-project.php"
+        ],
+        "post-autoload-dump": [
+            "@php scripts/discover-packages.php"
+        ],
     "doctor": "@php zero doctor",
     "install-wizard": "@php zero install",
     "serve": "@php zero serve",

@@ -21,6 +21,12 @@ class MigrationLoader
         if (!in_array($path, self::$paths, true)) {
             self::$paths[] = $path;
         }
+
+        // Mirror the path into the framework's migration runner so that
+        // `php zero migrate` scans package migrations without any extra wiring.
+        if (class_exists(\App\Core\Database\MigrationRunner::class)) {
+            \App\Core\Database\MigrationRunner::addPath($path);
+        }
     }
 
     /**

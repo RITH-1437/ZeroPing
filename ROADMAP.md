@@ -14,9 +14,11 @@ progresses. Suggestions and contributions are welcome — see
 - **Expanded test coverage** for the HTTP, Mail, Filesystem, and Scheduling
   subsystems.
 - **More queue drivers** (Redis, Beanstalkd) behind the existing contract.
-- **Improved error pages** with a friendlier development debug screen.
+- **Improved error pages** — ✅ shipped in **v1.3.0** (dedicated `403`/`419`
+  screens, development `404`/`500` pages with request details and a stack trace,
+  and clean production pages).
 
-## Mid term (v1.3 – v1.4)
+## Mid term (v1.4+)
 
 - **Asynchronous task scheduling** with crontab-free workers.
 - **Localization & internationalization** helpers (`__()` translation loader).

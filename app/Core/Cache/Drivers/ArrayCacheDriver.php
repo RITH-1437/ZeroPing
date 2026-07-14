@@ -68,12 +68,12 @@ class ArrayCacheDriver implements CacheDriver
             return false;
         }
 
-        $current = $this->get($key);
-        $new = $current + $value;
+        $item          = $this->storage[$key];
+        $item['value'] = $item['value'] + $value;
 
-        $this->put($key, $new, 0);
+        $this->storage[$key] = $item;
 
-        return $new;
+        return $item['value'];
     }
 
     public function decrement(string $key, int $value = 1): int|bool

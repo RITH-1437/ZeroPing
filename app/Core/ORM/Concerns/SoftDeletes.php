@@ -16,7 +16,7 @@ trait SoftDeletes
      *
      * @var string
      */
-    const DELETED_AT = 'deleted_at';
+    public const DELETED_AT = 'deleted_at';
 
     /**
      * Boot the soft deleting trait for a model.

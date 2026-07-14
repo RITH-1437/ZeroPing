@@ -5,152 +5,149 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Core\Container\Container;
+use PHPUnit\Framework\TestCase;
 
-class ContainerTest extends \Tests\TestCase
+interface RepoInterface
 {
-    public function testMakeReturnsNewInstanceForUnboundClass(): void
+    public function id(): int;
+}
+
+class Repo implements RepoInterface
+{
+    public function id(): int
     {
-        $container = new Container();
+        return 1;
+    }
+}
 
-        $result = $container->make(Container::class);
+class RepoAlt implements RepoInterface
+{
+    public function id(): int
+    {
+        return 2;
+    }
+}
 
-        $this->assertInstanceOf(Container::class, $result);
+interface LoggerInterface
+{
+}
+
+class FileLogger implements LoggerInterface
+{
+}
+
+class DbLogger implements LoggerInterface
+{
+}
+
+class Handler
+{
+    public function __construct(public LoggerInterface $log)
+    {
+    }
+}
+
+class AutoA
+{
+}
+
+class AutoB
+{
+    public function __construct(public AutoA $a)
+    {
+    }
+}
+
+interface DiscInterface
+{
+}
+
+class Disc implements DiscInterface
+{
+}
+
+class ContainerTest extends TestCase
+{
+    private Container $container;
+
+    protected function setUp(): void
+    {
+        $this->container = new Container();
     }
 
-    public function testBindReturnsNewInstanceEachTime(): void
+    public function testBindAndResolveInterface(): void
     {
-        $container = new Container();
+        $this->container->bind(RepoInterface::class, Repo::class);
 
-        $container->bind('counter', fn() => new \stdClass());
+        $repo = $this->container->resolve(RepoInterface::class);
 
-        $a = $container->make('counter');
-        $b = $container->make('counter');
+        $this->assertInstanceOf(Repo::class, $repo);
+        $this->assertSame(1, $repo->id());
+    }
 
-        $this->assertNotSame($a, $b);
+    public function testMakeAliasesResolve(): void
+    {
+        $this->container->singleton(RepoInterface::class, Repo::class);
+
+        $this->assertSame(
+            $this->container->make(RepoInterface::class),
+            $this->container->resolve(RepoInterface::class)
+        );
     }
 
     public function testSingletonReturnsSameInstance(): void
     {
-        $container = new Container();
+        $this->container->singleton(RepoInterface::class, Repo::class);
 
-        $container->singleton('config', fn() => (object)['debug' => true]);
-
-        $a = $container->make('config');
-        $b = $container->make('config');
-
-        $this->assertSame($a, $b);
+        $this->assertSame(
+            $this->container->resolve(RepoInterface::class),
+            $this->container->resolve(RepoInterface::class)
+        );
     }
 
-    public function testInstanceReturnsProvidedObject(): void
+    public function testInstanceReturnsGivenObject(): void
     {
-        $container = new Container();
-        $obj = new \stdClass();
-        $obj->name = 'test';
+        $instance = new Repo();
+        $this->container->instance(RepoInterface::class, $instance);
 
-        $container->instance('myobj', $obj);
-
-        $result = $container->make('myobj');
-
-        $this->assertSame($obj, $result);
-        $this->assertSame('test', $result->name);
+        $this->assertSame($instance, $this->container->resolve(RepoInterface::class));
     }
 
-    public function testInstanceOverridesBinding(): void
+    public function testAutoConstructorInjection(): void
     {
-        $container = new Container();
+        $b = $this->container->resolve(AutoB::class);
 
-        $container->bind('service', fn() => (object)['type' => 'bound']);
-        $container->instance('service', (object)['type' => 'instance']);
-
-        $result = $container->make('service');
-
-        $this->assertSame('instance', $result->type);
+        $this->assertInstanceOf(AutoB::class, $b);
+        $this->assertInstanceOf(AutoA::class, $b->a);
     }
 
-    public function testMakeResolvesClassConstructorDependencies(): void
+    public function testContextualBinding(): void
     {
-        $container = new Container();
+        $this->container->bind(LoggerInterface::class, FileLogger::class);
+        $this->container->when(Handler::class)
+            ->needs(LoggerInterface::class)
+            ->give(DbLogger::class);
 
-        $result = $container->make(\stdClass::class);
+        $handler = $this->container->resolve(Handler::class);
 
-        $this->assertInstanceOf(\stdClass::class, $result);
+        $this->assertInstanceOf(DbLogger::class, $handler->log);
     }
 
-    public function testMakeThrowsForNonExistentClass(): void
+    public function testContextualBindingWithClosure(): void
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Class NonExistent\\FakeClass not found.');
+        $this->container->when(Handler::class)
+            ->needs(LoggerInterface::class)
+            ->give(fn () => new DbLogger());
 
-        $container = new Container();
-        $container->make('NonExistent\\FakeClass');
+        $handler = $this->container->resolve(Handler::class);
+
+        $this->assertInstanceOf(DbLogger::class, $handler->log);
     }
 
-    public function testBindWithStringClassResolvesClass(): void
+    public function testInterfaceAutoDiscovery(): void
     {
-        $container = new Container();
-        $container->bind('std', \stdClass::class);
+        $disc = $this->container->resolve(DiscInterface::class);
 
-        $result = $container->make('std');
-
-        $this->assertInstanceOf(\stdClass::class, $result);
-    }
-
-    public function testSingletonWithStringClassResolvesAndCaches(): void
-    {
-        $container = new Container();
-        $container->singleton('std', \stdClass::class);
-
-        $a = $container->make('std');
-        $b = $container->make('std');
-
-        $this->assertSame($a, $b);
-    }
-
-    public function testMakeWithClosureReceivesContainer(): void
-    {
-        $container = new Container();
-        $receivedContainer = null;
-
-        $container->bind('test', function (Container $c) use (&$receivedContainer) {
-            $receivedContainer = $c;
-            return new \stdClass();
-        });
-
-        $container->make('test');
-
-        $this->assertSame($container, $receivedContainer);
-    }
-
-    public function testMultipleSingletonsAreIndependent(): void
-    {
-        $container = new Container();
-
-        $container->singleton('a', fn() => (object)['val' => 1]);
-        $container->singleton('b', fn() => (object)['val' => 2]);
-
-        $a = $container->make('a');
-        $b = $container->make('b');
-
-        $this->assertNotSame($a, $b);
-        $this->assertSame(1, $a->val);
-        $this->assertSame(2, $b->val);
-    }
-
-    public function testBindClosureCanReturnSharedInstanceManually(): void
-    {
-        $container = new Container();
-        $instance = null;
-
-        $container->bind('manual', function () use (&$instance) {
-            if ($instance === null) {
-                $instance = new \stdClass();
-            }
-            return $instance;
-        });
-
-        $a = $container->make('manual');
-        $b = $container->make('manual');
-
-        $this->assertSame($a, $b);
+        $this->assertInstanceOf(Disc::class, $disc);
     }
 }

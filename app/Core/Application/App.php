@@ -10,7 +10,7 @@ class App
     /**
      * The current ZeroPing Framework version.
      */
-    public const VERSION = '1.2.0';
+    public const VERSION = '2.0.0-beta';
 
     protected string $basePath;
 
@@ -35,16 +35,21 @@ class App
 
     public static function container(): Container
     {
-        if (static::$container === null) {
-            static::$container = new Container();
-        }
+        return self::$container ??= new Container();
+    }
 
-        return static::$container;
+    public function basePath(): string
+    {
+        return $this->basePath;
     }
 
     public function handle($request): void
     {
-        Router::dispatch($this->basePath);
+        $kernelClass = class_exists('App\\Http\\Kernel')
+            ? 'App\\Http\\Kernel'
+            : \App\Core\Http\Kernel::class;
+
+        (new $kernelClass($this))->handle();
     }
 
     protected function bootstrap(): void
@@ -53,7 +58,7 @@ class App
 
         \App\Core\View\View::setBasePath($this->basePath);
 
-        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+        if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
 
@@ -64,6 +69,7 @@ class App
 
         // Define DB/app constants if not already defined
         if (!defined('DB_HOST')) {
+            define('DB_CONNECTION', $_ENV['DB_CONNECTION'] ?? 'sqlite');
             define('DB_HOST', $_ENV['DB_HOST']    ?? '127.0.0.1');
             define('DB_NAME', $_ENV['DB_NAME']    ?? '');
             define('DB_USER', $_ENV['DB_USER']    ?? '');
@@ -141,20 +147,123 @@ class App
     {
         $providers = \App\Core\Config\Config::get('app.providers', []);
 
-        $instances = [];
+        $manifest = $this->loadPackageManifest();
+
+        if ($manifest !== null) {
+            foreach ($manifest as $pkg) {
+                if (!($pkg['enabled'] ?? true)) {
+                    continue;
+                }
+                foreach (($pkg['providers'] ?? []) as $provider) {
+                    $providers[] = $provider;
+                }
+            }
+        }
+
+        $eager    = [];
+        $deferred = [];
+        $booted  = [];
+
         foreach ($providers as $providerClass) {
             if (!class_exists($providerClass)) {
                 continue;
             }
+
             $provider = new $providerClass(static::$container);
             $provider->register();
-            $instances[] = $provider;
+
+            if ($provider->isDeferred()) {
+                $deferred[] = $provider;
+
+                foreach ($provider->provides() as $service) {
+                    static::$container->resolving(
+                        $service,
+                        function (object $object, Container $container) use ($provider, &$booted): void {
+                            if (!in_array($provider, $booted, true)) {
+                                $provider->boot();
+                                $booted[] = $provider;
+                            }
+                        }
+                    );
+                }
+            } else {
+                $eager[] = $provider;
+            }
         }
 
-        foreach ($instances as $provider) {
+        foreach ($eager as $provider) {
             if (method_exists($provider, 'boot')) {
                 $provider->boot();
             }
         }
+
+        $this->registerPackageHooks(array_merge($eager, $deferred));
+    }
+
+    /**
+     * Let booted providers plug into the Event Bus and Scheduler using the
+     * same declarative style as the framework's own providers.
+     *
+     * @param array<int, object> $instances
+     */
+    protected function registerPackageHooks(array $instances): void
+    {
+        if (App::container()->bound(\App\Core\Events\EventDispatcher::class)) {
+            $dispatcher = App::container()->make(\App\Core\Events\EventDispatcher::class);
+
+            foreach ($instances as $provider) {
+                if (!method_exists($provider, 'listens')) {
+                    continue;
+                }
+
+                foreach ($provider->listens() as $event => $listeners) {
+                    foreach ((array) $listeners as $listener) {
+                        $dispatcher->listen($event, $listener);
+                    }
+                }
+            }
+        }
+
+        if (App::container()->bound(\App\Core\Scheduling\ScheduleManager::class)) {
+            $schedule = App::container()->make(\App\Core\Scheduling\ScheduleManager::class)->schedule();
+
+            foreach ($instances as $provider) {
+                if (method_exists($provider, 'schedules')) {
+                    $provider->schedules($schedule);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load the discovered package manifest (from cache when fresh, else
+     * rebuild it). Returns null when auto-discovery is disabled.
+     *
+     * @return array<string, array>|null
+     */
+    private function loadPackageManifest(): ?array
+    {
+        if (!$this->packageAutoDiscoverEnabled()) {
+            return null;
+        }
+
+        $repo = new \App\Core\Packages\ProviderRepository(
+            $this->basePath,
+            $this->basePath . '/bootstrap/cache/packages.php'
+        );
+
+        $enabled = \App\Core\Config\Config::has('packages')
+            ? \App\Core\Config\Config::get('packages', [])
+            : [];
+
+        return $repo->getCached()
+            ?? $repo->buildManifest($enabled, $this->packageAutoDiscoverEnabled());
+    }
+
+    private function packageAutoDiscoverEnabled(): bool
+    {
+        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?? 'true';
+
+        return $flag !== 'false' && $flag !== '0';
     }
 }

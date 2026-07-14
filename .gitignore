@@ -25,3 +25,6 @@ arena
 
 # Generated bootstrap caches
 bootstrap/cache/*
+
+# Local dev / test databases
+database/*.sqlite

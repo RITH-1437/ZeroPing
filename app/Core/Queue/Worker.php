@@ -13,8 +13,13 @@ class Worker
         $this->manager = $manager;
     }
 
-    public function run(string $connection, string $queue = null, int $delay = 0, int $sleep = 3, int $maxTries = 1): void
-    {
+    public function run(
+        string $connection,
+        string $queue = null,
+        int $delay = 0,
+        int $sleep = 3,
+        int $maxTries = 1
+    ): void {
         while (true) {
             $job = $this->getNextJob($connection, $queue);
 
@@ -71,22 +76,22 @@ class Worker
 
     protected function raiseBeforeJobEvent(Job $job): void
     {
-        Log::info("Processing job: " . get_class($job->payload()));
+        Log::info("Processing job: " . get_class($job));
     }
 
     protected function raiseAfterJobEvent(Job $job): void
     {
-        Log::info("Processed job: " . get_class($job->payload()));
+        Log::info("Processed job: " . get_class($job));
     }
 
     protected function raiseJobFailedEvent(Job $job, \Throwable $e): void
     {
-        Log::error("Job failed: " . get_class($job->payload()));
+        Log::error("Job failed: " . get_class($job));
         Log::error($e->getMessage());
     }
 
     protected function raiseJobRetryEvent(Job $job): void
     {
-        Log::info("Retrying job: " . get_class($job->payload()));
+        Log::info("Retrying job: " . get_class($job));
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Core\Console\Commands;
 
+use App\Core\Console\Banner;
 use App\Core\Console\Command;
+use App\Core\Application\App;
 use App\Core\Security\Random;
 
 /**
@@ -34,6 +36,7 @@ class InstallCommand extends Command
             $this->generateKey();
             $this->runMigrations();
             $this->installTemplate();
+            $this->validateEnvironment();
             $this->finish();
         } catch (\Throwable $e) {
             $this->line('');
@@ -49,14 +52,7 @@ class InstallCommand extends Command
     private function welcome(): void
     {
         $this->output->writeln('');
-        $this->output->writeln("<fg=cyan>  ███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗</>");
-        $this->output->writeln("<fg=cyan>  ╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝</>");
-        $this->output->writeln("<fg=cyan>    ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗</>");
-        $this->output->writeln("<fg=cyan>   ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║</>");
-        $this->output->writeln("<fg=cyan>  ███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝</>");
-        $this->output->writeln("<fg=cyan>  ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝</>");
-        $this->output->writeln('');
-        $this->output->writeln('  <options=bold;fg=white>Welcome to the ZeroPing installation wizard</> <fg=yellow>v' . \App\Core\Application\App::VERSION . '</>');
+        $this->output->writeln(Banner::header(App::VERSION));
         $this->output->writeln('  <fg=gray>This will guide you through configuring your application.</>');
         $this->output->writeln('  <fg=gray>Press Enter to accept the [default] shown for each question.</>');
         $this->output->writeln('');
@@ -107,9 +103,22 @@ class InstallCommand extends Command
         $url = $this->ask('Application URL', $this->env['APP_URL'] ?? 'http://localhost:1437');
         $this->env['APP_URL'] = $url;
 
+        $timezone = $this->ask('Application timezone', $this->env['APP_TIMEZONE'] ?? date_default_timezone_get());
+        $this->env['APP_TIMEZONE'] = $timezone;
+
         $this->writeEnv();
         $this->ok('Environment configured.');
     }
+
+    /**
+     * @var array<string, array{label: string, port: int, dsn: string}>
+     */
+    private const DATABASE_DRIVERS = [
+        'sqlite'   => ['label' => 'SQLite (zero-config, file-based)', 'port' => 0,    'dsn' => 'sqlite'],
+        'mysql'    => ['label' => 'MySQL (recommended for production)', 'port' => 3306, 'dsn' => 'mysql'],
+        'mariadb'  => ['label' => 'MariaDB (MySQL-compatible)', 'port' => 3306, 'dsn' => 'mysql'],
+        'pgsql'    => ['label' => 'PostgreSQL', 'port' => 5432, 'dsn' => 'pgsql'],
+    ];
 
     private function configureDatabase(): void
     {
@@ -120,7 +129,9 @@ class InstallCommand extends Command
             return;
         }
 
-        $driver = $this->choice('Database driver', ['mysql', 'sqlite'], 0);
+        $choices = array_map(static fn ($d) => $d['label'], self::DATABASE_DRIVERS);
+        $index = $this->choice('Database driver', $choices, 0);
+        $driver = array_keys(self::DATABASE_DRIVERS)[$index];
         $this->env['DB_CONNECTION'] = $driver;
 
         if ($driver === 'sqlite') {
@@ -133,8 +144,9 @@ class InstallCommand extends Command
                 @touch($full);
             }
         } else {
+            $defaultPort = self::DATABASE_DRIVERS[$driver]['port'];
             $this->env['DB_HOST'] = $this->ask('Database host', $this->env['DB_HOST'] ?? '127.0.0.1');
-            $this->env['DB_PORT'] = $this->askNumeric('Database port', $this->env['DB_PORT'] ?? '3306');
+            $this->env['DB_PORT'] = $this->askNumeric('Database port', (string) ($this->env['DB_PORT'] ?? $defaultPort));
             $this->env['DB_NAME'] = $this->ask('Database name', $this->env['DB_NAME'] ?? 'zero_ping');
             $this->env['DB_USER'] = $this->ask('Database user', $this->env['DB_USER'] ?? 'root');
             $this->env['DB_PASS'] = $this->secret('Database password (leave blank for none)');
@@ -146,21 +158,26 @@ class InstallCommand extends Command
 
     private function testDatabase(): void
     {
+        $driver = $this->env['DB_CONNECTION'] ?? 'sqlite';
+
         try {
-            if (($this->env['DB_CONNECTION'] ?? 'mysql') === 'sqlite') {
+            if ($driver === 'sqlite') {
                 new \PDO('sqlite:' . $this->path($this->env['DB_NAME'] ?? 'database/database.sqlite'));
-            } else {
-                new \PDO(
-                    sprintf(
-                        'mysql:host=%s;port=%s;charset=utf8mb4',
-                        $this->env['DB_HOST'] ?? '127.0.0.1',
-                        $this->env['DB_PORT'] ?? '3306'
-                    ),
-                    $this->env['DB_USER'] ?? 'root',
-                    (string) ($this->env['DB_PASS'] ?? ''),
-                    [\PDO::ATTR_TIMEOUT => 3]
-                );
+                $this->ok('SQLite database is ready.');
+                return;
             }
+
+            $host = $this->env['DB_HOST'] ?? '127.0.0.1';
+            $port = $this->env['DB_PORT'] ?? self::DATABASE_DRIVERS[$driver]['port'];
+            $dsn = self::DATABASE_DRIVERS[$driver]['dsn'];
+            $charset = $driver === 'pgsql' ? 'utf8' : 'utf8mb4';
+
+            new \PDO(
+                sprintf('%s:host=%s;port=%s;charset=%s', $dsn, $host, $port, $charset),
+                $this->env['DB_USER'] ?? 'root',
+                (string) ($this->env['DB_PASS'] ?? ''),
+                [\PDO::ATTR_TIMEOUT => 3]
+            );
             $this->ok('Database connection successful.');
         } catch (\Throwable $e) {
             $this->warn('Could not connect to the database.');
@@ -183,6 +200,98 @@ class InstallCommand extends Command
         $this->env['APP_KEY'] = 'base64:' . base64_encode(Random::string(32));
         $this->writeEnv();
         $this->ok('Application key generated.');
+    }
+
+    private function validateEnvironment(): void
+    {
+        $this->step('Validation');
+
+        $fixed = [];
+
+        // Application name
+        $name = trim($this->env['APP_NAME'] ?? '', '"');
+        if ($name === '') {
+            $this->env['APP_NAME'] = 'ZeroPing';
+            $fixed[] = 'APP_NAME → ZeroPing';
+        }
+
+        // Environment
+        $env = strtolower(trim($this->env['APP_ENV'] ?? ''));
+        if (!in_array($env, ['local', 'production', 'testing'], true)) {
+            $this->env['APP_ENV'] = 'local';
+            $fixed[] = 'APP_ENV → local';
+        }
+
+        // Debug consistency
+        $debug = strtolower(trim($this->env['APP_DEBUG'] ?? ''));
+        if ($debug !== 'true' && $debug !== 'false') {
+            $this->env['APP_DEBUG'] = $this->env['APP_ENV'] === 'production' ? 'false' : 'true';
+            $fixed[] = 'APP_DEBUG → ' . $this->env['APP_DEBUG'];
+        }
+
+        // Application URL
+        $url = trim($this->env['APP_URL'] ?? '');
+        if ($url === '' || !preg_match('#^https?://#i', $url)) {
+            $this->env['APP_URL'] = 'http://localhost:1437';
+            $fixed[] = 'APP_URL → http://localhost:1437';
+        }
+
+        // Timezone
+        $tz = trim($this->env['APP_TIMEZONE'] ?? '');
+        if ($tz === '' || !$this->isValidTimezone($tz)) {
+            $this->env['APP_TIMEZONE'] = date_default_timezone_get();
+            $fixed[] = 'APP_TIMEZONE → ' . $this->env['APP_TIMEZONE'];
+        }
+
+        // Application key
+        $key = trim($this->env['APP_KEY'] ?? '');
+        if ($key === '' || $key === 'base64:') {
+            $this->env['APP_KEY'] = 'base64:' . base64_encode(Random::string(32));
+            $fixed[] = 'APP_KEY → generated';
+        }
+
+        // Database settings
+        $driver = $this->env['DB_CONNECTION'] ?? 'sqlite';
+        if (!isset($this->env['DB_CONNECTION']) || $this->env['DB_CONNECTION'] === '') {
+            $this->env['DB_CONNECTION'] = 'sqlite';
+            $driver = 'sqlite';
+            $fixed[] = 'DB_CONNECTION → sqlite';
+        }
+
+        if ($driver === 'sqlite') {
+            if (empty($this->env['DB_NAME'])) {
+                $this->env['DB_NAME'] = 'database/database.sqlite';
+                $fixed[] = 'DB_NAME → database/database.sqlite';
+            }
+        } else {
+            $defaults = [
+                'DB_HOST' => '127.0.0.1',
+                'DB_PORT' => self::DATABASE_DRIVERS[$driver]['port'] ?? 3306,
+                'DB_NAME' => 'zero_ping',
+                'DB_USER' => 'root',
+            ];
+            foreach ($defaults as $k => $dv) {
+                if (empty($this->env[$k])) {
+                    $this->env[$k] = (string) $dv;
+                    $fixed[] = $k . ' → ' . $dv;
+                }
+            }
+        }
+
+        if ($fixed !== []) {
+            $this->writeEnv();
+            $this->ok('Missing configuration was generated:');
+            foreach ($fixed as $f) {
+                $this->line('    <fg=gray>' . $f . '</>');
+            }
+        } else {
+            $this->ok('Configuration is complete and valid.');
+        }
+    }
+
+    private function isValidTimezone(string $tz): bool
+    {
+        return in_array($tz, timezone_identifiers_list(), true);
     }
 
     private function runMigrations(): void

@@ -28,7 +28,7 @@ class FilesystemManager
         return $this->disks[$name] = $this->resolve($name, $config);
     }
 
-    public function driver(string $driver = null): FilesystemRepository
+    public function driver(?string $driver = null): FilesystemRepository
     {
         return $this->disk($driver);
     }
