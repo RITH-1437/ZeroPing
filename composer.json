@@ -98,6 +98,12 @@
       "dev-main": "2.0.x-dev"
     }
   },
+  "suggest": {
+    "ext-pdo_sqlite": "Required for SQLite database support (default driver)",
+    "ext-pdo_pgsql": "Required for PostgreSQL database support",
+    "ext-redis": "Recommended for Redis cache and session drivers",
+    "ext-bcmath": "Required for bcrypt password hashing on some systems"
+  },
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require-dev": {

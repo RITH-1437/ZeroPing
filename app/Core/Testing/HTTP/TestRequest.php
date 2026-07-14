@@ -2,6 +2,10 @@
 
 namespace App\Core\Testing\HTTP;
 
+use App\Core\Application\App;
+use App\Core\Http\Kernel;
+use App\Core\Http\Response;
+
 class TestRequest
 {
     protected string $method;
@@ -32,12 +36,48 @@ class TestRequest
 
     public function send(): TestResponse
     {
-        // This is a simplified implementation. A real implementation would
-        // create a new request and dispatch it through the router.
-        ob_start();
-        // The router would be called here.
-        $content = ob_get_clean();
+        $originalServer = $_SERVER;
+        $originalGet = $_GET;
+        $originalPost = $_POST;
 
-        return new TestResponse($content, 200, []);
+        try {
+            $_SERVER['REQUEST_METHOD'] = $this->method;
+            $_SERVER['REQUEST_URI'] = $this->uri;
+
+            foreach ($this->server as $key => $value) {
+                $_SERVER[$key] = $value;
+            }
+
+            if ($this->method === 'GET') {
+                $_GET = $this->parameters;
+                $_POST = [];
+            } else {
+                $_POST = $this->parameters;
+                $_GET = [];
+            }
+
+            Response::resetLastSent();
+
+            $kernelClass = class_exists('App\\Http\\Kernel')
+                ? 'App\\Http\\Kernel'
+                : Kernel::class;
+
+            $kernel = new $kernelClass(App::container());
+            ob_start();
+            $kernel->handle();
+            $content = ob_get_clean();
+
+            $sent = Response::lastSent();
+
+            return new TestResponse(
+                $content,
+                $sent['status'] ?? 200,
+                $sent['headers'] ?? []
+            );
+        } finally {
+            $_SERVER = $originalServer;
+            $_GET = $originalGet;
+            $_POST = $originalPost;
+        }
     }
 }

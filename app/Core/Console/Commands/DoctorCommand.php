@@ -48,6 +48,7 @@ class DoctorCommand extends Command
         $this->section('Application');
         $this->checkEnvFile();
         $this->checkAppKey();
+        $this->checkEnvKeys();
         $this->checkConfig();
 
         $this->section('Filesystem');
@@ -168,6 +169,39 @@ class DoctorCommand extends Command
 
         $this->warnCheck('Application key', 'not set');
         $this->warnings[] = 'Generate an application key: php zero key:generate';
+    }
+
+    private function checkEnvKeys(): void
+    {
+        $required = [
+            'APP_KEY'      => 'Application encryption key',
+            'DB_CONNECTION' => 'Database connection driver',
+        ];
+
+        $missing = [];
+
+        foreach ($required as $key => $label) {
+            $value = $_ENV[$key] ?? ($_SERVER[$key] ?? getenv($key));
+
+            if ($key === 'APP_KEY' && (!empty($value) && $value !== 'base64:')) {
+                continue;
+            }
+
+            if ($key !== 'APP_KEY' && !empty($value)) {
+                continue;
+            }
+
+            $missing[] = $key;
+        }
+
+        if ($missing === []) {
+            $this->pass('Required env keys', 'all present');
+        } else {
+            $this->warnCheck('Required env keys', 'missing: ' . implode(', ', $missing));
+            foreach ($missing as $key) {
+                $this->warnings[] = "Set {$key} in your .env file.";
+            }
+        }
     }
 
     private function checkConfig(): void

@@ -39,6 +39,7 @@ use App\Core\Console\Generators\MakeEventCommand;
 use App\Core\Console\Generators\MakeListenerCommand;
 use App\Core\Console\Generators\MakeNotificationCommand;
 use App\Core\Console\Generators\MakeFactoryCommand;
+use App\Core\Console\Generators\MakeAuthCommand;
 use App\Core\Console\Generators\MakeEnumCommand;
 use App\Core\Console\Commands\MakeServiceCommand;
 use App\Core\Console\Commands\MakeTestCommand;
@@ -232,6 +233,10 @@ class Console
 
             case 'make:factory':
                 (new MakeFactoryCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:auth':
+                (new MakeAuthCommand())->handle($argv[2] ?? '');
                 break;
 
             case 'make:enum':
@@ -697,6 +702,13 @@ class Console
                     'arguments' => [['name' => 'name', 'description' => 'Factory class name']],
                     'examples' => ['php zero make:factory PostFactory --model=Post'],
                     'notes' => '',
+                ],
+                'make:auth' => [
+                    'description' => 'Scaffold authentication (controller, views, routes)',
+                    'options' => ['--name=' => 'Controller class name (default AuthController)'] + $force,
+                    'arguments' => [],
+                    'examples' => ['php zero make:auth', 'php zero make:auth --name=AuthController'],
+                    'notes' => 'Generates AuthController, auth views, and appends routes to config/routes.php.',
                 ],
                 'make:enum' => [
                     'description' => 'Create a new backed enum',

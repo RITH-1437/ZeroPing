@@ -369,6 +369,12 @@ parameters:
 		-
 			message: '#^Constant BASE_PATH not found\.$#'
 			identifier: constant.notFound
+			count: 4
+			path: app/Core/Console/Generators/MakeAuthCommand.php
+
+		-
+			message: '#^Constant BASE_PATH not found\.$#'
+			identifier: constant.notFound
 			count: 1
 			path: app/Core/Console/Generators/MakeEnumCommand.php
 

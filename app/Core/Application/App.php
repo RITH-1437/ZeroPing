@@ -67,19 +67,7 @@ class App
             \App\Core\Config\Env::load($this->basePath . '/.env');
         }
 
-        // Define DB/app constants if not already defined
-        if (!defined('DB_HOST')) {
-            define('DB_CONNECTION', $_ENV['DB_CONNECTION'] ?? 'sqlite');
-            define('DB_HOST', $_ENV['DB_HOST']    ?? '127.0.0.1');
-            define('DB_NAME', $_ENV['DB_NAME']    ?? '');
-            define('DB_USER', $_ENV['DB_USER']    ?? '');
-            define('DB_PASS', $_ENV['DB_PASS']    ?? '');
-            define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8mb4');
-            define('DB_PORT', $_ENV['DB_PORT']    ?? 3306);
-            define('APP_NAME', $_ENV['APP_NAME']   ?? 'ZeroPing');
-            define('APP_ENV', $_ENV['APP_ENV']    ?? 'local');
-            define('APP_DEBUG', ($_ENV['APP_DEBUG'] ?? 'false') === 'true');
-        }
+        // Define DB/app constants — config/constants.php handles runtime checks
 
         // Load config files into repository
         $this->loadConfig();

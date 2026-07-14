@@ -204,9 +204,9 @@ if (!function_exists('dump')) {
 }
 
 if (!function_exists('ray')) {
-    function ray(...$args)
+    function ray(...$args): void
     {
-        // This is a placeholder for a real ray implementation.
+        (new \App\Core\Debug\Dumper())->dump($args);
     }
 }
 
