@@ -11,6 +11,9 @@ class WelcomeController extends Controller
     {
         $name = $this->env('APP_NAME', 'ZeroPing');
         $version = App::VERSION;
+        $php = PHP_VERSION;
+        $env = $this->env('APP_ENV', 'local');
+        $driver = strtoupper($this->env('DB_CONNECTION', 'sqlite'));
 
         return <<<HTML
 <!DOCTYPE html>
@@ -23,19 +26,36 @@ class WelcomeController extends Controller
         * { box-sizing:border-box; }
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
                font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-               background:#0b1020; color:#e2e8f0; text-align:center; padding:24px; }
-        .logo svg { width:64px; height:64px; }
-        h1 { font-size:36px; margin:16px 0 8px; letter-spacing:-.03em;
+               background:#0b1020; padding:24px; }
+        .card { background:#11182e; border:1px solid #1f2a44; border-radius:20px;
+                padding:48px 40px; max-width:560px; width:100%; text-align:center; }
+        .logo { margin-bottom:20px; }
+        .logo svg { width:56px; height:56px; }
+        h1 { font-size:28px; margin:0 0 4px; letter-spacing:-.02em;
              background:linear-gradient(135deg,#7c3aed,#22d3ee); -webkit-background-clip:text;
              background-clip:text; color:transparent; }
-        p { color:#9fb0d0; margin:0 0 4px; font-size:15px; line-height:1.6; }
-        .version { color:#5b6b8c; font-size:13px; margin-top:20px; }
-        a { color:#22d3ee; text-decoration:none; }
-        a:hover { text-decoration:underline; }
+        .subtitle { color:#9fb0d0; margin:0 0 24px; font-size:14px; }
+        .info { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; text-align:left; }
+        .info-item { background:#0b1020; border-radius:10px; padding:12px 16px; }
+        .info-label { color:#5b6b8c; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+        .info-value { color:#e2e8f0; font-size:14px; margin-top:2px; font-weight:600; }
+        .links { display:flex; flex-direction:column; gap:8px; margin-bottom:28px; }
+        .link { display:flex; align-items:center; justify-content:space-between;
+                background:#0b1020; border-radius:10px; padding:12px 16px; text-decoration:none;
+                color:#e2e8f0; font-size:14px; transition:background .15s; }
+        .link:hover { background:#16213c; }
+        .link-arrow { color:#5b6b8c; font-size:16px; }
+        .footer { color:#5b6b8c; font-size:12px; border-top:1px solid #1f2a44; padding-top:20px; }
+        .footer a { color:#22d3ee; text-decoration:none; }
+        .footer a:hover { text-decoration:underline; }
+        @media (max-width:480px) {
+            .card { padding:32px 20px; }
+            .info { grid-template-columns:1fr; }
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="card">
         <div class="logo">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <defs><linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
@@ -47,9 +67,47 @@ class WelcomeController extends Controller
             </svg>
         </div>
         <h1>{$name}</h1>
-        <p>Lightweight PHP Framework</p>
-        <p>Fast &bull; Elegant &bull; Extensible</p>
-        <p class="version">ZeroPing v{$version}</p>
+        <p class="subtitle">Powered by ZeroPing Framework</p>
+
+        <div class="info">
+            <div class="info-item">
+                <div class="info-label">Framework</div>
+                <div class="info-value">ZeroPing v{$version}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">PHP</div>
+                <div class="info-value">{$php}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Environment</div>
+                <div class="info-value">{$env}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Database</div>
+                <div class="info-value">{$driver}</div>
+            </div>
+        </div>
+
+        <div class="links">
+            <a class="link" href="https://github.com/RITH-1437/ZeroPing/tree/main/docs" target="_blank" rel="noopener">
+                Documentation
+                <span class="link-arrow">&rarr;</span>
+            </a>
+            <a class="link" href="https://github.com/RITH-1437/ZeroPing" target="_blank" rel="noopener">
+                GitHub
+                <span class="link-arrow">&rarr;</span>
+            </a>
+            <a class="link" href="https://github.com/RITH-1437/ZeroPing/issues" target="_blank" rel="noopener">
+                Report an Issue
+                <span class="link-arrow">&rarr;</span>
+            </a>
+        </div>
+
+        <div class="footer">
+            ZeroPing v{$version} &mdash;
+            <a href="/cli">CLI Reference</a> &middot;
+            <a href="/start">Quick Start</a>
+        </div>
     </div>
 </body>
 </html>

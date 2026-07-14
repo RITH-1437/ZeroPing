@@ -216,14 +216,39 @@ if ($warnings !== []) {
     $line('');
 }
 
-$line($c('  âœ” ZeroPing is ready!', '1;32'));
-$line('');
-$line('  Next steps:');
-$line('    ' . $c('php zero serve', '36') . '     Start the development server');
-$line('    ' . $c('php zero install', '36') . '   Run the interactive setup wizard (optional)');
-$line('    ' . $c('php zero doctor', '36') . '    Verify your environment any time');
-$line('');
-$line('  Then open ' . $c('http://localhost:1437', '36') . ' in your browser.');
-$line('');
-$line('  Documentation: ' . $c('https://github.com/RITH-1437/ZeroPing/tree/main/docs', '90'));
-$line('');
+$rendererLoaded = false;
+$autoloadPath = $root . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+    if (class_exists(\App\Core\Console\InstallerSuccessRenderer::class, false)) {
+        try {
+            $appVersion = \App\Core\Application\App::VERSION;
+            $projectName = $_ENV['APP_NAME'] ?? 'ZeroPing';
+            $r = new \App\Core\Console\InstallerSuccessRenderer(
+                projectName: $projectName,
+                starterType: 'mvc',
+                frameworkVersion: $appVersion,
+                phpVersion: PHP_VERSION,
+                projectPath: $root,
+            );
+            echo "\n" . $r->render() . "\n";
+            $rendererLoaded = true;
+        } catch (\Throwable $e) {
+            $rendererLoaded = false;
+        }
+    }
+}
+
+if (!$rendererLoaded) {
+    $line($c('  âœ” ZeroPing is ready!', '1;32'));
+    $line('');
+    $line('  Next steps:');
+    $line('    ' . $c('php zero serve', '36') . '     Start the development server');
+    $line('    ' . $c('php zero install', '36') . '   Run the interactive setup wizard (optional)');
+    $line('    ' . $c('php zero doctor', '36') . '    Verify your environment any time');
+    $line('');
+    $line('  Then open ' . $c('http://localhost:1437', '36') . ' in your browser.');
+    $line('');
+    $line('  Documentation: ' . $c('https://github.com/RITH-1437/ZeroPing/tree/main/docs', '90'));
+    $line('');
+}

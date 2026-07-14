@@ -216,20 +216,15 @@ class NewCommand
             }
         }
 
-        $this->style->writeln('');
-        $this->style->writeln("<fg=green>✔ Project created successfully.</>");
+        $renderer = new \App\Core\Console\InstallerSuccessRenderer(
+            projectName: $a['name'],
+            starterType: $a['type'],
+            frameworkVersion: \App\Core\Application\App::VERSION,
+            phpVersion: PHP_VERSION,
+            projectPath: $targetDir,
+        );
 
-        $this->style->writeln('');
-        $this->style->writeln('<fg=yellow>Next steps:</>');
-        $this->style->writeln('');
-        $this->style->writeln("  <fg=green>$</> <fg=white>cd</> <fg=cyan>{$targetDir}</>");
-        $this->style->writeln("  <fg=green>$</> <fg=white>composer install</>");
-        $this->style->writeln("  <fg=green>$</> <fg=white>php zero key:generate</>");
-        $this->style->writeln("  <fg=green>$</> <fg=white>php zero migrate</>");
-        $this->style->writeln("  <fg=green>$</> <fg=white>php zero serve</>");
-        $this->style->writeln('');
-        $this->style->writeln('  <fg=gray>Then open http://localhost:1437 in your browser</>');
-        $this->style->writeln('');
+        echo "\n" . $renderer->render() . "\n";
     }
 
     // ── Scaffolding helpers ───────────────────────────────────────────────
