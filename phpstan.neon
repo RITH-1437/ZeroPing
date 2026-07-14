@@ -21,6 +21,7 @@ parameters:
     ignoreErrors:
         - '#Class App\\Controllers\\#'
         - '#Class App\\Models\\#'
+        - '#Path in require\(\) .*bootstrap/cache/config\.php is not a file or it does not exist#'
 
     # Treat various framework patterns leniently
     reportUnmatchedIgnoredErrors: false
