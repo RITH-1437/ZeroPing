@@ -75,26 +75,36 @@ and 0 phpcs warnings across the entire codebase.
 
 ## Installation
 
-### Option A — Composer (recommended)
+### Option A — Clone from GitHub (recommended)
 
-Start a new project with Composer (downloads the packaged release from Packagist):
+```bash
+git clone https://github.com/rith-1437/zero-ping.git my-app
+cd my-app
+
+composer install
+cp .env.example .env
+php zero key:generate
+php zero serve
+```
+
+The app will be available at `http://localhost:1437`. Run `php zero doctor` to
+verify your environment, or `php zero install` for an interactive wizard.
+
+### Option B — Composer (when Packagist is configured)
+
+Start a new project with Composer (requires the package to be registered on
+Packagist):
 
 ```bash
 composer create-project rith-1437/zero-ping my-app
 cd my-app
-
-# The installer copies .env, generates your APP_KEY, and prepares storage.
 php zero serve
 ```
 
 > **Package name:** `rith-1437/zero-ping` — all lowercase, with a hyphen
 > (the GitHub repo is `rith-1437/zero-ping`).
 
-The `post-create-project-cmd` script runs automatically after install. Prefer a
-guided setup? Run `php zero install` for an interactive wizard, or
-`php zero doctor` to verify your environment at any time.
-
-### Option B — Docker (development environment)
+### Option C — Docker (development environment)
 
 A Docker Compose setup is included for local development with PHP 8.3, Nginx, and MySQL:
 
@@ -109,22 +119,6 @@ docker compose exec app php zero migrate
 The app will be available at `http://localhost`.
 
 For VS Code users, a [devcontainer](.devcontainer/devcontainer.json) configuration is also provided — reopen the project in the container for a zero-setup development environment.
-
-### Option C — Clone from GitHub
-
-To work from the source repository instead:
-
-```bash
-git clone https://github.com/rith-1437/zero-ping.git my-app
-cd my-app
-
-composer install
-cp .env.example .env
-php zero key:generate
-php zero serve
-```
-
-Run `php zero doctor` at any time to verify your installation.
 
 ## Documentation
 
