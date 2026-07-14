@@ -23,7 +23,28 @@ class ExceptionHandler
 
     protected function renderProductionException(Throwable $e): void
     {
-        // A real implementation would show a generic error page.
+        http_response_code(500);
+
+        $view = BASE_PATH . '/views/errors/500.php';
+
+        if (file_exists($view)) {
+            $message    = $e->getMessage();
+            $exception  = get_class($e);
+            $file       = $e->getFile();
+            $line       = $e->getLine();
+            $trace      = $e->getTrace();
+
+            $requestUrl     = $_SERVER['REQUEST_URI'] ?? '/';
+            $requestMethod  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+            $environment    = $_ENV['APP_ENV'] ?? 'production';
+            $debug          = false;
+            $active         = '';
+            $title          = '500 - Server Error';
+
+            require $view;
+            return;
+        }
+
         echo '<h1>500 Internal Server Error</h1>';
     }
 }

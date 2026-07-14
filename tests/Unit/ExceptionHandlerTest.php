@@ -39,7 +39,7 @@ class ExceptionHandlerTest extends TestCase
         (new ExceptionHandler())->handle(new \RuntimeException('boom'));
         $output = (string) ob_get_clean();
 
-        $this->assertStringContainsString('500 Internal Server Error', $output);
+        $this->assertStringContainsString('Something went wrong', $output);
         $this->assertStringNotContainsString('boom', $output);
     }
 }

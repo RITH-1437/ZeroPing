@@ -2,7 +2,7 @@
 
 return [
 
-    'key' => 'base64:l+Y9aF8nZ5x/A4zBwE1c3g==',
+    'key' => $_ENV['APP_KEY'] ?? '',
 
     'hash_driver' => 'bcrypt',
 

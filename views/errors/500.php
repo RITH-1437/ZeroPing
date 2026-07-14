@@ -55,7 +55,7 @@
             </div>
         </div>
     <?php else: ?>
-        <p class="mt-3 text-slate-600 dark:text-slate-400 max-w-md mx-auto"><?= e($message ?? 'An unexpected error occurred while handling your request.') ?></p>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 max-w-md mx-auto">An unexpected error occurred while handling your request.</p>
         <p class="mt-2 text-slate-400 dark:text-slate-500 text-sm">If this persists, check the application logs or contact the site administrator.</p>
     <?php endif; ?>
 
