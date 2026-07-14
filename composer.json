@@ -101,6 +101,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require-dev": {
+    "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^13.2",
     "squizlabs/php_codesniffer": "^3.10"
   }

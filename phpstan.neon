@@ -1,0 +1,23 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 1
+    paths:
+        - app/Core
+        - app/Helpers
+        - config
+    scanFiles:
+        - bootstrap/app.php
+    scanDirectories:
+        - app/Core
+    excludePaths:
+        - app/Core/Console/Templates
+        - app/Core/Console/Stubs
+        - vendor
+    ignoreErrors:
+        - '#Class App\\Controllers\\#'
+        - '#Class App\\Models\\#'
+
+    # Treat various framework patterns leniently
+    reportUnmatchedIgnoredErrors: false

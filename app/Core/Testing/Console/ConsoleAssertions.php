@@ -2,13 +2,35 @@
 
 namespace App\Core\Testing\Console;
 
+use App\Core\Console\Console;
+
 trait ConsoleAssertions
 {
     public function artisan(string $command, array $parameters = []): int
     {
-        // This is a simplified implementation. A real implementation would
-        // run the command and capture the output.
-        return 0;
+        $argv = ['zero', $command];
+
+        foreach ($parameters as $key => $value) {
+            if (is_string($key)) {
+                $argv[] = $key;
+            }
+            $argv[] = (string) $value;
+        }
+
+        ob_start();
+
+        try {
+            (new Console())->run($argv);
+            $exitCode = 0;
+        } catch (\Throwable $e) {
+            echo $e->getMessage() . PHP_EOL;
+            $exitCode = 1;
+        }
+
+        $this->output = ob_get_clean();
+        $this->exitCode = $exitCode;
+
+        return $exitCode;
     }
 
     public function assertExitCode(int $expected): void

@@ -3,6 +3,7 @@
 namespace App\Core\Scheduling;
 
 use App\Core\Application\App;
+use App\Core\Cache\CacheRepository;
 use App\Core\Support\Log;
 
 class Scheduler
@@ -42,22 +43,31 @@ class Scheduler
         }
     }
 
+    protected function mutexName(Event $event): string
+    {
+        return 'scheduler-mutex-' . md5($event->command);
+    }
+
     protected function mutexExists(Event $event): bool
     {
-        // This is a simplified implementation. A real implementation would
-        // use a cache driver.
-        return false;
+        return App::container()->make(CacheRepository::class)->has(
+            $this->mutexName($event)
+        );
     }
 
     protected function createMutex(Event $event): void
     {
-        // This is a simplified implementation. A real implementation would
-        // use a cache driver.
+        App::container()->make(CacheRepository::class)->put(
+            $this->mutexName($event),
+            true,
+            $event->expiresAt
+        );
     }
 
     protected function removeMutex(Event $event): void
     {
-        // This is a simplified implementation. A real implementation would
-        // use a cache driver.
+        App::container()->make(CacheRepository::class)->forget(
+            $this->mutexName($event)
+        );
     }
 }

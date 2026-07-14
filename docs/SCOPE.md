@@ -142,8 +142,8 @@
 - [x] Optimize Commands
 - [x] Environment
 - [x] CLI Improvements
-- [ ] Project Generator
+- [x] Project Generator
 - [x] Generators
 - [x] Code Quality
 - [x] Debug Helpers
-- [ ] Documentation
+- [x] Documentation *(+ Markdown docs subsystem at `/docs/{page}`)*

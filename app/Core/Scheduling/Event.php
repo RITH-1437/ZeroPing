@@ -111,9 +111,7 @@ abstract class Event
 
     public function isDue(): bool
     {
-        // This is a simplified implementation. A real implementation would
-        // use a library like cron-expression.
-        return true;
+        return (new CronExpression($this->expression))->isDue();
     }
 
     public function filtersPass(): bool

@@ -39,6 +39,9 @@ class Container
 
     /**
      * Bind a class.
+     *
+     * @param string $abstract
+     * @param Closure|string $concrete
      */
     public function bind(string $abstract, Closure|string $concrete): void
     {
@@ -50,6 +53,9 @@ class Container
 
     /**
      * Register a singleton.
+     *
+     * @param string $abstract
+     * @param Closure|string $concrete
      */
     public function singleton(string $abstract, Closure|string $concrete): void
     {
@@ -61,17 +67,34 @@ class Container
 
     /**
      * Begin a contextual binding for the given consumer class.
+     *
+     * @param string $concrete
+     * @return ContextualBindingBuilder
      */
     public function when(string $concrete): ContextualBindingBuilder
     {
         return new ContextualBindingBuilder($this, $concrete);
     }
 
+    /**
+     * Add a contextual binding.
+     *
+     * @param string $consumer
+     * @param string $abstract
+     * @param Closure|string $concrete
+     */
     public function addContextualBinding(string $consumer, string $abstract, Closure|string $concrete): void
     {
         $this->contextual[$consumer][$abstract] = $concrete;
     }
 
+    /**
+     * Get a contextual binding.
+     *
+     * @param string $consumer
+     * @param string $abstract
+     * @return Closure|string|null
+     */
     public function getContextualBinding(string $consumer, string $abstract): Closure|string|null
     {
         return $this->contextual[$consumer][$abstract] ?? null;
@@ -81,6 +104,9 @@ class Container
      * Register a callback fired after an abstract is resolved.
      *
      * Used to boot deferred service providers on first use.
+     *
+     * @param string $abstract
+     * @param Closure $callback
      */
     public function resolving(string $abstract, Closure $callback): void
     {
@@ -100,6 +126,9 @@ class Container
 
     /**
      * Whether an abstract is already bound or instantiated.
+     *
+     * @param string $abstract
+     * @return bool
      */
     public function bound(string $abstract): bool
     {
@@ -108,6 +137,9 @@ class Container
 
     /**
      * Register an existing instance.
+     *
+     * @param string $abstract
+     * @param object $instance
      */
     public function instance(string $abstract, object $instance): void
     {
@@ -116,6 +148,9 @@ class Container
 
     /**
      * Resolve a class (alias: make()).
+     *
+     * @param string $abstract
+     * @return object
      */
     public function make(string $abstract): object
     {
@@ -128,6 +163,9 @@ class Container
      * Supports concrete classes, interface bindings, contextual bindings
      * and convention-based auto-discovery of interface implementations
      * (e.g. Foo\BarInterface -> Foo\Bar).
+     *
+     * @param string $abstract
+     * @return object
      */
     public function resolve(string $abstract): object
     {

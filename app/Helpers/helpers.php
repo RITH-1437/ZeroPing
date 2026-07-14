@@ -238,7 +238,28 @@ if (!function_exists('e')) {
 if (!function_exists('env')) {
     function env(string $key, mixed $default = null): mixed
     {
-        return $_ENV[$key] ?? $default;
+        return $_ENV[$key] ?? getenv($key) ?? $_SERVER[$key] ?? $default;
+    }
+}
+
+if (!function_exists('asset')) {
+    function asset(string $path): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('url')) {
+    function url(?string $path = null): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        if ($path === null) {
+            return $scheme . '://' . $host . ($_SERVER['REQUEST_URI'] ?? '/');
+        }
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
     }
 }
 
