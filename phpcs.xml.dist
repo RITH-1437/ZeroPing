@@ -63,6 +63,7 @@
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/views/*</exclude-pattern>
     <exclude-pattern>*/Templates/*</exclude-pattern>
+    <exclude-pattern>*bootstrap/cache/*</exclude-pattern>
 
     <arg name="colors"/>
     <arg value="s"/>

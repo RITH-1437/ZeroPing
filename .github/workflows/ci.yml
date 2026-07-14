@@ -134,7 +134,7 @@ jobs:
       - name: composer create-project rith-1437/zero-ping
         run: |
           rm -rf /tmp/myapp
-          composer create-project rith-1437/zero-ping /tmp/myapp --no-interaction
+          composer create-project rith-1437/zero-ping /tmp/myapp --no-interaction --stability dev
           cd /tmp/myapp
           php zero doctor || true
 
