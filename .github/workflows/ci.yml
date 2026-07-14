@@ -142,8 +142,11 @@ jobs:
       - name: Boot and smoke-test (port 1437)
         run: |
           cd /tmp/myapp
+          cp .env.example .env
+          php zero key:generate >/dev/null 2>&1 || true
+          touch bootstrap/cache/config.php 2>/dev/null || true
           php zero serve 1437 >/tmp/serve.log 2>&1 &
           SERVER_PID=$!
-          sleep 4
+          sleep 5
           curl -fsS http://localhost:1437/ | head -c 200
-          kill $SERVER_PID
+          kill $SERVER_PID || true
