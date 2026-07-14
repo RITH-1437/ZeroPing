@@ -123,11 +123,11 @@ CSS;
                 <h3>GitHub</h3>
                 <p class="sub">Source, issues and release notes.</p>
             </a>
-            <a class="card" href="?cli">
+            <a class="card" href="/cli">
                 <h3>CLI Tooling</h3>
                 <p class="sub">Run <span class="accent">php zero</span> for commands and wizards.</p>
             </a>
-            <a class="card" href="?start">
+            <a class="card" href="/start">
                 <h3>Quick Start</h3>
                 <p class="sub">Edit routes in <span class="accent">config/routes.php</span> to begin.</p>
             </a>
