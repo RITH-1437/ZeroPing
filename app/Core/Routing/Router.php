@@ -41,6 +41,14 @@ class Router
      */
     private static ?array $nameMap = null;
 
+    /**
+     * Register a GET route.
+     *
+     * @param string          $uri
+     * @param array|\Closure  $action
+     * @param array           $middleware
+     * @return \App\Core\Routing\Route
+     */
     public static function get(
         string $uri,
         array|\Closure $action,
@@ -57,6 +65,14 @@ class Router
         ));
     }
 
+    /**
+     * Register a POST route.
+     *
+     * @param string          $uri
+     * @param array|\Closure  $action
+     * @param array           $middleware
+     * @return \App\Core\Routing\Route
+     */
     public static function post(
         string $uri,
         array|\Closure $action,
@@ -73,6 +89,12 @@ class Router
         ));
     }
 
+    /**
+     * Register routes under a URI prefix.
+     *
+     * @param string   $prefix
+     * @param callable $callback
+     */
     public static function prefix(
         string $prefix,
         callable $callback
@@ -87,6 +109,12 @@ class Router
         self::$prefix = $previous;
     }
 
+    /**
+     * Register routes that share common middleware.
+     *
+     * @param array    $middleware
+     * @param callable $callback
+     */
     public static function middleware(
         array $middleware,
         callable $callback
@@ -104,6 +132,11 @@ class Router
         self::$groupMiddleware = $previous;
     }
 
+    /**
+     * Return all registered routes.
+     *
+     * @return array
+     */
     public static function routes(): array
     {
         return self::$routes;
@@ -111,6 +144,9 @@ class Router
 
     /**
      * Register a named middleware group (e.g. "web", "api").
+     *
+     * @param string $name
+     * @param array  $middleware
      */
     public static function middlewareGroup(string $name, array $middleware): void
     {
@@ -153,11 +189,23 @@ class Router
         self::$nameMap = null;
     }
 
+    /**
+     * Get the currently matched route.
+     *
+     * @return \App\Core\Routing\Route|null
+     */
     public static function current(): ?Route
     {
         return self::$current;
     }
 
+    /**
+     * Generate a URL for a named route.
+     *
+     * @param string $name
+     * @param array  $parameters
+     * @return string
+     */
     public static function route(string $name, array $parameters = []): string
     {
         if (self::$nameMap === null) {
@@ -183,6 +231,11 @@ class Router
         return $url;
     }
 
+    /**
+     * Dispatch the current request to the matching route.
+     *
+     * @param string|null $basePath
+     */
     public static function dispatch(?string $basePath = null): void
     {
         try {
@@ -342,6 +395,13 @@ class Router
         }
     }
 
+    /**
+     * Render an HTTP error page.
+     *
+     * @param string           $frameworkPath
+     * @param int              $code
+     * @param \Throwable|null  $e
+     */
     public static function renderError(string $frameworkPath, int $code, ?\Throwable $e): void
     {
         $titles = [

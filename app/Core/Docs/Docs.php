@@ -17,17 +17,34 @@ class Docs
 {
     protected string $path;
 
+    /**
+     * Set the docs directory path.
+     *
+     * @param string|null $path
+     */
     public function __construct(?string $path = null)
     {
         $this->path = $path
             ?? ((defined('BASE_PATH') ? BASE_PATH : dirname(__DIR__, 3)) . '/resources/docs');
     }
 
+    /**
+     * Determine if the given docs page exists.
+     *
+     * @param string $page
+     * @return bool
+     */
     public function has(string $page): bool
     {
         return is_file($this->path . '/' . $this->normalize($page) . '.md');
     }
 
+    /**
+     * Render a docs page to HTML.
+     *
+     * @param string $page
+     * @return string
+     */
     public function render(string $page): string
     {
         $file = $this->path . '/' . $this->normalize($page) . '.md';
@@ -39,6 +56,12 @@ class Docs
         return $this->toHtml((string) file_get_contents($file));
     }
 
+    /**
+     * Convert Markdown string to HTML.
+     *
+     * @param string $markdown
+     * @return string
+     */
     public function toHtml(string $markdown): string
     {
         $lines  = explode("\n", $markdown);

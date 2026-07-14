@@ -19,11 +19,23 @@ class CacheRepository
      */
     protected array $local = [];
 
+    /**
+     * Create a new cache repository instance.
+     *
+     * @param CacheDriver $driver
+     */
     public function __construct(CacheDriver $driver)
     {
         $this->driver = $driver;
     }
 
+    /**
+     * Retrieve an item from the cache.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public function get(string $key, $default = null)
     {
         if (array_key_exists($key, $this->local)) {
@@ -37,6 +49,14 @@ class CacheRepository
         return $value;
     }
 
+    /**
+     * Store an item in the cache.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $seconds
+     * @return bool
+     */
     public function put(string $key, $value, int $seconds): bool
     {
         $this->local[$key] = $value;
@@ -44,6 +64,14 @@ class CacheRepository
         return $this->driver->put($key, $value, $seconds);
     }
 
+    /**
+     * Get an item or store the result of a callback.
+     *
+     * @param string $key
+     * @param int $seconds
+     * @param callable $callback
+     * @return mixed
+     */
     public function remember(string $key, int $seconds, callable $callback)
     {
         if (array_key_exists($key, $this->local)) {
@@ -57,6 +85,13 @@ class CacheRepository
         return $value;
     }
 
+    /**
+     * Get an item or store the result of a callback indefinitely.
+     *
+     * @param string $key
+     * @param callable $callback
+     * @return mixed
+     */
     public function rememberForever(string $key, callable $callback)
     {
         if (array_key_exists($key, $this->local)) {
@@ -72,6 +107,13 @@ class CacheRepository
         return $value;
     }
 
+    /**
+     * Store an item in the cache indefinitely.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     */
     public function forever(string $key, mixed $value): bool
     {
         // Store with a very long TTL (10 years)
@@ -80,6 +122,12 @@ class CacheRepository
         return $this->driver->put($key, $value, 315360000);
     }
 
+    /**
+     * Determine if an item exists in the cache.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function has(string $key): bool
     {
         if (array_key_exists($key, $this->local)) {
@@ -89,6 +137,12 @@ class CacheRepository
         return $this->driver->has($key);
     }
 
+    /**
+     * Remove an item from the cache.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function forget(string $key): bool
     {
         unset($this->local[$key]);
@@ -96,6 +150,11 @@ class CacheRepository
         return $this->driver->forget($key);
     }
 
+    /**
+     * Remove all items from the cache.
+     *
+     * @return bool
+     */
     public function flush(): bool
     {
         $this->local = [];
@@ -103,6 +162,13 @@ class CacheRepository
         return $this->driver->flush();
     }
 
+    /**
+     * Increment the value of a cache item.
+     *
+     * @param string $key
+     * @param int $value
+     * @return int|bool
+     */
     public function increment(string $key, int $value = 1): int|bool
     {
         unset($this->local[$key]);
@@ -110,6 +176,13 @@ class CacheRepository
         return $this->driver->increment($key, $value);
     }
 
+    /**
+     * Decrement the value of a cache item.
+     *
+     * @param string $key
+     * @param int $value
+     * @return int|bool
+     */
     public function decrement(string $key, int $value = 1): int|bool
     {
         unset($this->local[$key]);

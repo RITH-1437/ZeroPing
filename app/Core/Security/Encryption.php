@@ -6,6 +6,12 @@ use App\Core\Support\Config;
 
 class Encryption
 {
+    /**
+     * Encrypt a plain-text value using AES-256-CBC.
+     *
+     * @param string $value
+     * @return string
+     */
     public static function encrypt(string $value): string
     {
         $key = Config::get('security.key');
@@ -14,6 +20,12 @@ class Encryption
         return base64_encode($encrypted . '::' . $iv);
     }
 
+    /**
+     * Decrypt an AES-256-CBC encrypted value.
+     *
+     * @param string $value
+     * @return string
+     */
     public static function decrypt(string $value): string
     {
         $key = Config::get('security.key');

@@ -6,6 +6,11 @@ use Throwable;
 
 class ExceptionHandler
 {
+    /**
+     * Handle an exception by rendering a pretty or production page.
+     *
+     * @param \Throwable $e
+     */
     public function handle(Throwable $e): void
     {
         if (config('app.debug')) {

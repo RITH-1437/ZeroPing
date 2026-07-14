@@ -43,6 +43,9 @@ class Kernel
 
     protected App $app;
 
+    /**
+     * @param App $app
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
@@ -97,6 +100,9 @@ class Kernel
      *
      * Accepts a FQCN directly, or a short name under
      * App\Http\Middleware\{Name}Middleware.
+     *
+     * @param string $name
+     * @return string
      */
     public function resolveMiddlewareClass(string $name): string
     {

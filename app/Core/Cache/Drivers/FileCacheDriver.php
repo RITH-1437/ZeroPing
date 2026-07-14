@@ -8,6 +8,11 @@ class FileCacheDriver implements CacheDriver
 {
     protected string $path;
 
+    /**
+     * Create a new file cache driver instance.
+     *
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         $this->path = $config['path'];
@@ -23,6 +28,13 @@ class FileCacheDriver implements CacheDriver
         }
     }
 
+    /**
+     * Retrieve an item from the cache.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public function get(string $key, $default = null)
     {
         $file = $this->path . '/' . sha1($key);
@@ -49,6 +61,14 @@ class FileCacheDriver implements CacheDriver
         return $data['value'];
     }
 
+    /**
+     * Store an item in the cache.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $seconds
+     * @return bool
+     */
     public function put(string $key, $value, int $seconds): bool
     {
         $this->ensureDirectory();
@@ -63,6 +83,12 @@ class FileCacheDriver implements CacheDriver
         return file_put_contents($file, json_encode($data)) !== false;
     }
 
+    /**
+     * Determine if an item exists in the cache.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function has(string $key): bool
     {
         $file = $this->path . '/' . sha1($key);
@@ -70,6 +96,12 @@ class FileCacheDriver implements CacheDriver
         return file_exists($file);
     }
 
+    /**
+     * Remove an item from the cache.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function forget(string $key): bool
     {
         $file = $this->path . '/' . sha1($key);
@@ -81,6 +113,11 @@ class FileCacheDriver implements CacheDriver
         return false;
     }
 
+    /**
+     * Remove all items from the cache.
+     *
+     * @return bool
+     */
     public function flush(): bool
     {
         $files = glob($this->path . '/*');
@@ -95,6 +132,14 @@ class FileCacheDriver implements CacheDriver
         return true;
     }
 
+    /**
+     * Get an item or store the result of a callback.
+     *
+     * @param string $key
+     * @param int $seconds
+     * @param callable $callback
+     * @return mixed
+     */
     public function remember(string $key, int $seconds, callable $callback)
     {
         if (!is_null($value = $this->get($key))) {
@@ -106,6 +151,13 @@ class FileCacheDriver implements CacheDriver
         return $value;
     }
 
+    /**
+     * Increment the value of a cache item.
+     *
+     * @param string $key
+     * @param int $value
+     * @return int|bool
+     */
     public function increment(string $key, int $value = 1): int|bool
     {
         if (!$this->has($key)) {
@@ -131,11 +183,25 @@ class FileCacheDriver implements CacheDriver
         return $new;
     }
 
+    /**
+     * Decrement the value of a cache item.
+     *
+     * @param string $key
+     * @param int $value
+     * @return int|bool
+     */
     public function decrement(string $key, int $value = 1): int|bool
     {
         return $this->increment($key, $value * -1);
     }
 
+    /**
+     * Store an item in the cache indefinitely.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     */
     public function forever(string $key, $value): bool
     {
         return $this->put($key, $value, 999999999);

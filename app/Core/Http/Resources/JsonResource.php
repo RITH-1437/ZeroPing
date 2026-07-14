@@ -21,6 +21,9 @@ abstract class JsonResource
 
     protected array $additional = [];
 
+    /**
+     * @param mixed $resource
+     */
     public function __construct(mixed $resource)
     {
         $this->resource = $resource;
@@ -28,9 +31,16 @@ abstract class JsonResource
 
     /**
      * Transform the resource into an array.
+     *
+     * @param mixed $request
+     * @return array
      */
     abstract public function toArray(mixed $request): array;
 
+    /**
+     * @param mixed $resource
+     * @return static
+     */
     public static function make(mixed $resource): static
     {
         return new static($resource);
@@ -38,6 +48,9 @@ abstract class JsonResource
 
     /**
      * Create a collection resource wrapping each item in this resource class.
+     *
+     * @param mixed $resource
+     * @return AnonymousResourceCollection
      */
     public static function collection(mixed $resource): AnonymousResourceCollection
     {
@@ -46,6 +59,9 @@ abstract class JsonResource
 
     /**
      * Add top-level key/value pairs to the outgoing response.
+     *
+     * @param array $data
+     * @return static
      */
     public function with(array $data): static
     {
@@ -56,6 +72,9 @@ abstract class JsonResource
 
     /**
      * Merge extra data into the resource payload.
+     *
+     * @param array $data
+     * @return static
      */
     public function additional(array $data): static
     {
@@ -74,6 +93,9 @@ abstract class JsonResource
 
     /**
      * Resolve the resource to its final array form.
+     *
+     * @param mixed|null $request
+     * @return array
      */
     public function resolve(mixed $request = null): array
     {
@@ -82,6 +104,8 @@ abstract class JsonResource
 
     /**
      * Build an HTTP response for this resource.
+     *
+     * @return Response
      */
     public function toResponse(): Response
     {

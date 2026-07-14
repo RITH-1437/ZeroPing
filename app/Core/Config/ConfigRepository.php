@@ -22,6 +22,11 @@ class ConfigRepository
      */
     protected array $existsCache = [];
 
+    /**
+     * Replace all config items.
+     *
+     * @param array $items
+     */
     public function set(array $items): void
     {
         $this->items = $items;
@@ -29,11 +34,23 @@ class ConfigRepository
         $this->existsCache = [];
     }
 
+    /**
+     * Return all config items.
+     *
+     * @return array
+     */
     public function all(): array
     {
         return $this->items;
     }
 
+    /**
+     * Retrieve a config value using dot notation.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public function get(string $key, mixed $default = null): mixed
     {
         if (array_key_exists($key, $this->cache)) {
@@ -57,6 +74,12 @@ class ConfigRepository
         return $config;
     }
 
+    /**
+     * Determine if a config key exists using dot notation.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function has(string $key): bool
     {
         if (array_key_exists($key, $this->existsCache)) {
@@ -81,6 +104,12 @@ class ConfigRepository
         return $exists;
     }
 
+    /**
+     * Set a config value using dot notation.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public function setValue(string $key, mixed $value): void
     {
         $segments = explode('.', $key);

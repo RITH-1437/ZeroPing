@@ -16,6 +16,12 @@ class CacheManager
         // Drivers are resolved via create*Driver() methods in resolve()
     }
 
+    /**
+     * Resolve and return a named cache store.
+     *
+     * @param string|null $name
+     * @return CacheRepository
+     */
     public function store(?string $name = null): CacheRepository
     {
         $name = $name ?: $this->getDefaultDriver();
@@ -29,6 +35,12 @@ class CacheManager
         return $this->stores[$name] = $this->resolve($name, $config);
     }
 
+    /**
+     * Alias for the store method.
+     *
+     * @param string|null $driver
+     * @return CacheRepository
+     */
     public function driver(?string $driver = null): CacheRepository
     {
         return $this->store($driver);
@@ -60,11 +72,23 @@ class CacheManager
         return new CacheRepository(new NullCacheDriver());
     }
 
+    /**
+     * Return the default cache driver name from config.
+     *
+     * @return string
+     */
     public function getDefaultDriver(): string
     {
         return Config::get('cache.default');
     }
 
+    /**
+     * Dynamically call methods on the default cache store.
+     *
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
     public function __call(string $method, array $parameters)
     {
         return $this->store()->$method(...$parameters);

@@ -10,6 +10,13 @@ class Validator
 
     protected bool $validated = false;
 
+    /**
+     * Create a new validator instance.
+     *
+     * @param array $data
+     * @param array $rules
+     * @param array $messages
+     */
     public function __construct(
         protected array $data,
         protected array $rules,
@@ -18,6 +25,14 @@ class Validator
         $this->result = new ValidationResult();
     }
 
+    /**
+     * Create a new validator instance.
+     *
+     * @param array $data
+     * @param array $rules
+     * @param array $messages
+     * @return static
+     */
     public static function make(
         array $data,
         array $rules,
@@ -26,6 +41,11 @@ class Validator
         return new static($data, $rules, $messages);
     }
 
+    /**
+     * Validate the data against the rules.
+     *
+     * @return \App\Core\Validation\ValidationResult
+     */
     public function validate(): ValidationResult
     {
         if ($this->validated) {
@@ -119,16 +139,31 @@ class Validator
         return $this->result;
     }
 
+    /**
+     * Determine if validation passes.
+     *
+     * @return bool
+     */
     public function passes(): bool
     {
         return $this->validate()->passes();
     }
 
+    /**
+     * Determine if validation fails.
+     *
+     * @return bool
+     */
     public function fails(): bool
     {
         return $this->validate()->fails();
     }
 
+    /**
+     * Get the validation error messages.
+     *
+     * @return array
+     */
     public function errors(): array
     {
         return $this->validate()->errors();

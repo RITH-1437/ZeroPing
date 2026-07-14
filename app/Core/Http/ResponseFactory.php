@@ -14,16 +14,35 @@ use App\Core\View\View;
  */
 class ResponseFactory
 {
+    /**
+     * @param mixed $content
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
     public function make(mixed $content = '', int $status = 200, array $headers = []): Response
     {
         return new Response($content, $status, $headers);
     }
 
+    /**
+     * @param mixed $data
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
     public function json(mixed $data, int $status = 200, array $headers = []): Response
     {
         return Response::json($data, $status)->withHeaders($headers);
     }
 
+    /**
+     * @param string $view
+     * @param array $data
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
     public function view(string $view, array $data = [], int $status = 200, array $headers = []): Response
     {
         $content = View::render($view, $data);
@@ -33,6 +52,12 @@ class ResponseFactory
         return new Response($content, $status, $headers);
     }
 
+    /**
+     * @param string $content
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
     public function html(string $content, int $status = 200, array $headers = []): Response
     {
         $headers = array_merge(['Content-Type' => 'text/html; charset=utf-8'], $headers);
@@ -40,16 +65,31 @@ class ResponseFactory
         return new Response($content, $status, $headers);
     }
 
+    /**
+     * @param string $to
+     * @param int $status
+     * @return Response
+     */
     public function redirect(string $to, int $status = 302): Response
     {
         return new Response('', $status, ['Location' => $to]);
     }
 
+    /**
+     * @param int $status
+     * @return Response
+     */
     public function noContent(int $status = 204): Response
     {
         return new Response('', $status);
     }
 
+    /**
+     * @param string $path
+     * @param string|null $name
+     * @param array $headers
+     * @return Response
+     */
     public function download(string $path, ?string $name = null, array $headers = []): Response
     {
         if (!is_file($path)) {

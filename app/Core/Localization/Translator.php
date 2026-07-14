@@ -22,6 +22,11 @@ class Translator
      */
     protected array $loaded = [];
 
+    /**
+     * @param string $path
+     * @param string $locale
+     * @param string $fallback
+     */
     public function __construct(
         protected string $path,
         string $locale = 'en',
@@ -31,21 +36,44 @@ class Translator
         $this->fallback = $fallback;
     }
 
+    /**
+     * Get the current locale.
+     *
+     * @return string
+     */
     public function getLocale(): string
     {
         return $this->locale;
     }
 
+    /**
+     * Set the current locale.
+     *
+     * @param string $locale
+     */
     public function setLocale(string $locale): void
     {
         $this->locale = $locale;
     }
 
+    /**
+     * Get the fallback locale.
+     *
+     * @return string
+     */
     public function getFallback(): string
     {
         return $this->fallback;
     }
 
+    /**
+     * Get a translation string by dot-notated key with optional :placeholder replacement.
+     *
+     * @param string $key
+     * @param array $replace
+     * @param string|null $locale
+     * @return string
+     */
     public function get(string $key, array $replace = [], ?string $locale = null): string
     {
         $locale = $locale ?? $this->locale;
@@ -63,6 +91,13 @@ class Translator
         return $this->replace($value, $replace);
     }
 
+    /**
+     * Check if a translation key exists in the current or fallback locale.
+     *
+     * @param string $key
+     * @param string|null $locale
+     * @return bool
+     */
     public function has(string $key, ?string $locale = null): bool
     {
         $locale = $locale ?? $this->locale;
