@@ -21,7 +21,6 @@
             'title' => 'terminal',
             'language' => 'bash',
             'codeId' => 'install-cli',
-            'width' => 'half',
             'code' => "php zero new my-app\ncd my-app\nphp zero serve",
         ]); ?>
     </div>
@@ -37,7 +36,6 @@
             'title' => 'terminal',
             'language' => 'bash',
             'codeId' => 'install-composer',
-            'width' => 'half',
             'code' => "composer create-project rith-1437/zeroping my-app\ncd my-app\nphp zero serve",
         ]); ?>
     </div>

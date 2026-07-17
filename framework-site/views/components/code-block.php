@@ -3,8 +3,7 @@ $title = $title ?? 'Code';
 $code = $code ?? '';
 $codeId = $codeId ?? ('code-' . md5($title . $code));
 $language = $language ?? '';
-$width = $width ?? '';
-$widthClass = $width === 'half' ? 'w-full sm:w-[70%] lg:w-1/2' : '';
+$widthClass = '';
 $langClass = $language ? 'language-' . strtolower($language) : '';
 $langDisplay = $language ? strtoupper(htmlspecialchars($language, ENT_QUOTES, 'UTF-8')) : '';
 $langBadge = $langDisplay
