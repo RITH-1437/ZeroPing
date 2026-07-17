@@ -61,7 +61,7 @@
         <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="rounded-2xl border border-zp-border bg-zp-surface p-5 flex items-center gap-4">
                 <div class="flex items-center justify-center h-12 w-12 rounded-full bg-zp-surface border border-zp-border overflow-hidden">
-                    <img src="/assets/images/me.png" alt="Rin Nairith" class="h-12 w-12 object-cover">
+                    <img src="/assets/images/me.jpg" alt="Rin Nairith" class="h-12 w-12 object-cover">
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-zp-ink">Rin Nairith</p>
