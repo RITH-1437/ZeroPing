@@ -11,29 +11,19 @@
   <div class="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
     <?php
     $features = [
-      ['icon' => 'zap', 'title' => 'Fast Routing', 'desc' => 'Expressive, regex-powered router with named routes, groups, prefixes, and middleware stacks.'],
-      ['icon' => 'database', 'title' => 'Modern ORM', 'desc' => 'Active Record ORM with relationships, accessors, mutators, pagination, and soft deletes.'],
-      ['icon' => 'terminal', 'title' => 'Powerful CLI', 'desc' => 'Zero CLI — scaffold, migrate, test, and manage your app from a single command surface.'],
-      ['icon' => 'shield', 'title' => 'Secure by Default', 'desc' => 'CSRF protection, encryption, rate limiting, signed URLs, and HTML escaping out of the box.'],
-      ['icon' => 'test-tube', 'title' => 'Built-in Testing', 'desc' => 'HTTP assertions, database transactions, test factories, and a dedicated test runner.'],
-      ['icon' => 'book-open', 'title' => 'Beautiful Docs', 'desc' => 'Searchable documentation with code examples, dark mode, and interactive navigation.'],
+      ['icon' => 'router.png', 'title' => 'Fast Routing', 'desc' => 'Expressive, regex-powered router with named routes, groups, prefixes, and middleware stacks.'],
+      ['icon' => 'database.png', 'title' => 'Modern ORM', 'desc' => 'Active Record ORM with relationships, accessors, mutators, pagination, and soft deletes.'],
+      ['icon' => 'cli.png', 'title' => 'Powerful CLI', 'desc' => 'Zero CLI — scaffold, migrate, test, and manage your app from a single command surface.'],
+      ['icon' => 'authentication.png', 'title' => 'Secure by Default', 'desc' => 'CSRF protection, encryption, rate limiting, signed URLs, and HTML escaping out of the box.'],
+      ['icon' => 'testing.png', 'title' => 'Built-in Testing', 'desc' => 'HTTP assertions, database transactions, test factories, and a dedicated test runner.'],
+      ['icon' => 'documentation.png', 'title' => 'Beautiful Docs', 'desc' => 'Searchable documentation with code examples, dark mode, and interactive navigation.'],
     ];
     foreach ($features as $f): ?>
     <article class="group relative rounded-2xl border border-zp-border bg-zp-surface/50 p-6 hover:bg-zp-surface hover:border-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-300">
       <div class="absolute inset-0 rounded-2xl bg-zp-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       <div class="relative">
         <div class="inline-flex items-center justify-center h-11 w-11 rounded-xl bg-zp-surface border border-zp-border text-zp-link transition-all duration-300 group-hover:scale-110 group-hover:border-cyan-500/40 group-hover:shadow-lg group-hover:shadow-cyan-500/10">
-          <?php
-          $icons = [
-            'zap' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>',
-            'database' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>',
-            'terminal' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg>',
-            'shield' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>',
-            'test-tube' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>',
-            'book-open' => '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>',
-          ];
-          echo $icons[$f['icon']];
-          ?>
+          <img src="/assets/images/<?= $f['icon'] ?>" alt="<?= $f['title'] ?>" class="h-6 w-6 object-contain" loading="lazy">
         </div>
         <h3 class="mt-5 text-xl font-semibold text-zp-ink group-hover:text-zp-link transition-colors"><?= $f['title'] ?></h3>
         <p class="mt-2 text-sm text-zp-desc leading-relaxed"><?= $f['desc'] ?></p>
