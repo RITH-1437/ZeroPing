@@ -31,6 +31,6 @@ RUN chown -R $user:$user /var/www
 
 USER $user
 
-EXPOSE 9000
+EXPOSE 8080
 
-CMD ["php-fpm"]
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public"]
