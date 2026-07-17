@@ -28,7 +28,7 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user && \
 
 WORKDIR /var/www
 
-COPY . .
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --prefer-dist --no-interaction --optimize-autoloader
 
@@ -36,6 +36,6 @@ RUN chown -R $user:$user /var/www
 
 USER $user
 
-EXPOSE 8080
+EXPOSE 1437
 
-CMD sh -c "php -S 0.0.0.0:${PORT:-8080} -t public"
+CMD sh -c "php -S 0.0.0.0:${PORT:-1437} -t public"
