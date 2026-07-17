@@ -73,9 +73,10 @@ class NewCommand
 
         $opts = $this->parseOptions($options);
 
-        // Scripted (non-interactive) mode: anything explicitly supplied,
-        // otherwise fall back to the wizard.
-        $interactive = !$this->hasAnyOption($opts);
+        // Non-interactive when any explicit option is given, OR when a project
+        // name is passed positionally (e.g. `php zero new my-app`). Otherwise
+        // fall back to the guided wizard.
+        $interactive = !$this->hasAnyOption($opts) && $name === '';
 
         if ($interactive) {
             $answers = $this->wizard();
