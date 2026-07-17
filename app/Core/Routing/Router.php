@@ -350,7 +350,7 @@ class Router
             $result = $controller->$methodName(...$params);
             self::sendResult($result);
         } catch (\Throwable $e) {
-            $code = in_array($e->getCode(), [403, 404, 419], true)
+            $code = in_array($e->getCode(), [401, 403, 404, 419, 429, 500, 503], true)
                 ? $e->getCode()
                 : 500;
 
@@ -404,16 +404,8 @@ class Router
      */
     public static function renderError(string $frameworkPath, int $code, ?\Throwable $e): void
     {
-        $titles = [
-            403 => '403 - Forbidden',
-            404 => '404 - Page Not Found',
-            419 => '419 - Page Expired',
-            500 => '500 - Server Error',
-        ];
-
         http_response_code($code);
 
-        $title      = $titles[$code] ?? '500 - Server Error';
         $message    = $e !== null ? $e->getMessage() : '';
         $exception  = $e !== null ? get_class($e) : '';
         $file       = $e !== null ? $e->getFile() : '';
@@ -431,26 +423,17 @@ class Router
             $view = $frameworkPath . '/views/errors/500.php';
         }
 
-        // The "site" layout lives in framework-site/ for the official website,
-        // and at the repo root for backwards compat. Generated applications
-        // ship neither, so the plain error view is rendered below.
-        $siteLayout = $frameworkPath . '/framework-site/views/layouts/site.php';
-        if (!file_exists($siteLayout)) {
-            $siteLayout = $frameworkPath . '/views/layouts/site.php';
-        }
-
-        if (file_exists($view) && file_exists($siteLayout)) {
-            ob_start();
+        // The error views under views/errors/ are self-contained documents
+        // (they include the shared views/layouts/error.php), so they render
+        // standalone without the website "site" layout. This keeps the starter
+        // application's error pages dependency-free.
+        if (file_exists($view)) {
             require $view;
-            $content = ob_get_clean();
-
-            require $siteLayout;
-
             return;
         }
 
         // Last-resort fallback so an error never itself fatals.
         http_response_code($code);
-        echo htmlspecialchars($title, ENT_QUOTES) . ': ' . htmlspecialchars($message, ENT_QUOTES);
+        echo htmlspecialchars((string) $code, ENT_QUOTES) . ' Error';
     }
 }

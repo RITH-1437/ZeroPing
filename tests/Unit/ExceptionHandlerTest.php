@@ -39,7 +39,7 @@ class ExceptionHandlerTest extends TestCase
         (new ExceptionHandler())->handle(new \RuntimeException('boom'));
         $output = (string) ob_get_clean();
 
-        $this->assertStringContainsString('Something went wrong', $output);
+        $this->assertStringContainsString('Something Went Wrong', $output);
         $this->assertStringNotContainsString('boom', $output);
     }
 }

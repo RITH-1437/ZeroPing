@@ -31,7 +31,7 @@ class WelcomeController extends Controller
         $php     = PHP_VERSION;
         $env     = config('app.env', 'local');
         $driver  = strtoupper((string) env('DB_CONNECTION', 'sqlite'));
-        $docsUrl = config('app.docs_url', 'https://zeroping.dev');
+        $docsUrl = config('app.docs_url', 'https://localhost:1437/docs');
 
         return $this->renderWelcome($name, $starterType, $starterLabel, $version, $php, $env, $driver, $docsUrl);
     }
@@ -51,7 +51,6 @@ class WelcomeController extends Controller
     ): string {
         $ascii = $this->asciiLogo();
         $commands = $this->commandLines();
-        $steps = $this->nextSteps();
 
         $html  = $this->docType($name);
         $html .= $this->styles();
@@ -59,7 +58,7 @@ class WelcomeController extends Controller
         $html .= "<main class=\"zp-wrap\">\n";
 
         // ASCII logo
-        $html .= "<pre class=\"zp-logo\" aria-hidden=\"true\">" . htmlspecialchars($ascii, ENT_QUOTES) . "</pre>\n";
+        $html .= "<pre class=\"zp-logo\"><code aria-hidden=\"true\">" . htmlspecialchars($ascii, ENT_QUOTES) . "</code></pre>\n";
 
         // Project name + starter badge
         $html .= "<h1 class=\"zp-title\">" . htmlspecialchars($name, ENT_QUOTES) . "</h1>\n";
@@ -67,7 +66,6 @@ class WelcomeController extends Controller
 
         // Description
         $html .= "<p class=\"zp-desc\">Your ZeroPing application has been created successfully.</p>\n";
-        $html .= "<p class=\"zp-starter\">Starter: <strong>" . htmlspecialchars($starterLabel, ENT_QUOTES) . "</strong></p>\n";
 
         // Terminal card
         $html .= "<section class=\"zp-terminal\" aria-label=\"Quick commands\">\n";
@@ -78,20 +76,9 @@ class WelcomeController extends Controller
         }
         $html .= "</div>\n</section>\n";
 
-        // Next steps
-        $html .= "<section class=\"zp-steps\" aria-label=\"Next steps\">\n";
-        foreach ($steps as $step) {
-            $html .= "<a class=\"zp-step\" href=\"" . htmlspecialchars($step['href'], ENT_QUOTES) . "\" target=\"_blank\" rel=\"noopener\">\n";
-            $html .= "<span class=\"zp-step-title\">" . htmlspecialchars($step['title'], ENT_QUOTES) . "</span>\n";
-            $html .= "<span class=\"zp-step-sub\">" . htmlspecialchars($step['sub'], ENT_QUOTES) . "</span>\n";
-            $html .= "<span class=\"zp-step-arrow\">&rarr;</span>\n";
-            $html .= "</a>\n";
-        }
-        $html .= "</section>\n";
-
-        // Documentation button
-        $html .= "<a class=\"zp-docs\" href=\"" . htmlspecialchars($docsUrl, ENT_QUOTES) . "\" target=\"_blank\" rel=\"noopener\">\n";
-        $html .= "Read ZeroPing Documentation &rarr;\n";
+        // Documentation link
+        $html .= "<a class=\"zp-docs-link\" href=\"" . htmlspecialchars($docsUrl, ENT_QUOTES) . "\" rel=\"noopener\">\n";
+        $html .= "Read Documentation &rarr;\n";
         $html .= "</a>\n";
 
         // Footer meta
@@ -119,20 +106,20 @@ class WelcomeController extends Controller
     {
         return "<style>
 :root {
-  --bg: #0a0e1a;
-  --bg-soft: #0f1525;
-  --card: #111827;
-  --border: #1f2937;
-  --text: #e6edf7;
-  --muted: #8a98b5;
-  --faint: #5b6883;
-  --primary: #7c3aed;
-  --primary-2: #22d3ee;
-  --term-bg: #060912;
-  --term-text: #cdd6e8;
-  --cmd: #22d3ee;
+  --bg: #070b14;
+  --bg-soft: #0d1424;
+  --card: #0e1626;
+  --border: #1c2740;
+  --text: #e8eef9;
+  --muted: #93a1bd;
+  --faint: #5d6b87;
+  --primary: #22c55e;
+  --primary-2: #16a34a;
+  --term-bg: #050912;
+  --term-text: #c7d2e8;
+  --cmd: #22c55e;
   --flag: #f0a868;
-  --comment: #5b6883;
+  --comment: #5d6b87;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -141,116 +128,84 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(124,58,237,.18), transparent 60%),
-    radial-gradient(900px 500px at 50% 110%, rgba(34,211,238,.12), transparent 60%),
+    radial-gradient(1000px 520px at 50% -12%, rgba(34,197,94,.16), transparent 62%),
+    radial-gradient(800px 480px at 50% 112%, rgba(22,163,74,.10), transparent 60%),
     var(--bg);
   color: var(--text);
-  padding: 32px 20px;
+  padding: 40px 20px;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-.zp-wrap { width: 100%; max-width: 620px; text-align: center; }
+.zp-wrap { width: 100%; max-width: 600px; margin: 0 auto; text-align: center; }
 .zp-logo {
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-size: 11px; line-height: 1.1; color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  -webkit-background-clip: text; background-clip: text;
-  display: inline-block; margin: 0 0 22px; letter-spacing: 0; font-weight: 700;
-  text-shadow: 0 0 24px rgba(124,58,237,.25);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  font-size: clamp(13px, 1.6vw, 18px);
+  line-height: 0.9;
+  letter-spacing: 0;
+  white-space: pre;
+  display: inline-block;
+  text-rendering: geometricPrecision;
+  font-feature-settings: 'liga' 0;
+  font-variant-ligatures: none;
+  text-align: center;
+  margin: 0 auto 30px; padding: 10px 0; color: #22C55E;
+  text-shadow: 0 0 8px rgba(34,197,94,.45), 0 0 22px rgba(34,197,94,.18);
+  image-rendering: auto; transform: none; font-weight: 700;
 }
+.zp-logo code { font: inherit; color: inherit; text-shadow: inherit; white-space: pre; }
 .zp-title {
-  font-size: 34px; font-weight: 800; letter-spacing: -.03em; margin: 0 0 14px;
-  background: linear-gradient(135deg, #fff, #c7d2fe);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-size: 32px; font-weight: 800; letter-spacing: -.025em; margin: 0 0 12px;
+  color: #f4f7fc;
 }
 .zp-badge {
   display: inline-block; padding: 5px 14px; border-radius: 999px;
-  font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-  color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  box-shadow: 0 8px 24px -8px rgba(124,58,237,.6);
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: #d1fae5; background: rgba(34,197,94,.10);
+  border: 1px solid rgba(34,197,94,.35);
+  backdrop-filter: blur(6px);
 }
-.zp-desc { color: var(--muted); font-size: 15px; margin: 22px 0 6px; }
-.zp-starter { color: var(--faint); font-size: 13px; margin: 0 0 26px; }
-.zp-starter strong { color: var(--text); font-weight: 600; }
+.zp-desc { color: var(--muted); font-size: 15px; margin: 38px 0 0; }
 
 .zp-terminal {
   text-align: left; background: var(--term-bg); border: 1px solid var(--border);
-  border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(0,0,0,.7);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 30px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(34,197,94,.04) inset;
+  margin: 36px auto 0; max-width: 540px;
 }
-.zp-terminal-bar { display: flex; gap: 7px; padding: 13px 16px; background: #0b1120; border-bottom: 1px solid var(--border); }
+.zp-terminal-bar {
+  display: flex; gap: 7px; padding: 13px 16px; background: #0a1020;
+  border-bottom: 1px solid var(--border);
+}
 .zp-terminal-bar span { width: 11px; height: 11px; border-radius: 50%; background: #2a3550; }
 .zp-terminal-bar span:nth-child(1) { background: #ff5f57; }
 .zp-terminal-bar span:nth-child(2) { background: #febc2e; }
 .zp-terminal-bar span:nth-child(3) { background: #28c840; }
-.zp-terminal-body { padding: 18px 20px; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 13.5px; line-height: 1.9; color: var(--term-text); }
+.zp-terminal-body { padding: 18px 20px; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace; font-size: 13.5px; line-height: 1.9; color: var(--term-text); }
 .zp-cmd-line { white-space: pre-wrap; }
 .zp-prompt { color: var(--comment); user-select: none; }
 .zp-cmd { color: var(--cmd); font-weight: 600; }
-.zp-arg { color: #cdd6e8; }
+.zp-arg { color: #c7d2e8; }
 .zp-flag { color: var(--flag); }
 
-.zp-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 26px 0; text-align: left; }
-.zp-step {
-  position: relative; display: block; padding: 16px 18px; border-radius: 14px;
-  background: var(--card); border: 1px solid var(--border); text-decoration: none;
-  color: var(--text); transition: border-color .18s, transform .18s, background .18s;
+.zp-docs-link {
+  display: inline-block; margin-top: 34px; text-decoration: none;
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  letter-spacing: .01em; transition: color .18s;
 }
-.zp-step:hover { border-color: rgba(124,58,237,.6); transform: translateY(-2px); background: var(--bg-soft); }
-.zp-step-title { display: block; font-size: 14px; font-weight: 700; }
-.zp-step-sub { display: block; font-size: 12px; color: var(--faint); margin-top: 3px; }
-.zp-step-arrow { position: absolute; top: 18px; right: 18px; color: var(--faint); font-size: 15px; }
-
-.zp-docs {
-  display: inline-flex; align-items: center; gap: 8px; margin-top: 6px;
-  padding: 14px 26px; border-radius: 12px; font-size: 14px; font-weight: 700;
-  text-decoration: none; color: #fff;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  box-shadow: 0 14px 34px -12px rgba(124,58,237,.7);
-  transition: transform .18s, box-shadow .18s;
-}
-.zp-docs:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(124,58,237,.85); }
+.zp-docs-link:hover { color: var(--primary); }
 
 .zp-meta {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px;
   margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);
-  color: var(--faint); font-size: 12px; font-family: ui-monospace, monospace;
+  color: var(--faint); font-size: 12px; font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 .zp-meta span { position: relative; }
 
 @media (max-width: 520px) {
-  .zp-title { font-size: 28px; }
-  .zp-steps { grid-template-columns: 1fr; }
-  .zp-logo { font-size: 9px; }
+  .zp-title { font-size: 26px; }
+  .zp-logo { font-size: 8px; }
 }
 </style>";
-    }
-
-    /**
-     * @return array<int,array{href:string,title:string,sub:string}>
-     */
-    private function nextSteps(): array
-    {
-        return [
-            [
-                'href' => 'https://zeroping.dev/docs/getting-started',
-                'title' => 'Create your first controller',
-                'sub' => 'php zero make:controller HomeController',
-            ],
-            [
-                'href' => 'https://zeroping.dev',
-                'title' => 'Read documentation',
-                'sub' => 'Guides, API reference & examples',
-            ],
-            [
-                'href' => 'https://zeroping.dev/docs/database',
-                'title' => 'Configure database',
-                'sub' => 'Edit .env — DB_CONNECTION, DB_DATABASE',
-            ],
-            [
-                'href' => 'https://zeroping.dev/docs',
-                'title' => 'Start development',
-                'sub' => 'php zero serve → localhost:1437',
-            ],
-        ];
     }
 
     /**
@@ -295,12 +250,12 @@ body {
     private function asciiLogo(): string
     {
         return <<<LOGO
-  ███████╗███████╗██████╗  ██╗███╗   ██╗███████╗███╗   ██╗
-  ╚══███╔╝██╔════╝██╔══██╗██╔╝████╗  ██║██╔════╝████╗  ██║
-    ███╔╝ █████╗  ██████╔╝██║ ██╔██╗ ██║█████╗  ██╔██╗ ██║
-   ███╔╝  ██╔══╝  ██╔══██╗██║ ██║╚██╗██║██╔══╝  ██║╚██╗██║
-  ███████╗███████╗██║  ██║██║ ██║ ╚████║███████╗██║ ╚████║
-  ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═══╝
+███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗
+╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝
+  ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗
+ ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║
+███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝
+╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝
 LOGO;
     }
 
