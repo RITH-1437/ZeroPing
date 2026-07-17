@@ -7,7 +7,11 @@ if (!defined('BASE_PATH')) {
 require_once __DIR__ . '/../app/Core/Config/Env.php';
 require_once BASE_PATH . '/app/Helpers/helpers.php';
 
-\App\Core\Config\Env::load(BASE_PATH . '/.env');
+$envFile = BASE_PATH . '/.env';
+
+if (file_exists($envFile)) {
+    \App\Core\Config\Env::load($envFile);
+}
 
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/database.php';
