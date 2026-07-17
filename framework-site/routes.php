@@ -23,3 +23,9 @@ Router::get('/roadmap', [WebsiteController::class, 'roadmap']);
 Router::get('/github', [WebsiteController::class, 'github']);
 Router::get('/community', [WebsiteController::class, 'community']);
 Router::get('/search', [SearchController::class, 'search']);
+
+Router::get('/up', function () {
+    return response()
+        ->json(['status' => 'ok', 'timestamp' => time()])
+        ->send();
+});
