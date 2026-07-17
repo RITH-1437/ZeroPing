@@ -4,11 +4,26 @@ services:
     container_name: zeroping
     restart: unless-stopped
 
-    ports:
-      - "1437:1437"
+    expose:
+      - "1437"
 
     env_file:
       - .env
 
     volumes:
       - .:/var/www
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: zeroping-web
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+    depends_on:
+      - app
+
+    restart: unless-stopped
