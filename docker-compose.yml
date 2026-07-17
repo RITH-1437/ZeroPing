@@ -1,56 +1,14 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: zeroping-app
+    build: .
+    container_name: zeroping
     restart: unless-stopped
-    working_dir: /var/www
+
+    ports:
+      - "1437:1437"
+
+    env_file:
+      - .env
+
     volumes:
       - .:/var/www
-    environment:
-      - APP_ENV=development
-      - APP_DEBUG=true
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=zero_ping
-      - DB_USER=zeroping
-      - DB_PASS=secret
-    networks:
-      - zeroping
-
-  web:
-    image: nginx:1.27-alpine
-    container_name: zeroping-web
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - .:/var/www
-      - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-    networks:
-      - zeroping
-
-  db:
-    image: mysql:8.0
-    container_name: zeroping-db
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: zero_ping
-      MYSQL_USER: zeroping
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "3306:3306"
-    volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - zeroping
-
-volumes:
-  dbdata:
-
-networks:
-  zeroping:
