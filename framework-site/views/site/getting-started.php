@@ -10,7 +10,7 @@
             ['icon' => '/assets/images/router.png', 'label' => '1. Define a Route', 'filename' => 'config/routes.php', 'code' => "use App\\Core\\Routing\\Router;\nuse App\\Controllers\\WebsiteController;\n\nRouter::get('/', [WebsiteController::class, 'home']);"],
             ['icon' => '/assets/images/controller.png', 'label' => '2. Create a Controller', 'filename' => 'App/Controllers/HomeController.php', 'code' => "public function home(): void\n{\n    \$this->view('site/home', [\n        'title' => 'ZeroPing',\n        'active' => 'home',\n    ]);\n}"],
             ['icon' => '/assets/images/view.png', 'label' => '3. Build a View', 'filename' => 'resources/views/site/home.php', 'code' => "<!-- views/site/home.php -->\n<h1>Welcome to ZeroPing</h1>\n<p>Your app is running.</p>"],
-            ['icon' => '/assets/images/run.png', 'label' => '4. Run the App', 'filename' => 'terminal', 'language' => 'bash', 'code' => "php public\\index.php\n# Server started on http://localhost:1437"],
+            ['icon' => '/assets/images/run.png', 'label' => '4. Run the App', 'filename' => 'terminal', 'language' => 'bash', 'code' => "php zero serve\n\nZeroPing development server started.\n\n➜ Local:   http://localhost:1437\n➜ Network: http://192.168.1.10:1437\n\nPress Ctrl+C to stop the server."],
         ];
         foreach ($flow as $i => $step): ?>
             <div class="relative">
