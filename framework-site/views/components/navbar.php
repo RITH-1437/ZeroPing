@@ -39,7 +39,7 @@ $githubUrl = 'https://github.com/RITH-1437/ZeroPing';
         <div class="flex items-center gap-2">
             <a href="<?= $githubUrl ?>" target="_blank" rel="noopener noreferrer"
                class="hidden sm:inline-flex items-center gap-2 rounded-xl border border-zp-border hover:bg-zp-surface px-3 py-1.5 text-sm font-medium text-zp-muted hover:text-zp-ink transition-all duration-200 focus-ring shrink-0">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+                <img src="/assets/images/github.png" alt="GitHub" class="h-4 w-4 object-contain">
                 Star
             </a>
             <a href="/github"
@@ -65,7 +65,7 @@ $githubUrl = 'https://github.com/RITH-1437/ZeroPing';
             <?php endforeach; ?>
             <a href="<?= $githubUrl ?>" target="_blank" rel="noopener noreferrer"
                class="rounded-xl px-3 py-2.5 text-sm font-medium text-zp-muted hover:text-zp-ink hover:bg-zp-surface flex items-center gap-2">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+                <img src="/assets/images/github.png" alt="GitHub" class="h-4 w-4 object-contain">
                 GitHub
             </a>
         </div>
