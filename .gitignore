@@ -28,3 +28,8 @@ bootstrap/cache/*
 
 # Local dev / test databases
 database/*.sqlite
+
+# SSH private keys (never commit)
+*.pem
+id_ed25519
+EC2_SSH_KEY
