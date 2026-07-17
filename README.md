@@ -96,12 +96,12 @@ Start a new project with Composer (requires the package to be registered on
 Packagist):
 
 ```bash
-composer create-project rith-1437/zero-ping my-app
+composer create-project rith-1437/zeroping my-app
 cd my-app
 php zero serve
 ```
 
-> **Package name:** `rith-1437/zero-ping` — all lowercase, with a hyphen
+> **Package name:** `rith-1437/zeroping` — all lowercase, with a hyphen
 > (the GitHub repo is `rith-1437/zero-ping`).
 
 ### Option C — Docker (development environment)
