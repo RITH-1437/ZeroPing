@@ -399,6 +399,7 @@ $activePage = $active ?? '';
     </script>
 </head>
 <body class="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased scrollbar-stable">
+    <div class="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat" style="background-image:url('/assets/background/wallpaper.png');"></div>
     <div class="fixed inset-0 -z-10 bg-radial-gradient"></div>
     <div class="fixed inset-0 -z-10 bg-grid"></div>
 
