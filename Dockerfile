@@ -15,18 +15,13 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-COPY . .
-
-RUN echo "===== ROOT =====" && ls -la
-
-RUN echo "===== FRAMEWORK SITE =====" && \
-    ls -la framework-site || echo "framework-site NOT FOUND"
-
 RUN useradd -G www-data,root -u $uid -d /home/$user $user && \
     mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
 WORKDIR /var/www
+
+COPY . .
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
