@@ -18,3 +18,4 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             ~/scripts/deploy.sh
+            curl -f http://localhost/up

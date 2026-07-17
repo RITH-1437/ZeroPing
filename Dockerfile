@@ -25,7 +25,13 @@ COPY . .
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN composer install --prefer-dist --no-interaction --optimize-autoloader
+COPY .docker/php/opcache.ini \
+    /usr/local/etc/php/conf.d/opcache.ini
+
+RUN composer install \
+  --no-dev \
+  --optimize-autoloader \
+  --classmap-authoritative
 
 RUN chown -R $user:$user /var/www
 

@@ -26,4 +26,10 @@ services:
     depends_on:
       - app
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
     restart: unless-stopped
