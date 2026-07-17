@@ -104,28 +104,75 @@
     ];
     ?>
 
-    <div class="mt-16 relative pl-8">
-        <div class="absolute left-3 top-2 bottom-2 w-px bg-zp-border"></div>
-        <div class="space-y-12">
-            <?php foreach ($milestones as $m): ?>
-                <div class="relative">
-                    <span class="absolute -left-8 top-1.5 h-3 w-3 rounded-full <?= $m['dotClass'] ?> ring-4 ring-zp-bg"></span>
-                    <div class="rounded-2xl border border-zp-border bg-zp-surface p-6 shadow-sm">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h2 class="font-display text-2xl font-bold text-zp-ink"><?= htmlspecialchars($m['version'], ENT_QUOTES, 'UTF-8') ?></h2>
-                            <span class="rounded-full border px-3 py-0.5 text-xs font-medium <?= $m['badgeClass'] ?>"><?= htmlspecialchars($m['status'], ENT_QUOTES, 'UTF-8') ?></span>
+    <div class="mt-16 relative">
+        <!-- Central spine -->
+        <div class="absolute left-4 lg:left-1/2 lg:-translate-x-1/2 top-2 bottom-2 w-px bg-gradient-to-b from-zp-border via-zp-primary/40 to-zp-border"></div>
+
+        <div class="space-y-10">
+            <?php foreach ($milestones as $i => $m): ?>
+                <?php $left = $i % 2 === 0; ?>
+                <div class="relative roadmap-item <?= $left ? 'roadmap-from-left' : 'roadmap-from-right' ?>" style="opacity:0;">
+                    <!-- Dot on the spine -->
+                    <span class="absolute left-4 lg:left-1/2 lg:-translate-x-1/2 top-6 -ml-1.5 h-3.5 w-3.5 rounded-full <?= $m['dotClass'] ?> ring-4 ring-zp-bg z-10"></span>
+
+                    <div class="pl-12 lg:pl-0 <?= $left ? 'lg:pr-[calc(50%+2rem)]' : 'lg:pl-[calc(50%+2rem)]' ?>">
+                        <div class="rounded-2xl border border-zp-border bg-zp-surface p-6 shadow-sm hover:border-zp-primary/30 hover:shadow-lg hover:shadow-zp-primary/5 transition-all duration-300">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <h2 class="font-display text-2xl font-bold text-zp-ink"><?= htmlspecialchars($m['version'], ENT_QUOTES, 'UTF-8') ?></h2>
+                                <span class="rounded-full border px-3 py-0.5 text-xs font-medium <?= $m['badgeClass'] ?>"><?= htmlspecialchars($m['status'], ENT_QUOTES, 'UTF-8') ?></span>
+                            </div>
+                            <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-zp-desc">
+                                <?php foreach ($m['features'] as $f): ?>
+                                    <li class="flex items-start gap-2.5">
+                                        <svg class="h-4 w-4 shrink-0 mt-0.5 <?= $m['checkClass'] ?>" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                        <span><?= htmlspecialchars($f, ENT_QUOTES, 'UTF-8') ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
-                        <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-zp-desc">
-                            <?php foreach ($m['features'] as $f): ?>
-                                <li class="flex items-start gap-2.5">
-                                    <svg class="h-4 w-4 shrink-0 mt-0.5 <?= $m['checkClass'] ?>" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                    <span><?= htmlspecialchars($f, ENT_QUOTES, 'UTF-8') ?></span>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
+
+<style>
+    @keyframes roadmapSweepLeft {
+        from { opacity: 0; transform: translateX(-48px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes roadmapSweepRight {
+        from { opacity: 0; transform: translateX(48px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    .roadmap-from-left.is-visible {
+        animation: roadmapSweepLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .roadmap-from-right.is-visible {
+        animation: roadmapSweepRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .roadmap-from-left, .roadmap-from-right { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+</style>
+
+<script>
+(function() {
+    var items = document.querySelectorAll('.roadmap-item');
+    if (!('IntersectionObserver' in window) || !items.length) {
+        items.forEach(function (el) { el.style.opacity = 1; el.classList.add('is-visible'); });
+        return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = 1;
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+    items.forEach(function (el) { observer.observe(el); });
+})();
+</script>
