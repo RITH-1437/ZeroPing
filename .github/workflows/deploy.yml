@@ -16,26 +16,5 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-
           script: |
-            cd ~/ZeroPing
-
-            echo "Pulling latest code..."
-            git fetch origin
-            git reset --hard origin/main
-
-            echo "Building Docker image..."
-            docker build -t zeroping .
-
-            echo "Stopping old container..."
-            docker rm -f zeroping || true
-
-            echo "Starting new container..."
-            docker run -d \
-              --name zeroping \
-              -p 1437:1437 \
-              --restart unless-stopped \
-              zeroping
-
-            echo "Deployment completed!"
+            ~/scripts/deploy.sh
