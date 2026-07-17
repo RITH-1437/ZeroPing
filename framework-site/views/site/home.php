@@ -121,7 +121,7 @@
       ['title' => 'Community', 'desc' => 'GitHub discussions, issues, and contributions from the community.', 'icon' => 'community.png', 'href' => 'https://github.com/RITH-1437/ZeroPing/discussions'],
     ];
     foreach ($ecosystem as $item): ?>
-    <a href="<?= $item['href'] ?>" class="group relative rounded-2xl border border-zp-border bg-zp-surface/30 p-5 hover:bg-zp-surface hover:border-cyan-500/20 transition-all duration-300 <?= !empty($item['disabled']) ? 'opacity-40 pointer-events-none' : '' ?>">
+    <a href="<?= !empty($item['disabled']) ? '#' : $item['href'] ?>" class="group relative rounded-2xl border border-zp-border bg-zp-surface/30 p-5 hover:bg-zp-surface hover:border-cyan-500/20 transition-all duration-300 <?= !empty($item['disabled']) ? 'opacity-40 pointer-events-none' : '' ?>">
       <div class="flex items-center gap-3">
         <div class="flex items-center justify-center h-9 w-9 rounded-lg bg-zp-surface border border-zp-border text-zp-muted group-hover:text-zp-link group-hover:border-cyan-500/30 transition-all">
           <img src="/assets/images/<?= $item['icon'] ?>" alt="<?= $item['title'] ?>" class="h-5 w-5 object-contain" loading="lazy">
