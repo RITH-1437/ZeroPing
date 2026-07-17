@@ -47,6 +47,7 @@ class InstallerSuccessRenderer
 
     private const NEXT_STEPS = [
         'cd {project}',
+        'composer install',
         'php zero serve',
         'php zero migrate',
         'php zero doctor',

@@ -197,7 +197,7 @@ class NewCommand
         $steps = [
             'Creating directories'        => fn() => $this->ensureParent($targetDir),
             'Copying template'         => fn() => $this->copyAll($frameworkDir, $targetDir, $a),
-            'Installing dependencies'   => fn() => $this->stubDependencies(),
+            'Preparing composer.json'  => fn() => $this->stubDependencies(),
             'Generating .env'          => fn() => $this->prepareEnv($targetDir, (string) $a['name']),
             'Creating app key'         => fn() => $this->ensureKey($targetDir),
             'Configuring database'     => fn() => $this->configureDatabase($targetDir, $a),

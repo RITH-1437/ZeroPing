@@ -147,14 +147,22 @@ class ProjectMetadataGenerator
         if (!file_exists($composerPath)) {
             return;
         }
-        $json = json_decode(file_get_contents($composerPath), true);
+        $raw = (string) file_get_contents($composerPath);
+        $json = json_decode($raw, true);
         if ($json === null) {
             return;
         }
         $json['name'] = 'zeroping/' . $this->slug();
         $json['description'] = $this->projectName . ' — ' . $this->starterDescription();
         unset($json['repositories']);
-        file_put_contents($composerPath, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        if (isset($json['config']['allow-plugins']) && $json['config']['allow-plugins'] === []) {
+            $json['config']['allow-plugins'] = new \stdClass();
+        }
+        $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        if (defined('JSON_UNESCAPED_UNICODE')) {
+            $flags |= JSON_UNESCAPED_UNICODE;
+        }
+        file_put_contents($composerPath, json_encode($json, $flags) . "\n");
     }
 
     public function generateReadme(string $readmePath): void
