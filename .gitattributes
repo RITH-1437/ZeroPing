@@ -1,5 +1,7 @@
 # Directives for the archive published on Packagist (composer create-project).
-# Files listed with `export-ignore` are excluded from the distributed package.
+# Files listed with `export-ignore` are excluded from the distributed package
+# so generated applications never contain the framework's official website,
+# its marketing assets, or the in-repo starter template sources.
 
 /.github                 export-ignore
 /.git                    export-ignore
@@ -13,30 +15,38 @@
 /packages                export-ignore
 /arena                   export-ignore
 
+# The official framework website is repository-only and must never ship to
+# generated projects. It is served from framework-site/ when the repo runs.
+/framework-site          export-ignore
+
+# Starter template sources are consumed by `php zero new` at scaffold time
+# and must not be duplicated into the generated application.
+/templates               export-ignore
+
 /storage/cache/*         export-ignore
 /storage/logs/*          export-ignore
 /bootstrap/cache/*       export-ignore
 
-# Marketing website + interactive demos are not shipped to fresh installs.
-# The repository itself keeps them; new projects fall back to a clean welcome page.
+# Interactive demos that are not part of a generated application.
 /app/Controllers/CoffeeController.php   export-ignore
-/app/Controllers/SearchController.php   export-ignore
 /app/Controllers/TestController.php     export-ignore
 /app/Controllers/UserController.php     export-ignore
-/app/Controllers/WebsiteController.php  export-ignore
 /app/Services/CoffeeService.php         export-ignore
-/app/Services/DocsService.php           export-ignore
-/app/Services/SearchIndex.php           export-ignore
 /app/Services/TestService.php           export-ignore
-/views/site                             export-ignore
 /views/home                             export-ignore
-/views/components/hero.php              export-ignore
-/public/assets/images/*.png            export-ignore
+
+# Marketing imagery stays in the repo but is excluded from fresh installs.
 /public/assets/images/opensource.png   export-ignore
 /public/assets/images/sponser.png      export-ignore
 /public/assets/images/mascot.svg       export-ignore
 /public/assets/images/og-image.svg     export-ignore
 /public/assets/images/github-banner.svg export-ignore
+/public/assets/images/logo.png         export-ignore
+/public/assets/images/logo-full.svg    export-ignore
+/public/assets/images/logo-monochrome.svg export-ignore
+/public/assets/images/app-icon.svg     export-ignore
+/public/assets/images/favicon.svg      export-ignore
+/public/assets/images/logo-icon.svg    export-ignore
 
 *.cache                  export-ignore
 .php-cs-fixer.dist.php   export-ignore

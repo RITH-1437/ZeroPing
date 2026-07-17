@@ -20,7 +20,7 @@ class StarterTemplatesTest extends TestCase
 
         $this->assertNotEmpty($templates, 'NewCommand should declare at least one template.');
 
-        $base = dirname(__DIR__, 2) . '/app/Core/Console/Templates';
+        $base = dirname(__DIR__, 2) . '/templates';
 
         foreach (array_keys($templates) as $type) {
             $dir = $base . '/' . $type;

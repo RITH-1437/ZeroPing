@@ -54,7 +54,7 @@ trait MakesHTTPRequests
         $body = (string) ob_get_clean();
 
         $last = \App\Core\Http\Response::lastSent();
-        $status = $last['status'] ?? (int) http_response_code();
+        $status = $last['status'] ?? ((int) http_response_code() ?: 200);
         $headers = $last['headers'] ?? headers_list();
 
         return new TestResponse($body, $status, $headers);

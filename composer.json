@@ -50,6 +50,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "FrameworkSite\\": "framework-site/src",
             "Zeroping\\Support\\": "packages/zeroping/support/src",
             "Zeroping\\Queue\\": "packages/zeroping/queue/src"
         },

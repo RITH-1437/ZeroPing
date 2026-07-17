@@ -1,45 +1,78 @@
 # Roadmap
 
-This document outlines the planned direction of the ZeroPing Framework. It is
-intentionally high-level; specific scope for each release is decided as work
-progresses. Suggestions and contributions are welcome — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+ZeroPing is actively evolving with a focus on stability first, then ecosystem growth. Suggestions and contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Near term (v1.2)
-
-- **First-party package extraction.** Begin publishing the packages described in
-  [`packages/ARCHITECTURE.md`](packages/ARCHITECTURE.md) under the `zeroping/*`
-  namespace, starting with `zeroping/support` and `zeroping/queue` as
-  Composer-installable components.
-- **Expanded test coverage** for the HTTP, Mail, Filesystem, and Scheduling
-  subsystems.
-- **More queue drivers** (Redis, Beanstalkd) behind the existing contract.
-- **Improved error pages** — ✅ shipped in **v1.3.0** (dedicated `403`/`419`
-  screens, development `404`/`500` pages with request details and a stack trace,
-  and clean production pages).
-
-## Mid term (v1.4+)
-
-- **Asynchronous task scheduling** with crontab-free workers.
-- **Localization & internationalization** helpers (`__()` translation loader).
-- **API resource transformers** for building JSON APIs with less boilerplate.
-- **Event broadcasting** over WebSockets or a queue transport.
-- **Official starter kits** (API, blog, admin) built from the existing CLI
-  templates.
-
-## Long term (v2.0 and beyond)
-
-- **PHP 8.4+ native features** adoption (property hooks, asymmetric visibility)
-  once the minimum supported PHP version allows it.
-- **Aura/PSR compatibility** where it adds value without compromising the
-  zero-dependency philosophy.
-- **Official extensions marketplace** and community package registry.
-- **Performance benchmarking dashboard** tracking regressions release over
-  release (building on `bench/run.php`).
-
-## Guiding principles
+## Guiding Principles
 
 1. **Zero hidden magic.** Everything should be readable and debuggable.
 2. **No required runtime dependencies.** The framework runs on PHP alone.
 3. **Stable, predictable APIs.** Breaking changes are rare and well-documented.
 4. **Documentation first.** No feature ships without docs and tests.
+
+## v1.0.0 — Historical Foundation
+
+The initial stable release that established the foundation:
+
+- Expressive routing system with static/dynamic routes, groups, prefixes, and named routes
+- Active Record ORM with relationships, accessors, mutators, and pagination
+- Lightweight service container with auto-resolution and singleton binding
+- Middleware pipeline for authentication, CSRF, rate limiting, and custom logic
+- Blade-style templating engine
+- Zero CLI tool for scaffolding and management
+- Database migrations with up/down methods and fresh/rollback commands
+- Session-based authentication with password hashing and guards
+- CSRF protection and security layer
+- Session management
+- Form request validation
+- Caching system
+
+## v1.5.0 — Released
+
+Expanded the framework with relationships, queues, and developer tools:
+
+- Eloquent-style relationships (has-one, has-many, belongs-to, many-to-many)
+- Fluent query builder with chainable methods
+- Queue and job dispatching with sync and database drivers
+- Mail facade with pluggable drivers and mailable classes
+- Built-in testing suite with feature and unit testing tools
+- Debug bar and profiler for development
+- Rate limiting middleware
+- API resource transformers
+
+## v2.0.0 — Released
+
+Stability and ecosystem enhancements:
+
+- Real-time broadcasting with WebSocket support
+- Localization and i18n framework
+- Sliding window rate limiter for improved throttling
+- Health check and metrics endpoint
+- First-party admin starter kit
+- Plugin architecture for extensibility
+
+## v2.0.1 — Current Stable
+
+Polish and quality improvements:
+
+- Premium documentation website with green terminal code blocks
+- Expanded documentation coverage (16+ pages)
+- Composer package name standardized to `rith-1437/zeroping`
+- Version tracking system
+
+## v2.1 — In Progress
+
+Next feature release under active development:
+
+- GraphQL support
+- Serverless deployment adapter
+- Built-in admin panel generator
+- Enhanced async I/O capabilities
+
+## v3.0 — Planned
+
+Long-term vision for advanced features:
+
+- Async and parallel request handling
+- Plugin and extension marketplace
+- Distributed tracing
+- Edge runtime support

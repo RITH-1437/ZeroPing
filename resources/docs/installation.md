@@ -6,7 +6,7 @@ are needed to run the framework core — only PHPUnit is required for tests.
 ## Install
 
 ```bash
-composer create-project rith-1437/zero-ping my-app
+composer create-project rith-1437/zeroping my-app
 cd my-app
 ```
 

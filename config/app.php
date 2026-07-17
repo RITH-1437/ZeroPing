@@ -4,6 +4,19 @@ return [
 
     'name' => $_ENV['APP_NAME'] ?? 'ZeroPing',
 
+    'slug' => $_ENV['PROJECT_SLUG'] ?? 'zero-ping',
+
+    'description' => $_ENV['STARTER_DESCRIPTION'] ?? 'A lightweight starter ready for development.',
+
+    'starter' => [
+        'type' => $_ENV['STARTER_TYPE'] ?? 'empty',
+        'label' => $_ENV['STARTER_LABEL'] ?? 'Empty Starter',
+        'description' => $_ENV['STARTER_DESCRIPTION'] ?? 'A lightweight starter ready for development.',
+        'version' => $_ENV['FRAMEWORK_VERSION'] ?? \App\Core\Application\App::VERSION,
+    ],
+
+    'docs_url' => $_ENV['DOCS_URL'] ?? 'https://zeroping.dev',
+
     'env' => $_ENV['APP_ENV'] ?? 'local',
 
     'debug' => ($_ENV['APP_DEBUG'] ?? 'false') === 'true',

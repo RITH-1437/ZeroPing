@@ -15,7 +15,7 @@ parameters:
     scanDirectories:
         - app/Core
     excludePaths:
-        - app/Core/Console/Templates
+        - templates
         - app/Core/Console/Stubs
         - vendor
     ignoreErrors:

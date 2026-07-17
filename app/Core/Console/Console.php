@@ -501,7 +501,7 @@ class Console
                     'options' => $force,
                     'arguments' => [['name' => 'type', 'description' => 'empty | mvc | blog | api']],
                     'examples' => ['php zero new blog', 'php zero new api'],
-                    'notes' => 'Templates live in app/Core/Console/Templates.',
+                    'notes' => 'Starter templates live in /templates (empty, mvc, blog, api).',
                 ],
                 'install' => [
                     'description' => 'Run the interactive installation wizard',

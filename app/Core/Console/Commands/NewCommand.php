@@ -4,6 +4,7 @@ namespace App\Core\Console\Commands;
 
 use App\Core\Console\Banner;
 use App\Core\Console\ConsoleStyle;
+use App\Core\Console\ProjectMetadataGenerator;
 use App\Core\Console\Prompts\Prompt;
 use App\Core\Console\Prompts\ChoicePrompt;
 use App\Core\Console\Prompts\ConfirmPrompt;
@@ -29,16 +30,14 @@ class NewCommand
         'empty'     => 'Minimal project skeleton with a single welcome page',
         'mvc'       => 'Full MVC CRUD scaffold with user management',
         'blog'      => 'Blog with posts, categories and pagination',
-        'api'        => 'RESTful API with authentication boilerplate',
-        'dashboard' => 'Admin dashboard with stats and user management',
+        'api'       => 'RESTful API with authentication boilerplate',
     ];
 
     private array $templates = [
         'empty'     => 'Minimal project skeleton with a single welcome page',
         'mvc'       => 'Full MVC CRUD scaffold with user management',
         'blog'      => 'Blog with posts, categories and pagination',
-        'api'        => 'RESTful API with authentication boilerplate',
-        'dashboard' => 'Admin dashboard with stats and user management',
+        'api'       => 'RESTful API with authentication boilerplate',
     ];
 
     private const DRIVERS = [
@@ -201,6 +200,7 @@ class NewCommand
             'Generating .env'          => fn() => $this->prepareEnv($targetDir, (string) $a['name']),
             'Creating app key'         => fn() => $this->ensureKey($targetDir),
             'Configuring database'     => fn() => $this->configureDatabase($targetDir, $a),
+            'Personalizing project'    => fn() => $this->personalize($targetDir, $a),
             'Running migrations'       => fn() => $this->stubMigrations(),
             'Creating storage'         => fn() => $this->ensureStorage($targetDir),
             'Installing starter files' => fn() => $this->installStarterFiles($targetDir, $a),
@@ -234,7 +234,7 @@ class NewCommand
      */
     private function copyAll(string $source, string $target, array $a): void
     {
-        $sourceDir = dirname(__DIR__, 1) . '/Templates/' . $a['type'];
+        $sourceDir = BASE_PATH . '/templates/' . $a['type'];
 
         if (!is_dir($sourceDir)) {
             throw new \RuntimeException("Unknown template '{$a['type']}'.");
@@ -245,8 +245,17 @@ class NewCommand
         }
 
         $this->copyFramework($source, $target);
-        $this->copyDirectory($sourceDir, $target, (string) $a['name'], (string) $a['type']);
-        $this->brandComposer($target, (string) $a['name']);
+        $this->copyDirectory($sourceDir, $target);
+    }
+
+    /**
+     * Whether the framework repository (not a generated app) is being run.
+     * Detected by the presence of the top-level framework-site/ directory,
+     * which is excluded from every generated project.
+     */
+    private function isFrameworkRepo(): bool
+    {
+        return is_dir(BASE_PATH . '/framework-site');
     }
 
     private function ensureParent(string $target): void
@@ -313,7 +322,9 @@ class NewCommand
         }
 
         $excluded = [
-            'app/Core/Console/Templates',
+            'templates',
+            'framework-site',
+            'docs/website',
             'views/site',
             'views/home',
             'views/components',
@@ -329,7 +340,7 @@ class NewCommand
         return false;
     }
 
-    private function copyDirectory(string $source, string $dest, string $projectName, string $type): void
+    private function copyDirectory(string $source, string $dest): void
     {
         if (!is_dir($source)) {
             return;
@@ -349,51 +360,46 @@ class NewCommand
                     mkdir($target, 0755, true);
                 }
             } else {
-                $content = file_get_contents($item->getRealPath());
-
-                if ($content === false) {
-                    continue;
-                }
-
                 if (!is_dir(dirname($target))) {
                     mkdir(dirname($target), 0755, true);
                 }
 
-                $content = str_replace(
-                    [
-                        '{{ project_name }}', '{{ project_type }}', '{{ project_slug }}',
-                        '{{ vendor }}', '{{ project_description }}', '{{ php_version }}',
-                    ],
-                    [
-                        $projectName, strtoupper($type), $this->slugify($projectName),
-                        'zeroping', $this->descriptions[$type], PHP_VERSION,
-                    ],
-                    $content
-                );
-
-                file_put_contents($target, $content);
+                copy($item->getRealPath(), $target);
             }
         }
     }
 
-    private function brandComposer(string $dir, string $projectName): void
+    /**
+     * @param array<string,mixed> $a
+     */
+    private function personalize(string $targetDir, array $a): void
     {
-        $file = $dir . '/composer.json';
-        if (!file_exists($file)) {
-            return;
+        $generator = new ProjectMetadataGenerator(
+            projectName: (string) $a['name'],
+            starterType: (string) $a['type'],
+            frameworkVersion: \App\Core\Application\App::VERSION,
+            databaseDriver: (string) ($a['driver'] ?? 'sqlite'),
+        );
+
+        $generator->replaceInDirectory($targetDir);
+
+        $envPath = $targetDir . '/.env';
+        if (file_exists($envPath)) {
+            $generator->brandEnv($envPath);
         }
 
-        $json = json_decode((string) file_get_contents($file), true);
-        if ($json === null) {
-            return;
+        $composerPath = $targetDir . '/composer.json';
+        if (file_exists($composerPath)) {
+            $generator->brandComposerJson($composerPath);
         }
 
-        $json['name'] = 'zeroping/' . $this->slugify($projectName);
-        $json['description'] = $projectName . ' — built with ZeroPing';
+        $readmePath = $targetDir . '/README.md';
+        $generator->generateReadme($readmePath);
 
-        unset($json['repositories']);
-
-        file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        $publicDir = $targetDir . '/public';
+        if (is_dir($publicDir)) {
+            $generator->generateAssets($publicDir);
+        }
     }
 
     private function prepareEnv(string $dir, string $projectName = 'ZeroPing'): void

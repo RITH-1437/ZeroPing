@@ -60,7 +60,7 @@ if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
     $ok('PHP ' . PHP_VERSION);
 } else {
     $errFn('PHP ' . PHP_VERSION . ' detected â€” ZeroPing requires PHP 8.1 or higher.');
-    $errors[] = 'Upgrade PHP to 8.1+ and re-run: composer create-project rith-1437/zero-ping';
+    $errors[] = 'Upgrade PHP to 8.1+ and re-run: composer create-project rith-1437/zeroping';
 }
 
 /* â”€â”€ 2. Verify required extensions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -135,7 +135,34 @@ if (!file_exists($envPath) && file_exists($examplePath)) {
     $warnings[] = 'Create a .env file before running the application.';
 }
 
-/* â”€â”€ 6. Generate the application key â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── 6. Personalize project metadata ────────────────────────────────────────────────────────── */
+$autoloadPath = $root . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+    if (class_exists(\App\Core\Console\ProjectMetadataGenerator::class, false)) {
+        try {
+            $projectName = $_ENV['APP_NAME'] ?? getenv('APP_NAME') ?: 'ZeroPing';
+            $starterType = $_ENV['STARTER_TYPE'] ?? getenv('STARTER_TYPE') ?: 'mvc';
+            $appVersion = defined(\App\Core\Application\App::class . '::VERSION')
+                ? \App\Core\Application\App::VERSION
+                : '2.0.0';
+            $gen = new \App\Core\Console\ProjectMetadataGenerator(
+                projectName: $projectName,
+                starterType: $starterType,
+                frameworkVersion: $appVersion,
+            );
+            $gen->replaceInDirectory($root);
+            $gen->brandEnv($root . '/.env');
+            $gen->brandComposerJson($root . '/composer.json');
+            $gen->generateReadme($root . '/README.md');
+            $gen->generateAssets($root . '/public');
+            $ok('Project personalized');
+        } catch (\Throwable $e) {
+            $warnFn('Could not personalize project metadata');
+            $warnings[] = 'Run: php zero project:brand to set your project name';
+        }
+    }
+}
 if (file_exists($envPath)) {
     $env = (string) file_get_contents($envPath);
 
@@ -223,10 +250,22 @@ if (file_exists($autoloadPath)) {
     if (class_exists(\App\Core\Console\InstallerSuccessRenderer::class, false)) {
         try {
             $appVersion = \App\Core\Application\App::VERSION;
-            $projectName = $_ENV['APP_NAME'] ?? 'ZeroPing';
+            $envContent = file_exists($root . '/.env') ? file_get_contents($root . '/.env') : '';
+            $envVars = [];
+            foreach (explode("\n", $envContent ?: '') as $line) {
+                $line = trim($line);
+                if ($line !== '' && !str_starts_with($line, '#')) {
+                    $parts = explode('=', $line, 2);
+                    if (count($parts) === 2) {
+                        $envVars[$parts[0]] = $parts[1];
+                    }
+                }
+            }
+            $projectName = $envVars['APP_NAME'] ?? 'ZeroPing';
+            $starterType = $envVars['STARTER_TYPE'] ?? 'empty';
             $r = new \App\Core\Console\InstallerSuccessRenderer(
                 projectName: $projectName,
-                starterType: 'mvc',
+                starterType: $starterType,
                 frameworkVersion: $appVersion,
                 phpVersion: PHP_VERSION,
                 projectPath: $root,

@@ -42,7 +42,7 @@ php zero doctor
 ## Quick Start
 
 ```bash
-composer create-project rith-1437/zero-ping blog
+composer create-project rith-1437/zeroping blog
 cd blog
 php zero serve
 ```
@@ -60,12 +60,12 @@ manual steps are required unless you intentionally defer database configuration.
 ### Option A — Composer (recommended)
 
 ```bash
-composer create-project rith-1437/zero-ping my-app
+composer create-project rith-1437/zeroping my-app
 cd my-app
 php zero serve
 ```
 
-> **Package name:** `rith-1437/zero-ping` — all lowercase, hyphenated
+> **Package name:** `rith-1437/zeroping` — all lowercase, no hyphen
 > (the GitHub repo is `RITH-1437/ZeroPing`).
 
 The `post-create-project-cmd` installer runs automatically and will:
@@ -217,7 +217,7 @@ Run `php zero help` for the full, grouped listing. The most common commands:
 
 | Symptom                                   | Cause & Fix                                                                 |
 | ----------------------------------------- | -------------------------------------------------------------------------- |
-| `Could not find package rith-1437/...`    | Use the exact name `rith-1437/zero-ping` and ensure Composer 2.x.          |
+| `Could not find package rith-1437/...`    | Use the exact name `rith-1437/zeroping` and ensure Composer 2.x.          |
 | `Missing PHP extensions: ...`             | Enable the listed extensions in your `php.ini`, then re-run `php zero doctor`. |
 | `Directory is not writable`               | Grant write permission to `storage/` and `bootstrap/cache/`.               |
 | `The .env file is missing`                | Copy `.env.example` to `.env`, then run `php zero key:generate`.           |
@@ -269,7 +269,7 @@ next step.
 **Create a REST API and hit its root:**
 
 ```bash
-composer create-project rith-1437/zero-ping shop-api
+composer create-project rith-1437/zeroping shop-api
 cd shop-api
 php zero new api --name="Shop API" --dir=.   # optional overlay
 php zero serve

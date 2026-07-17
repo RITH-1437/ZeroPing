@@ -1,99 +1,69 @@
-# ZeroPing Framework
-
 <p align="center">
-  <a href="https://github.com/rith-1437/zero-ping">
-    <img src="https://raw.githubusercontent.com/rith-1437/zero-ping/main/public/assets/images/logo.png" alt="ZeroPing Logo" width="200">
+  <a href="https://zeroping.dev">
+    <img src="https://raw.githubusercontent.com/rith-1437/ZeroPing/main/public/assets/images/mascot.svg" alt="ZeroPing" width="120">
   </a>
 </p>
 
+<h1 align="center">ZeroPing</h1>
+
 <p align="center">
-  <a href="https://packagist.org/packages/rith-1437/zero-ping"><img src="https://img.shields.io/packagist/v/rith-1437/zero-ping.svg?style=flat-square" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/rith-1437/zero-ping"><img src="https://img.shields.io/packagist/dt/rith-1437/zero-ping.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://github.com/rith-1437/zero-ping/actions"><img src="https://img.shields.io/github/actions/workflow/status/rith-1437/zero-ping/ci.yml?style=flat-square" alt="Build Status"></a>
-  <a href="https://github.com/rith-1437/zero-ping/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rith-1437/zero-ping?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
-  <a href="https://github.com/devcontainers/features"><img src="https://img.shields.io/badge/Dev%20Container-ready-007ACC.svg?style=flat-square" alt="Dev Container Ready"></a>
+  <strong>Clean. Expressive. Familiar.</strong><br>
+  A modern PHP framework built from scratch with zero external dependencies.
 </p>
 
-## About ZeroPing
+<p align="center">
+  <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/v/rith-1437/zeroping.svg?style=flat-square&color=14B8A6" alt="Latest Stable Version"></a>
+  <img src="https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg?style=flat-square" alt="PHP >= 8.1">
+  <a href="https://github.com/rith-1437/ZeroPing/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rith-1437/ZeroPing?style=flat-square" alt="License"></a>
+  <a href="https://github.com/rith-1437/ZeroPing/actions"><img src="https://img.shields.io/github/actions/workflow/status/rith-1437/ZeroPing/ci.yml?style=flat-square" alt="Tests"></a>
+  <a href="https://packagist.org/packages/rith-1437/zeroping"><img src="https://img.shields.io/packagist/dt/rith-1437/zeroping.svg?style=flat-square" alt="Downloads"></a>
+</p>
 
-ZeroPing is a lightweight, modern PHP framework built from scratch with a clean
-model–view–controller (MVC) architecture, a fast dependency-injection container,
-an expressive ORM, validation, caching, a background queue, a task scheduler,
-and developer-friendly CLI tooling. It is free, open-source, and created by
-**Rin Nairith**.
+---
 
-ZeroPing aims to be approachable for newcomers while remaining powerful enough
-for production applications — with zero magic, readable source, and no hidden
-configuration.
+## Introduction
 
-## Key Features
+ZeroPing is a lightweight, modern PHP framework built from scratch with a clean MVC architecture, a fast dependency-injection container, an expressive ORM, validation, caching, a background queue, a task scheduler, and developer-friendly CLI tooling.
 
-- **Expressive routing** with named routes, route groups, prefixes, and middleware.
-- **Dependency Injection container** with automatic resolution and reflection caching.
-- **Eloquent-style ORM** with relationships, accessors/mutators, and pagination.
-- **Schema builder & migrations** for versioned, reversible database changes.
-- **Validation** with a rich rule set and custom rule support.
-- **Caching** with multiple drivers and a per-request memory layer.
-- **Background queues** (sync, database, file) and scheduled commands.
-- **Security** middleware: CSRF protection, encryption, rate limiting, and HTML escaping.
-- **Blazing-fast CLI** (`php zero`) for scaffolding, migrations, and maintenance.
-- **Zero external runtime dependencies** beyond PHP itself.
+It is free, open-source, and created by **Rin Nairith**.
 
-## What's New in v2.0.0
+ZeroPing aims to be approachable for newcomers while remaining powerful enough for production applications — with zero magic, readable source, and no hidden configuration.
 
-ZeroPing 2.0 is the **Enterprise Framework Foundation** — a zero-dependency,
-fully-tested PHP core with 20 integrated subsystems built from scratch:
+## Why ZeroPing?
 
-- **Dependency Injection container** with automatic resolution and **Service Providers**.
-- **HTTP Kernel** with middleware pipeline, **API Resources** (JSON resources + collections),
-  and a full **Response system**.
-- **Validation engine** with an extensive rule set and custom rule support.
-- **Localization** (translator, `lang/` files, `trans()` / `__()` helpers).
-- **Multi-driver Cache** (file, array, database) with a per-request memory layer.
-- **Session management** with multiple drivers.
-- **File Storage abstraction** with local and extensible drivers.
-- **Testing harness** compatible with PHPUnit — HTTP client, database assertions,
-  and fluent `TestResponse` assertions.
-- **Benchmark** and **Profiler** for performance measurement.
-- **Debug Toolbar** with framework-collected telemetry.
-- **Security** (hashing, encryption, secure random, CSRF, rate limiting).
-- **Logging** (multi-channel via Monolog-style handlers).
-- **Error Handling** — pretty exception pages in development, clean error views in production.
-- **Markdown documentation subsystem** — `app/Core/Docs` serves `/docs/{page}`
-  from `resources/docs/`.
-- **Scheduler** — cron-based task scheduling with mutex support for overlapping prevention.
+- **Zero external runtime dependencies** — the framework runs on PHP alone.
+- **Readable source** — every component is designed to be understood by reading the code.
+- **Stable APIs** — breaking changes are rare and well-documented.
+- **375 tests, 900 assertions, 0 failures** — battle-tested from day one.
+- **Production-ready** — security, caching, queues, scheduling, and error handling built in.
 
-All 20 subsystems are fully tested: **375 tests, 901 assertions, 0 failures**,
-and 0 phpcs warnings across the entire codebase.
+## Features
 
-## Requirements
+| Category | Features |
+|----------|----------|
+| **Architecture** | MVC, Dependency Injection, Service Providers, Middleware Pipeline |
+| **Routing** | Static & Dynamic Routes, Route Groups, Prefixes, Named Routes |
+| **Database** | ORM with Relationships, Query Builder, Migrations, Seeding |
+| **Validation** | Fluent Validator, FormRequest, 20+ Built-in Rules |
+| **Security** | CSRF Protection, Encryption, Rate Limiting, Hashing |
+| **Performance** | File/Array/Database Cache, Route Caching, Config Caching |
+| **Background** | Queue with Sync/Database Drivers, Task Scheduler |
+| **Developer Experience** | CLI Tooling, Starter Templates, Debug Toolbar, Logging |
+| **Testing** | PHPUnit Integration, HTTP Assertions, Database Transactions |
 
-- PHP >= 8.1
-- Composer
-- MySQL / MariaDB (or another PDO-supported database)
+## Quick Start
 
-## Installation
+### Installation
 
-### Option A — Clone from GitHub (recommended)
+**Zero CLI** (recommended):
 
 ```bash
-git clone https://github.com/rith-1437/zero-ping.git my-app
+php zero new my-app
 cd my-app
-
-composer install
-cp .env.example .env
-php zero key:generate
 php zero serve
 ```
 
-The app will be available at `http://localhost:1437`. Run `php zero doctor` to
-verify your environment, or `php zero install` for an interactive wizard.
-
-### Option B — Composer (when Packagist is configured)
-
-Start a new project with Composer (requires the package to be registered on
-Packagist):
+**Composer**:
 
 ```bash
 composer create-project rith-1437/zeroping my-app
@@ -101,51 +71,11 @@ cd my-app
 php zero serve
 ```
 
-> **Package name:** `rith-1437/zeroping` — all lowercase, with a hyphen
-> (the GitHub repo is `rith-1437/zero-ping`).
+Open [http://localhost:1437](http://localhost:1437) — that's it.
 
-### Option C — Docker (development environment)
+### Build Your First App
 
-A Docker Compose setup is included for local development with PHP 8.3, Nginx, and MySQL:
-
-```bash
-docker compose up -d
-docker compose exec app composer install
-docker compose exec app cp -n .env.example .env
-docker compose exec app php zero key:generate
-docker compose exec app php zero migrate
-```
-
-The app will be available at `http://localhost`.
-
-For VS Code users, a [devcontainer](.devcontainer/devcontainer.json) configuration is also provided — reopen the project in the container for a zero-setup development environment.
-
-## Documentation
-
-The full documentation lives in the [`docs/`](docs/index.html) directory and can
-be opened directly in a browser, or built into a static site. It covers
-installation, routing, the container, database, ORM, validation, caching,
-queues, scheduling, security, testing, deployment, extending the framework, and the CLI reference.
-
-A quick tour of the most common commands:
-
-```bash
-php zero serve          # start the development server
-php zero route:list     # list all registered routes
-php zero make:controller BlogController
-php zero make:model Post
-php zero migrate        # run pending migrations
-php zero test           # run the test suite
-php zero about          # framework, PHP, and environment info
-php zero --help         # list all available commands (grouped & colorized)
-```
-
-## Quick Start
-
-A new ZeroPing project ships with a small demo website so you can see it running
-immediately. To add your own page alongside it, follow these three steps.
-
-**1. Register a route** (add this to the end of `config/routes.php`):
+**1. Define a route** (`config/routes.php`):
 
 ```php
 use App\Core\Routing\Router;
@@ -187,91 +117,90 @@ php zero serve
 # open http://localhost:1437/hello
 ```
 
-## Project Structure
+## CLI Reference
 
-A freshly created ZeroPing project looks like this:
+ZeroPing ships a batteries-included CLI. The most common commands:
+
+| Command | Description |
+|---------|-------------|
+| `php zero new my-app` | Create a new project |
+| `php zero serve` | Start the development server |
+| `php zero migrate` | Run database migrations |
+| `php zero make:controller HomeController` | Scaffold a controller |
+| `php zero make:model Post` | Scaffold a model |
+| `php zero route:list` | List registered routes |
+| `php zero doctor` | Verify your installation |
+| `php zero --help` | List all commands |
+
+## Project Structure
 
 ```
 my-app/
-├── app/                  # Your application code
+├── app/                  # Application code
 │   ├── Controllers/      # HTTP controllers
-│   ├── Models/           # Eloquent-style ORM models
+│   ├── Models/           # ORM models
 │   ├── Middleware/       # HTTP middleware
-│   ├── Services/         # Business logic services
+│   ├── Services/         # Business logic
 │   └── Providers/        # Service providers
-├── config/               # routes.php, database.php, app.php
-├── public/               # Web entry point (index.php)
-├── views/                # Plain-PHP view templates
+├── config/               # Configuration files
+├── public/               # Web entry point
+├── views/                # View templates
 ├── database/
 │   └── migrations/       # Database migrations
-├── storage/              # Cache, logs, and uploaded files
-├── tests/                # Unit & Feature tests
-├── zero                  # The CLI binary
-└── .env                  # Environment configuration
+├── storage/              # Cache, logs, uploads
+├── tests/                # Unit & feature tests
+├── zero                  # CLI binary
+└── .env                  # Environment config
 ```
 
-## CLI Usage
+## Documentation
 
-ZeroPing includes a batteries-included CLI. The most common commands:
+Full documentation is available at [zeroping.dev](https://zeroping.dev):
 
-```bash
-php zero serve              # start the development server
-php zero migrate            # run database migrations
-php zero make:controller   # scaffold a controller (--resource for CRUD)
-php zero make:model        # scaffold a model (--all for the full stack)
-php zero make:job          # scaffold a queue job
-php zero make:event        # scaffold an event
-php zero make:listener     # scaffold an event listener (--event=)
-php zero make:notification # scaffold a notification
-php zero make:factory      # scaffold a model factory (--model=)
-php zero make:enum         # scaffold a string-backed enum
-php zero route:list        # list registered routes
-php zero doctor            # verify your installation
-php zero --help             # full command reference
-```
+| Page | Description |
+|------|-------------|
+| [Introduction](https://zeroping.dev/docs/introduction) | What ZeroPing is and why it exists |
+| [Installation](https://zeroping.dev/installation) | Install and configure ZeroPing |
+| [Getting Started](https://zeroping.dev/getting-started) | Build your first app |
+| [CLI Reference](https://zeroping.dev/docs/cli) | Complete CLI command reference |
+| [Routing](https://zeroping.dev/docs/introduction) | Routes, groups, middleware |
+| [Database & ORM](https://zeroping.dev/docs/database) | Models, relationships, migrations |
+| [Validation](https://zeroping.dev/docs/validation) | Rules, FluentValidator, FormRequest |
+| [Caching](https://zeroping.dev/docs/caching) | File, array, and database cache |
+| [Queues](https://zeroping.dev/docs/queues) | Background job processing |
+| [Scheduler](https://zeroping.dev/docs/scheduler) | Task scheduling |
+| [Security](https://zeroping.dev/docs/security) | Encryption, hashing, CSRF |
+| [API Reference](https://zeroping.dev/api) | Classes, methods, namespaces |
+| [Roadmap](https://zeroping.dev/roadmap) | Where ZeroPing is heading |
 
-See the [CLI Reference](docs/website/cli.md) for the complete list.
+## Starter Templates
 
-## Examples
-
-ZeroPing ships with ready-made starter templates you can scaffold instantly:
+Scaffold a complete project from a pre-built template:
 
 ```bash
 php zero new empty       # minimal skeleton
 php zero new mvc         # full CRUD with user management
 php zero new blog        # blog with posts and pagination
 php zero new api         # RESTful API boilerplate
-php zero new dashboard   # admin dashboard with widgets
 ```
-
-A plan for additional example applications is available in
-[docs/EXAMPLES.md](docs/EXAMPLES.md).
 
 ## Community
 
-- 💬 **Discussions**: ask questions and share ideas at
-  [GitHub Discussions](https://github.com/rith-1437/zero-ping/discussions).
-- 🐞 **Issues**: report bugs and request features using the
-  [issue templates](https://github.com/rith-1437/zero-ping/issues/new/choose).
-- 🔒 **Security**: report vulnerabilities privately via our
-  [security policy](SECURITY.md).
+- **Discussions**: [GitHub Discussions](https://github.com/rith-1437/ZeroPing/discussions) — ask questions and share ideas
+- **Issues**: [GitHub Issues](https://github.com/rith-1437/ZeroPing/issues) — report bugs and request features
+- **Security**: [Security Policy](SECURITY.md) — report vulnerabilities privately
 
 ## Contributing
 
-Thank you for considering contributing to ZeroPing! Please read the
-[contribution guide](CONTRIBUTING.md) before opening a pull request.
+Thank you for considering contributing to ZeroPing! Please read the [contribution guide](CONTRIBUTING.md) before opening a pull request.
 
 ## Code of Conduct
 
-To ensure the ZeroPing community stays welcoming to everyone, please review and
-abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+To ensure the ZeroPing community stays welcoming to everyone, please review and abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within ZeroPing, please review our
-[security policy](SECURITY.md) for responsible disclosure instructions. You can
-report issues privately to **Rin Nairith** at
-[nairithrin143@gmail.com](mailto:nairithrin143@gmail.com).
+If you discover a security vulnerability within ZeroPing, please review our [security policy](SECURITY.md) for responsible disclosure instructions. You can report issues privately to **Rin Nairith** at [nairithrin143@gmail.com](mailto:nairithrin143@gmail.com).
 
 ## License
 

@@ -3,7 +3,7 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
-use App\Services\SearchIndex;
+use FrameworkSite\SearchIndex;
 
 class SearchIndexCommand extends Command
 {

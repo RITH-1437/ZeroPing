@@ -40,7 +40,7 @@ class View
     public static function render(
         string $view,
         array $data = [],
-        string $layout = 'guest'
+        ?string $layout = 'guest'
     ): string {
 
         if (self::$cacheEnabled) {
@@ -61,6 +61,13 @@ class View
         ob_start();
         require $viewFile;
         $content = ob_get_clean();
+
+        // A null layout means "render the view as-is" — used for complete,
+        // self-contained pages (e.g. the generated-project welcome page)
+        // that already include their own <!DOCTYPE html> document.
+        if ($layout === null) {
+            return $content;
+        }
 
         $layoutFile = self::findLayout($layout);
         if ($layoutFile === null) {

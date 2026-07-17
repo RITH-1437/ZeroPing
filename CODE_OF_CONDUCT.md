@@ -32,6 +32,15 @@ Examples of unacceptable behavior include:
 - Other conduct which could reasonably be considered inappropriate in a
   professional setting.
 
+## Project Values
+
+The ZeroPing community is built on these core values:
+
+- **Respect**: Treat everyone with dignity and respect, regardless of experience level or background.
+- **Inclusiveness**: Welcome newcomers and help them feel comfortable contributing.
+- **Professional communication**: Keep discussions constructive, civil, and focused on the technical topic at hand.
+- **Collaboration**: Work together toward common goals, share knowledge, and support each other.
+
 ## Enforcement Responsibilities
 
 Community leaders are responsible for clarifying and enforcing our standards of

@@ -431,12 +431,20 @@ class Router
             $view = $frameworkPath . '/views/errors/500.php';
         }
 
-        if (file_exists($view)) {
+        // The "site" layout lives in framework-site/ for the official website,
+        // and at the repo root for backwards compat. Generated applications
+        // ship neither, so the plain error view is rendered below.
+        $siteLayout = $frameworkPath . '/framework-site/views/layouts/site.php';
+        if (!file_exists($siteLayout)) {
+            $siteLayout = $frameworkPath . '/views/layouts/site.php';
+        }
+
+        if (file_exists($view) && file_exists($siteLayout)) {
             ob_start();
             require $view;
             $content = ob_get_clean();
 
-            require $frameworkPath . '/views/layouts/site.php';
+            require $siteLayout;
 
             return;
         }

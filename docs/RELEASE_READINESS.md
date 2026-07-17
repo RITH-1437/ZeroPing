@@ -62,7 +62,7 @@ templating/helpers, and ORM-specific documentation.
 
 ### P0 — v2.0.0 stable release
 1. Tag `v2.0.0` and create the GitHub Release.
-2. Verify `composer create-project rith-1437/zero-ping` end-to-end (CI job exists).
+2. Verify `composer create-project rith-1437/zeroping` end-to-end (CI job exists).
 3. Confirm Packagist auto-sync from the new tag.
 
 ### P1 — adoption-critical

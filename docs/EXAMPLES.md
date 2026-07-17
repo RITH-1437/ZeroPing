@@ -41,7 +41,7 @@ Scaffold any of these with `php zero new {type}`:
 
 ## How examples are delivered
 
-Starter templates live under `app/Core/Console/Templates/` and are copied by
-the `php zero new` command. Larger demos that are not templates may instead be
+Starter templates live under `templates/` at the repository root and are copied
+by the `php zero new` command. Larger demos that are not templates may instead be
 linked from the documentation as standalone repositories to avoid bloating the
 core package.
