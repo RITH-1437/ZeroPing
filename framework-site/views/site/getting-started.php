@@ -27,6 +27,7 @@
                             'language' => $step['language'] ?? 'PHP',
                             'codeId' => 'gs-flow-' . $i,
                             'code' => $step['code'],
+                            'width' => ($step['filename'] === 'terminal') ? 'half' : '',
                         ]); ?>
                     </div>
                 </div>

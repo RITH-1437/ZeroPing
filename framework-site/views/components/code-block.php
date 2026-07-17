@@ -3,6 +3,8 @@ $title = $title ?? 'Code';
 $code = $code ?? '';
 $codeId = $codeId ?? ('code-' . md5($title . $code));
 $language = $language ?? '';
+$width = $width ?? '';
+$widthStyle = $width === 'half' ? 'width:50%;max-width:50%;' : '';
 $langClass = $language ? 'language-' . strtolower($language) : '';
 $langDisplay = $language ? strtoupper(htmlspecialchars($language, ENT_QUOTES, 'UTF-8')) : '';
 $langBadge = $langDisplay
@@ -12,7 +14,7 @@ $titleBadge = ($title && $title !== 'Code')
     ? '<span class="shrink-0 rounded-md px-2.5 py-0.5 text-[11px] font-medium truncate border" style="background:#1B2A22;color:#D1FAE5;border-color:rgba(42,90,57,0.3);">' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</span>'
     : '';
 ?>
-<section class="code-block mt-6 rounded-2xl overflow-hidden shadow-xl" style="opacity:1;filter:none;backdrop-filter:none;background:#08120D;border:1px solid #1F3B2D;">
+<section class="code-block mt-6 rounded-2xl overflow-hidden shadow-xl" style="opacity:1;filter:none;backdrop-filter:none;background:#08120D;border:1px solid #1F3B2D;<?= $widthStyle ?>">
     <div class="flex items-center justify-between gap-2 px-4 py-3 rounded-t-2xl" style="background:#0E1C15;border-bottom:1px solid #214233;opacity:1;">
         <div class="flex items-center gap-3 min-w-0" style="opacity:1;">
             <div class="flex items-center gap-1.5 shrink-0" aria-hidden="true" style="opacity:1;">
