@@ -19,18 +19,6 @@ trait SoftDeletes
     public const DELETED_AT = 'deleted_at';
 
     /**
-     * Boot the soft deleting trait for a model.
-     *
-     * @return void
-     */
-    public static function bootSoftDeletes(): void
-    {
-        static::addGlobalScope('softDeletes', function ($query) {
-            $query->whereNull(static::DELETED_AT);
-        });
-    }
-
-    /**
      * Force a hard delete on a soft deleted model.
      *
      * @return bool|null

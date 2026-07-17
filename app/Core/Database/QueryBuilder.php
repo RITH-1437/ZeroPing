@@ -190,7 +190,11 @@ class QueryBuilder
         $this->reset();
 
         if ($this->modelClass) {
-            $rows = array_map(fn($attrs) => new $this->modelClass($attrs), $rows);
+            $rows = array_map(function ($attrs) {
+                $model = new $this->modelClass();
+                $model->forceFill($attrs);
+                return $model;
+            }, $rows);
         }
 
         return new Collection($rows);

@@ -53,7 +53,9 @@ abstract class Model implements \ArrayAccess
         $instance = new static();
         $qb = new QueryBuilder($instance->db, $instance->table);
 
-        if (!$instance->hasSoftDeletes) {
+        if ($instance->hasSoftDeletes) {
+            $qb->softDeletes();
+        } else {
             $qb->withTrashed();
         }
 

@@ -15,7 +15,10 @@ class CacheRepository
      * times (e.g. config, view paths). Hitting memory instead of the file/
      * array driver removes repeated (de)serialization and I/O.
      *
-     * @var array<string, mixed>
+     * Each entry stores its value alongside an absolute expiry timestamp so
+     * expired items are transparently dropped, mirroring the driver's TTL.
+     *
+     * @var array<string, array{value: mixed, expires: int}>
      */
     protected array $local = [];
 
@@ -39,14 +42,14 @@ class CacheRepository
     public function get(string $key, $default = null)
     {
         if (array_key_exists($key, $this->local)) {
-            return $this->local[$key];
+            if (time() >= $this->local[$key]['expires']) {
+                unset($this->local[$key]);
+            } else {
+                return $this->local[$key]['value'];
+            }
         }
 
-        $value = $this->driver->get($key, $default);
-
-        $this->local[$key] = $value;
-
-        return $value;
+        return $this->driver->get($key, $default);
     }
 
     /**
@@ -59,7 +62,10 @@ class CacheRepository
      */
     public function put(string $key, $value, int $seconds): bool
     {
-        $this->local[$key] = $value;
+        $this->local[$key] = [
+            'value' => $value,
+            'expires' => time() + $seconds,
+        ];
 
         return $this->driver->put($key, $value, $seconds);
     }
@@ -75,12 +81,19 @@ class CacheRepository
     public function remember(string $key, int $seconds, callable $callback)
     {
         if (array_key_exists($key, $this->local)) {
-            return $this->local[$key];
+            if (time() >= $this->local[$key]['expires']) {
+                unset($this->local[$key]);
+            } else {
+                return $this->local[$key]['value'];
+            }
         }
 
         $value = $this->driver->remember($key, $seconds, $callback);
 
-        $this->local[$key] = $value;
+        $this->local[$key] = [
+            'value' => $value,
+            'expires' => time() + $seconds,
+        ];
 
         return $value;
     }
@@ -95,14 +108,21 @@ class CacheRepository
     public function rememberForever(string $key, callable $callback)
     {
         if (array_key_exists($key, $this->local)) {
-            return $this->local[$key];
+            if (time() >= $this->local[$key]['expires']) {
+                unset($this->local[$key]);
+            } else {
+                return $this->local[$key]['value'];
+            }
         }
 
         $value = $callback();
 
         $this->driver->forever($key, $value);
 
-        $this->local[$key] = $value;
+        $this->local[$key] = [
+            'value' => $value,
+            'expires' => time() + 315360000,
+        ];
 
         return $value;
     }
@@ -117,7 +137,10 @@ class CacheRepository
     public function forever(string $key, mixed $value): bool
     {
         // Store with a very long TTL (10 years)
-        $this->local[$key] = $value;
+        $this->local[$key] = [
+            'value' => $value,
+            'expires' => time() + 315360000,
+        ];
 
         return $this->driver->put($key, $value, 315360000);
     }
@@ -131,7 +154,8 @@ class CacheRepository
     public function has(string $key): bool
     {
         if (array_key_exists($key, $this->local)) {
-            return $this->local[$key] !== null;
+            return time() < $this->local[$key]['expires']
+                && $this->local[$key]['value'] !== null;
         }
 
         return $this->driver->has($key);
