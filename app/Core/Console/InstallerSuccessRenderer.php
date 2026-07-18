@@ -2,6 +2,11 @@
 
 namespace App\Core\Console;
 
+/**
+ * Renders the post-install success summary for a freshly generated
+ * ZeroPing application. Output is a clean, boxed summary that works both in
+ * ANSI terminals (with a faint logo + colours) and in plain text.
+ */
 class InstallerSuccessRenderer
 {
     private const WORD = 'ZEROPING';
@@ -25,33 +30,16 @@ class InstallerSuccessRenderer
 
     private const RESET = "\e[0m";
 
-    private const DESCRIPTIONS = [
-        'empty'     => 'A lightweight starter containing only the essentials.',
-        'mvc'       => 'A full MVC application with authentication, routing, migrations and CRUD.',
-        'blog'      => 'A blog starter with posts, categories and pagination.',
-        'api'       => 'RESTful API starter with authentication and JSON responses.',
-        'dashboard' => 'Admin dashboard with stats, tables and user management.',
-    ];
+    private const DOCS_URL = 'https://zero-ping.duckdns.org/docs/introduction';
 
-    private const LINKS = [
-        'Documentation' => 'https://github.com/RITH-1437/ZeroPing/tree/main/docs',
-        'GitHub'        => 'https://github.com/RITH-1437/ZeroPing',
-        'Issues'        => 'https://github.com/RITH-1437/ZeroPing/issues',
-    ];
-
-    private const TIPS = [
-        'SQLite is configured by default.',
-        'Change DB_CONNECTION in .env to mysql, pgsql or sqlsrv.',
-        'Run "php zero doctor" anytime to verify your environment.',
-    ];
+    private const APP_URL = 'http://127.0.0.1:8000';
 
     private const NEXT_STEPS = [
         'cd {project}',
         'composer install',
-        'php zero serve',
+        'php zero install',
         'php zero migrate',
-        'php zero doctor',
-        'php zero test',
+        'php zero serve',
     ];
 
     private bool $ansi;
@@ -68,33 +56,33 @@ class InstallerSuccessRenderer
 
     public function render(): string
     {
-        $parts = [
-            $this->renderLogo(),
-            '',
-            $this->line(''),
-            $this->renderProjectInfo(),
-            $this->line(''),
-            $this->renderDescription(),
-            $this->line(''),
-            $this->renderNextSteps(),
-            $this->line(''),
-            $this->renderLinks(),
-            $this->line(''),
-            $this->renderTips(),
-            $this->line(''),
-            $this->renderFinalMessage(),
-            '',
-        ];
+        $parts = [];
+
+        if ($this->ansi) {
+            $parts[] = $this->renderLogo();
+            $parts[] = '';
+        }
+
+        $parts[] = $this->rule();
+        $parts[] = '';
+        $parts[] = $this->centerIfAnsi('Welcome to ZeroPing');
+        $parts[] = '';
+        $parts[] = $this->section('Project', $this->slugify($this->projectName));
+        $parts[] = '';
+        $parts[] = $this->section('Next steps', null, $this->nextSteps());
+        $parts[] = '';
+        $parts[] = $this->section('Application', self::APP_URL);
+        $parts[] = '';
+        $parts[] = $this->section('Documentation', self::DOCS_URL);
+        $parts[] = '';
+        $parts[] = $this->rule();
+        $parts[] = '';
 
         return implode("\n", $parts);
     }
 
     private function renderLogo(): string
     {
-        if (!$this->ansi) {
-            return '';
-        }
-
         $letters = str_split(self::WORD);
         $rows = count(self::GLYPHS['Z']);
         $glyphRows = [];
@@ -116,7 +104,7 @@ class InstallerSuccessRenderer
             $bannerWidth = max($bannerWidth, $len);
         }
 
-        $width = $this::detectWidth();
+        $width = self::detectWidth();
         $pad = $bannerWidth >= $width ? 0 : (int) floor(($width - $bannerWidth) / 2);
         $padStr = str_repeat(' ', $pad);
 
@@ -129,130 +117,49 @@ class InstallerSuccessRenderer
         return implode("\n", $out);
     }
 
-    private function renderProjectInfo(): string
+    private function section(string $title, ?string $value, ?array $lines = null): string
     {
-        $db = $this->resolveDatabaseDriver();
-        $lines = [
-            $this->bold('Project Created Successfully!'),
-            '',
-            $this->label('Project Name', $this->projectName),
-            $this->label('Starter Type', ucfirst($this->starterType)),
-            $this->label('Framework', 'ZeroPing v' . $this->frameworkVersion),
-            $this->label('PHP Version', $this->phpVersion),
-            $this->label('Database', $db),
-            $this->label('Location', $this->projectPath),
-        ];
+        if ($this->ansi) {
+            $titleLine = "\e[1;97m{$title}:\e[0m";
+        } else {
+            $titleLine = "{$title}:";
+        }
 
-        return implode("\n", $lines);
+        if ($lines !== null) {
+            $body = array_map(
+                fn (string $l) => $this->ansi ? '  ' . "\e[36m➜\e[0m " . "\e[97m" . $l . "\e[0m" : '  ' . $l,
+                $lines
+            );
+            return $titleLine . "\n" . implode("\n", $body);
+        }
+
+        $rendered = $this->ansi ? '  ' . "\e[32m" . $value . "\e[0m" : '  ' . $value;
+
+        return $titleLine . "\n" . $rendered;
     }
 
-    private function renderDescription(): string
+    private function nextSteps(): array
     {
-        $desc = self::DESCRIPTIONS[$this->starterType] ?? self::DESCRIPTIONS['empty'];
-        return $this->dim($desc);
-    }
-
-    private function renderNextSteps(): string
-    {
-        $lines = [$this->bold('Next Steps'), ''];
-
         $dirName = $this->slugify($this->projectName);
-        foreach (self::NEXT_STEPS as $step) {
-            $cmd = str_replace('{project}', $dirName, $step);
-            if ($this->ansi) {
-                $lines[] = '  ' . "\e[32m$\e[0m" . ' ' . "\e[97m" . $cmd . "\e[0m";
-            } else {
-                $lines[] = '  $ ' . $cmd;
-            }
-        }
-
-        return implode("\n", $lines);
+        return array_map(
+            fn (string $step) => str_replace('{project}', $dirName, $step),
+            self::NEXT_STEPS
+        );
     }
 
-    private function renderLinks(): string
+    private function centerIfAnsi(string $text): string
     {
-        $lines = [$this->bold('Useful Links'), ''];
-
-        foreach (self::LINKS as $label => $url) {
-            if ($this->ansi) {
-                $lines[] = '  ' . "\e[36m" . $label . "\e[0m";
-                $lines[] = '  ' . "\e[90m" . $url . "\e[0m";
-            } else {
-                $lines[] = '  ' . $label;
-                $lines[] = '  ' . $url;
-            }
-            $lines[] = '';
+        if (!$this->ansi) {
+            return $text;
         }
-
-        return rtrim(implode("\n", $lines));
+        return "\e[1;36m{$text}\e[0m";
     }
 
-    private function renderTips(): string
+    private function rule(): string
     {
-        $lines = [$this->bold('Tips'), ''];
-
-        foreach (self::TIPS as $tip) {
-            if ($this->ansi) {
-                $lines[] = '  ' . "\e[32m\u{2713}\e[0m" . ' ' . $tip;
-            } else {
-                $lines[] = '  * ' . $tip;
-            }
-        }
-
-        return implode("\n", $lines);
-    }
-
-    private function renderFinalMessage(): string
-    {
-        if ($this->ansi) {
-            return implode("\n", [
-                $this->line(''),
-                "\e[1;33mHappy coding with ZeroPing!\e[0m",
-                '',
-                "\e[90mBuild fast.\e[0m",
-                "\e[90mBuild clean.\e[0m",
-                "\e[90mBuild confidently.\e[0m",
-            ]);
-        }
-
-        return implode("\n", [
-            '',
-            'Happy coding with ZeroPing!',
-            '',
-            'Build fast.',
-            'Build clean.',
-            'Build confidently.',
-        ]);
-    }
-
-    private function label(string $key, string $value): string
-    {
-        if ($this->ansi) {
-            return '  ' . "\e[90m" . $key . "\e[0m" . ' : ' . "\e[97m" . $value . "\e[0m";
-        }
-        return '  ' . $key . ' : ' . $value;
-    }
-
-    private function bold(string $text): string
-    {
-        if ($this->ansi) {
-            return "\e[1;97m" . $text . "\e[0m";
-        }
-        return $text;
-    }
-
-    private function dim(string $text): string
-    {
-        if ($this->ansi) {
-            return "\e[2m" . $text . "\e[0m";
-        }
-        return $text;
-    }
-
-    private function line(string $text): string
-    {
-        $width = min(self::detectWidth(), 80);
-        return str_repeat("\e[90m\u{2500}\e[0m", $width);
+        $width = min(self::detectWidth(), 60);
+        $bar = str_repeat("\u{2501}", $width);
+        return $this->ansi ? "\e[90m{$bar}\e[0m" : $bar;
     }
 
     private function slugify(string $name): string
@@ -260,41 +167,26 @@ class InstallerSuccessRenderer
         return strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-'));
     }
 
-    private function resolveDatabaseDriver(): string
-    {
-        if (isset($_ENV['DB_CONNECTION'])) {
-            return strtoupper($_ENV['DB_CONNECTION']);
-        }
-        $envFile = rtrim($this->projectPath, '\\/') . '/.env';
-        if (file_exists($envFile)) {
-            $contents = file_get_contents($envFile);
-            if (preg_match('/^DB_CONNECTION\s*=\s*(\w+)/m', $contents, $m)) {
-                return strtoupper($m[1]);
-            }
-        }
-        return 'SQLITE';
-    }
-
     private static function detectWidth(): int
     {
         $columns = (int) ($_ENV['COLUMNS'] ?? 0);
         if ($columns > 0) {
-            return min(max($columns, 60), 120);
+            return min(max($columns, 40), 120);
         }
 
         if (PHP_OS_FAMILY === 'Windows') {
             $output = @shell_exec('mode con 2>NUL');
             if ($output && preg_match('/Columns:\s*(\d+)/i', $output, $m)) {
-                return min(max((int) $m[1], 60), 120);
+                return min(max((int) $m[1], 40), 120);
             }
         } else {
             $output = @shell_exec('tput cols 2>/dev/null');
             if ($output && is_numeric(trim($output))) {
-                return min(max((int) trim($output), 60), 120);
+                return min(max((int) trim($output), 40), 120);
             }
         }
 
-        return 80;
+        return 60;
     }
 
     private static function toBlock(string $line): string

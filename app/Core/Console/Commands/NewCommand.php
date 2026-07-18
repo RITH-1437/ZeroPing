@@ -27,6 +27,7 @@ use App\Core\Application\App;
 class NewCommand
 {
     private const TEMPLATES = [
+        'starter'   => 'Clean starter app with sample controller, model and routes',
         'empty'     => 'Minimal project skeleton with a single welcome page',
         'mvc'       => 'Full MVC CRUD scaffold with user management',
         'blog'      => 'Blog with posts, categories and pagination',
@@ -34,11 +35,17 @@ class NewCommand
     ];
 
     private array $templates = [
+        'starter'   => 'Clean starter app with sample controller, model and routes',
         'empty'     => 'Minimal project skeleton with a single welcome page',
         'mvc'       => 'Full MVC CRUD scaffold with user management',
         'blog'      => 'Blog with posts, categories and pagination',
         'api'       => 'RESTful API with authentication boilerplate',
     ];
+
+    /**
+     * Default template chosen by the wizard / when no --type is passed.
+     */
+    private const DEFAULT_TEMPLATE = 'starter';
 
     private const DRIVERS = [
         'SQLite'      => 'sqlite',
@@ -55,6 +62,20 @@ class NewCommand
     ];
 
     private ConsoleStyle $style;
+
+    /** Whether Composer was detected on the PATH. */
+    private bool $composerAvailable = true;
+
+    /** Whether a network connection is available. */
+    private bool $internetOk = true;
+
+    /**
+     * Files/dirs created inside the target during scaffolding. Used to roll
+     * back a partially-created project if a step throws.
+     *
+     * @var array<int,string>
+     */
+    private array $createdItems = [];
 
     public function __construct()
     {
@@ -88,8 +109,115 @@ class NewCommand
             return; // user aborted the wizard
         }
 
+        // Pre-flight environment checks (friendly errors, no stack traces).
+        if (!$this->validateName((string) $answers['name'])) {
+            return;
+        }
+        if (!$this->validateComposer()) {
+            return;
+        }
+        if (!$this->validateInternet()) {
+            return;
+        }
+
         $this->summary($answers);
-        $this->scaffold($answers);
+
+        try {
+            $this->scaffold($answers);
+        } catch (\Throwable $e) {
+            $this->style->writeln('');
+            $this->style->writeln("<fg=red>✗ Project creation failed: {$e->getMessage()}</>");
+            $this->style->writeln('<fg=gray>A partial project may have been created. Re-run the command once the issue is resolved.</>');
+        }
+    }
+
+    /**
+     * Validate a project/folder name: non-empty, valid directory name, not a
+     * reserved name, and no shell-hostile characters.
+     */
+    private function validateName(string $name): bool
+    {
+        $name = trim($name);
+
+        if ($name === '') {
+            $this->style->writeln('<fg=red>✗ Project name cannot be empty.</>');
+            return false;
+        }
+
+        if (str_starts_with($name, '-')) {
+            $this->style->writeln("<fg=red>✗ Project name cannot start with a hyphen: {$name}</>");
+            return false;
+        }
+
+        if (in_array(strtolower($name), ['.', '..', '/', '\\'], true)) {
+            $this->style->writeln("<fg=red>✗ Reserved name not allowed: {$name}</>");
+            return false;
+        }
+
+        if (preg_match('/[\/\\\\:*?"<>|]/', $name)) {
+            $this->style->writeln("<fg=red>✗ Project name contains invalid characters: {$name}</>");
+            $this->style->writeln('<fg=gray>Allowed: letters, numbers, spaces and dashes/underscores.</>');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Verify Composer is available on the PATH (friendly error if missing).
+     */
+    private function validateComposer(): bool
+    {
+        $output = @shell_exec(escapeshellcmd($this->composerBin()) . ' --version 2>&1');
+
+        if ($output === null || trim($output) === '' || stripos($output, 'composer') === false) {
+            $this->style->writeln('<fg=yellow>⚠ Composer was not detected on your PATH.</>');
+            $this->style->writeln('<fg=gray>Dependencies will be skipped — run `composer install` inside the project once available.</>');
+            $this->composerAvailable = false;
+        } else {
+            $this->composerAvailable = true;
+        }
+
+        return true;
+    }
+
+    /**
+     * Detect a working network connection to the repository host before
+     * attempting any network step. Non-fatal: the scaffolder works offline
+     * but asks the user to run composer manually afterwards.
+     */
+    private function validateInternet(): bool
+    {
+        $ok = false;
+
+        if (function_exists('fsockopen')) {
+            $conn = @fsockopen('github.com', 443, $errno, $errstr, 3);
+            if ($conn !== false) {
+                fclose($conn);
+                $ok = true;
+            }
+        }
+
+        if (!$ok && extension_loaded('curl')) {
+            $ch = curl_init('https://github.com');
+            curl_setopt_array($ch, [CURLOPT_TIMEOUT => 3, CURLOPT_NOBODY => true, CURLOPT_SSL_VERIFYPEER => false]);
+            $ok = (bool) @curl_exec($ch);
+            curl_close($ch);
+        }
+
+        $this->internetOk = $ok;
+
+        if (!$ok) {
+            $this->style->writeln('<fg=yellow>⚠ No internet connection detected.</>');
+            $this->style->writeln('<fg=gray>Dependencies will be skipped — run `composer install` inside the project once online.</>');
+        }
+
+        return true;
+    }
+
+    private function composerBin(): string
+    {
+        return PHP_OS_FAMILY === 'Windows' ? 'composer.bat' : 'composer';
     }
 
     /**
@@ -104,7 +232,7 @@ class NewCommand
         $this->style->writeln('');
 
         $projectName = (new Prompt('Project Name', 'My App'))->prompt();
-        $type        = (new ChoicePrompt('Project Type', array_keys(self::TEMPLATES), 1))->prompt();
+        $type        = (new ChoicePrompt('Project Type', array_keys(self::TEMPLATES), 0))->prompt();
         $driverLabel = (new ChoicePrompt('Database Driver', array_keys(self::DRIVERS), 0))->prompt();
         $auth        = (new ConfirmPrompt('Install Authentication?', true))->prompt();
         $tailwind    = (new ConfirmPrompt('Install Tailwind Starter?', true))->prompt();
@@ -139,9 +267,9 @@ class NewCommand
      */
     private function fromOptions(string $name, array $opts): array
     {
-        $type = strtolower((string) ($opts['type'] ?? 'mvc'));
+        $type = strtolower((string) ($opts['type'] ?? self::DEFAULT_TEMPLATE));
         if (!isset(self::TEMPLATES[$type])) {
-            $type = 'mvc';
+            $type = self::DEFAULT_TEMPLATE;
         }
 
         $driverLabel = 'SQLite';
@@ -192,21 +320,55 @@ class NewCommand
         $frameworkDir = getcwd();
         $targetDir = $this->resolveTarget((string) $a['location']);
 
+        $this->createdItems = [];
+
+        // Friendly guards before touching the filesystem.
+        if (is_dir($targetDir)) {
+            $this->style->writeln("<fg=red>✗ Target directory already exists: {$targetDir}</>");
+            $this->style->writeln('<fg=gray>Choose a different name or remove the existing directory first.</>');
+            return;
+        }
+
+        $parent = dirname($targetDir);
+        if (!is_writable($parent)) {
+            $this->style->writeln("<fg=red>✗ Cannot write to: {$parent}</>");
+            $this->style->writeln('<fg=gray>Check the directory permissions and try again.</>');
+            return;
+        }
+
         $this->style->writeln('');
+        $this->style->writeln('<fg=cyan>Creating ZeroPing project...</>');
 
-        $steps = [
-            'Creating directories'        => fn() => $this->ensureParent($targetDir),
-            'Copying template'         => fn() => $this->copyAll($frameworkDir, $targetDir, $a),
-            'Preparing composer.json'  => fn() => $this->stubDependencies(),
-            'Generating .env'          => fn() => $this->prepareEnv($targetDir, (string) $a['name']),
-            'Creating app key'         => fn() => $this->ensureKey($targetDir),
-            'Configuring database'     => fn() => $this->configureDatabase($targetDir, $a),
-            'Personalizing project'    => fn() => $this->personalize($targetDir, $a),
-            'Running migrations'       => fn() => $this->stubMigrations(),
-            'Creating storage'         => fn() => $this->ensureStorage($targetDir),
-            'Installing starter files' => fn() => $this->installStarterFiles($targetDir, $a),
-        ];
+        $steps = [];
 
+        $steps['Downloading starter'] = function () use ($frameworkDir, $targetDir, $a) {
+            $this->copyAll($frameworkDir, $targetDir, $a);
+        };
+
+        $steps['Installing dependencies'] = function () use ($targetDir) {
+            $this->runComposerInstall($targetDir);
+        };
+
+        $steps['Creating environment'] = function () use ($targetDir, $a) {
+            $this->prepareEnv($targetDir, (string) $a['name']);
+            $this->configureDatabase($targetDir, $a);
+            $this->personalize($targetDir, $a);
+        };
+
+        $steps['Generating application key'] = function () use ($targetDir) {
+            $this->ensureKey($targetDir);
+        };
+
+        $steps['Preparing storage'] = function () use ($targetDir) {
+            $this->ensureStorage($targetDir);
+        };
+
+        $steps['Optimizing framework'] = function () use ($targetDir) {
+            $this->optimizeFramework($targetDir);
+        };
+
+        $failed = false;
+        $failedLabel = '';
         foreach ($steps as $label => $work) {
             $this->style->write("  <fg=cyan>⟳</> <fg=white>{$label}</> ...");
             try {
@@ -214,8 +376,23 @@ class NewCommand
                 $this->style->writeln("\r  <fg=green>✔</> <fg=white>{$label}</>");
             } catch (\Throwable $e) {
                 $this->style->writeln("\r  <fg=red>✗</> <fg=white>{$label}</> <fg=gray>( {$e->getMessage()} )</>");
+                $failed = true;
+                $failedLabel = $label;
+                break;
             }
         }
+
+        if ($failed) {
+            $this->style->writeln('');
+            $this->style->writeln("<fg=red>✗ Failed at step: {$failedLabel}</>");
+            $this->rollbackDir($targetDir);
+            $this->style->writeln("<fg=yellow>↺ Rolled back the partially-created project.</>");
+            $this->style->writeln('<fg=gray>No changes were left on disk. Resolve the issue above and try again.</>');
+            return;
+        }
+
+        $this->style->writeln('');
+        $this->style->writeln('<fg=green>Project created successfully.</>');
 
         $renderer = new \App\Core\Console\InstallerSuccessRenderer(
             projectName: $a['name'],
@@ -226,6 +403,31 @@ class NewCommand
         );
 
         echo "\n" . $renderer->render() . "\n";
+    }
+
+    /**
+     * Remove a partially-created target directory (rollback helper).
+     */
+    private function rollbackDir(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($items as $item) {
+            if ($item->isDir()) {
+                @rmdir($item->getRealPath());
+            } else {
+                @unlink($item->getRealPath());
+            }
+        }
+
+        @rmdir($dir);
     }
 
     // ── Scaffolding helpers ───────────────────────────────────────────────
@@ -294,6 +496,7 @@ class NewCommand
             if ($item->isDir()) {
                 if (!is_dir($dest)) {
                     mkdir($dest, 0755, true);
+                    $this->createdItems[] = $dest;
                 }
             } else {
                 if (!is_dir(dirname($dest))) {
@@ -301,35 +504,73 @@ class NewCommand
                 }
                 if (!@copy($sourcePath, $dest)) {
                     $this->style->writeln("  <fg=yellow>skipped</> <fg=gray>{$relative}</>");
+                } else {
+                    $this->createdItems[] = $dest;
                 }
             }
         }
     }
 
+    /**
+     * Decide whether a repo file should be copied into a generated app.
+     *
+     * A generated application must contain ONLY application files — never the
+     * framework repository internals (CI/CD, Docker, website, docs, dev
+     * tooling, roadmap, etc.). We use an allow-list approach: anything that
+     * is not part of the application skeleton is excluded.
+     */
     private function isExcluded(string $relative): bool
     {
         $relative = str_replace('\\', '/', $relative);
         $top = explode('/', $relative)[0];
 
-        $excludeTop = [
-            '.git', '.github', '.idea', '.devcontainer', '.docker', '.opencode',
-            '.phpunit.cache', 'vendor', 'node_modules', 'arena', 'docs', 'tests',
-            'bench', 'packages', 'composer.lock', '.env', 'storage',
-            'package.json', 'package-lock.json',
+        // Application skeleton directories that ARE copied.
+        $allowTop = [
+            'app', 'bootstrap', 'config', 'database', 'public',
+            'resources', 'routes', 'storage', 'tests', 'views',
         ];
 
-        if (in_array($top, $excludeTop, true)) {
-            return true;
+        if (in_array($top, $allowTop, true)) {
+            return $this->isExcludedAppFile($relative);
         }
 
+        // Specific application-level files that ARE copied.
+        $allowFiles = [
+            '.env.example',
+            '.gitignore',
+            'composer.json',
+            'zero',
+            'README.md',
+        ];
+
+        if (in_array($relative, $allowFiles, true)) {
+            return false;
+        }
+
+        // Everything else (framework repo internals) is excluded.
+        return true;
+    }
+
+    /**
+     * Within the allowed app/ tree, hide framework-repo demo controllers,
+     * website views and any other non-application artifacts.
+     */
+    private function isExcludedAppFile(string $relative): bool
+    {
         $excluded = [
-            'templates',
-            'framework-site',
-            'docs/website',
+            'app/Controllers/CoffeeController.php',
+            'app/Controllers/HomeController.php',
+            'app/Controllers/TestController.php',
+            'app/Controllers/UserController.php',
             'views/site',
             'views/home',
             'views/components',
             'views/layouts/site.php',
+            'public/sitemap.xml',
+            'public/robots.txt',
+            'public/assets/images/og-image.svg',
+            'public/assets/images/mascot.svg',
+            'public/assets/images/app-icon.svg',
         ];
 
         foreach ($excluded as $path) {
@@ -359,6 +600,7 @@ class NewCommand
             if ($item->isDir()) {
                 if (!is_dir($target)) {
                     mkdir($target, 0755, true);
+                    $this->createdItems[] = $target;
                 }
             } else {
                 if (!is_dir(dirname($target))) {
@@ -366,6 +608,7 @@ class NewCommand
                 }
 
                 copy($item->getRealPath(), $target);
+                $this->createdItems[] = $target;
             }
         }
     }
@@ -537,17 +780,36 @@ class NewCommand
         }
     }
 
-    private function stubDependencies(): void
+    /**
+     * Install Composer dependencies in the generated project. Skipped (with a
+     * note) when Composer is missing or there is no network connection.
+     */
+    private function runComposerInstall(string $dir): void
     {
-        // Dependencies are installed by the user with `composer install`
-        // once the project is in place. We don't run it here so the
-        // scaffolder never blocks on a network download.
+        if (!$this->composerAvailable || !$this->internetOk) {
+            $this->style->writeln('');
+            $this->style->writeln('<fg=yellow>  ⓘ Skipped — run `composer install` inside the project.</>');
+            return;
+        }
+
+        $result = @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' install --no-interaction --no-progress 2>&1');
+
+        if ($result === null || stripos($result, 'error') !== false && stripos($result, 'Generated') === false) {
+            $this->style->writeln('');
+            $this->style->writeln('<fg=yellow>  ⓘ Composer install encountered an issue — run it manually.</>');
+        }
     }
 
-    private function stubMigrations(): void
+    /**
+     * Optimize the framework autoloader / caches in the generated project.
+     */
+    private function optimizeFramework(string $dir): void
     {
-        // Migrations run after `composer install` brings in the
-        // database drivers. Surfaced as a next step instead.
+        if (!$this->composerAvailable) {
+            return;
+        }
+
+        @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' dump-autoload --optimize --no-interaction 2>&1');
     }
 
     private function resolveTarget(string $location): string

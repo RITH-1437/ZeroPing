@@ -9,89 +9,83 @@ use App\Core\View\Controller;
  * Default landing page for a freshly generated ZeroPing application.
  *
  * This is deliberately NOT the framework website — it is a minimal,
- * developer-focused welcome screen. It shows that the project was created
- * successfully, which starter template is installed, and how to start
- * building. It contains no framework marketing.
+ * developer-focused welcome screen showing key runtime info and links to the
+ * official documentation, getting-started guide and GitHub repository. It
+ * contains no framework marketing.
  */
 class WelcomeController extends Controller
 {
     public function index(): string
     {
-        $name = config('app.name', 'ZeroPing App');
-        $name = $name === 'ZeroPing' ? 'ZeroPing App' : $name;
+        $name      = config('app.name', 'ZeroPing App');
+        $name      = $name === 'ZeroPing' ? 'ZeroPing App' : $name;
+        $version   = config('app.starter.version', App::VERSION);
+        $php       = PHP_VERSION;
+        $env       = config('app.env', 'local');
+        $docsUrl   = config('app.docs_url', 'https://zero-ping.duckdns.org');
 
-        $starterType = strtolower(
-            (string) (config('app.starter.type') ?? env('STARTER_TYPE') ?? 'empty')
-        );
-        $starterType = $this->normalizeStarter($starterType);
-
-        $starterLabel = $this->starterLabel($starterType);
-
-        $version = config('app.starter.version', App::VERSION);
-        $php     = PHP_VERSION;
-        $env     = config('app.env', 'local');
-        $driver  = strtoupper((string) env('DB_CONNECTION', 'sqlite'));
-        $docsUrl = config('app.docs_url', 'https://zero-ping.duckdns.org');
-
-        return $this->renderWelcome($name, $starterType, $starterLabel, $version, $php, $env, $driver, $docsUrl);
+        return $this->renderWelcome($name, $version, $php, $env, $docsUrl);
     }
 
-    /**
-     * @param array<string,string> $data
-     */
     private function renderWelcome(
         string $name,
-        string $starterType,
-        string $starterLabel,
         string $version,
         string $php,
         string $env,
-        string $driver,
         string $docsUrl
     ): string {
-        $ascii = $this->asciiLogo();
-        $commands = $this->commandLines();
-
         $html  = $this->docType($name);
         $html .= $this->styles();
         $html .= "</head>\n<body>\n";
         $html .= "<main class=\"zp-wrap\">\n";
 
-        // ASCII logo
-        $html .= "<pre class=\"zp-logo\"><code aria-hidden=\"true\">" . htmlspecialchars($ascii, ENT_QUOTES) . "</code></pre>\n";
+        // Logo
+        $html .= "<div class=\"zp-logo\" aria-hidden=\"true\">" . $this->logoSvg() . "</div>\n";
 
-        // Project name + starter badge
+        // Project name + tagline
         $html .= "<h1 class=\"zp-title\">" . htmlspecialchars($name, ENT_QUOTES) . "</h1>\n";
-        $html .= "<div class=\"zp-badge\">" . htmlspecialchars($starterLabel, ENT_QUOTES) . "</div>\n";
+        $html .= "<p class=\"zp-desc\">Your ZeroPing application was created successfully.</p>\n";
 
-        // Description
-        $html .= "<p class=\"zp-desc\">Your ZeroPing application has been created successfully.</p>\n";
+        // Runtime info cards
+        $html .= "<section class=\"zp-stats\" aria-label=\"Runtime information\">\n";
+        $html .= $this->stat('Framework', 'ZeroPing v' . htmlspecialchars($version, ENT_QUOTES));
+        $html .= $this->stat('PHP', htmlspecialchars($php, ENT_QUOTES));
+        $html .= $this->stat('Environment', htmlspecialchars(ucfirst($env), ENT_QUOTES));
+        $html .= "</section>\n";
 
-        // Terminal card
-        $html .= "<section class=\"zp-terminal\" aria-label=\"Quick commands\">\n";
-        $html .= "<div class=\"zp-terminal-bar\"><span></span><span></span><span></span></div>\n";
-        $html .= "<div class=\"zp-terminal-body\">\n";
-        foreach ($commands as $line) {
-            $html .= $this->highlightCommand($line) . "\n";
+        // Primary action buttons
+        $html .= "<nav class=\"zp-actions\" aria-label=\"Getting started\">\n";
+        $html .= $this->button('Documentation', 'https://zero-ping.duckdns.org/docs/introduction');
+        $html .= $this->button('Getting Started', 'https://zero-ping.duckdns.org/getting-started');
+        $html .= $this->button('GitHub', 'https://github.com/RITH-1437/ZeroPing');
+        $html .= "</nav>\n";
+
+        // Secondary doc links
+        $html .= "<div class=\"zp-links\">\n";
+        foreach ([
+            'Features'      => 'https://zero-ping.duckdns.org/features',
+            'Installation'  => 'https://zero-ping.duckdns.org/installation',
+            'API Reference' => 'https://zero-ping.duckdns.org/api',
+        ] as $label => $url) {
+            $html .= "<a href=\"" . htmlspecialchars($url, ENT_QUOTES) . "\" rel=\"noopener\">" . htmlspecialchars($label, ENT_QUOTES) . "</a>\n";
         }
-        $html .= "</div>\n</section>\n";
-
-        // Documentation link
-        $html .= "<a class=\"zp-docs-link\" href=\"" . htmlspecialchars($docsUrl, ENT_QUOTES) . "\" rel=\"noopener\">\n";
-        $html .= "Read Documentation &rarr;\n";
-        $html .= "</a>\n";
-
-        // Footer meta
-        $html .= "<footer class=\"zp-meta\">\n";
-        $html .= "<span>ZeroPing v" . htmlspecialchars($version, ENT_QUOTES) . "</span>\n";
-        $html .= "<span>PHP " . htmlspecialchars($php, ENT_QUOTES) . "</span>\n";
-        $html .= "<span>" . htmlspecialchars(ucfirst($env), ENT_QUOTES) . "</span>\n";
-        $html .= "<span>" . htmlspecialchars($driver, ENT_QUOTES) . "</span>\n";
-        $html .= "</footer>\n";
+        $html .= "</div>\n";
 
         $html .= "</main>\n</body>\n</html>\n";
 
         return $html;
+    }
+
+    private function stat(string $label, string $value): string
+    {
+        return "<div class=\"zp-stat\"><span class=\"zp-stat-label\">" . htmlspecialchars($label, ENT_QUOTES)
+            . "</span><span class=\"zp-stat-value\">" . $value . "</span></div>\n";
+    }
+
+    private function button(string $label, string $url): string
+    {
+        return "<a class=\"zp-btn\" href=\"" . htmlspecialchars($url, ENT_QUOTES) . "\" rel=\"noopener\">"
+            . htmlspecialchars($label, ENT_QUOTES) . "</a>\n";
     }
 
     private function docType(string $name): string
@@ -107,19 +101,12 @@ class WelcomeController extends Controller
         return "<style>
 :root {
   --bg: #070b14;
-  --bg-soft: #0d1424;
   --card: #0e1626;
   --border: #1c2740;
   --text: #e8eef9;
   --muted: #93a1bd;
-  --faint: #5d6b87;
   --primary: #22c55e;
   --primary-2: #16a34a;
-  --term-bg: #050912;
-  --term-text: #c7d2e8;
-  --cmd: #22c55e;
-  --flag: #f0a868;
-  --comment: #5d6b87;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -134,153 +121,54 @@ body {
   color: var(--text);
   padding: 40px 20px;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
-.zp-wrap { width: 100%; max-width: 600px; margin: 0 auto; text-align: center; }
-.zp-logo {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
-  font-size: clamp(13px, 1.6vw, 18px);
-  line-height: 0.9;
-  letter-spacing: 0;
-  white-space: pre;
-  display: inline-block;
-  text-rendering: geometricPrecision;
-  font-feature-settings: 'liga' 0;
-  font-variant-ligatures: none;
-  text-align: center;
-  margin: 0 auto 30px; padding: 10px 0; color: #22C55E;
-  text-shadow: 0 0 8px rgba(34,197,94,.45), 0 0 22px rgba(34,197,94,.18);
-  image-rendering: auto; transform: none; font-weight: 700;
-}
-.zp-logo code { font: inherit; color: inherit; text-shadow: inherit; white-space: pre; }
-.zp-title {
-  font-size: 32px; font-weight: 800; letter-spacing: -.025em; margin: 0 0 12px;
-  color: #f4f7fc;
-}
-.zp-badge {
-  display: inline-block; padding: 5px 14px; border-radius: 999px;
-  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
-  color: #d1fae5; background: rgba(34,197,94,.10);
-  border: 1px solid rgba(34,197,94,.35);
-  backdrop-filter: blur(6px);
-}
-.zp-desc { color: var(--muted); font-size: 15px; margin: 38px 0 0; }
+.zp-wrap { width: 100%; max-width: 560px; margin: 0 auto; text-align: center; }
+.zp-logo { margin: 0 auto 26px; }
+.zp-logo svg { width: 64px; height: 64px; filter: drop-shadow(0 0 12px rgba(34,197,94,.45)); }
+.zp-title { font-size: 30px; font-weight: 800; letter-spacing: -.025em; margin: 0 0 8px; color: #f4f7fc; }
+.zp-desc { color: var(--muted); font-size: 15px; margin: 0 0 28px; }
 
-.zp-terminal {
-  text-align: left; background: var(--term-bg); border: 1px solid var(--border);
-  border-radius: 16px; overflow: hidden;
-  box-shadow: 0 30px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(34,197,94,.04) inset;
-  margin: 36px auto 0; max-width: 540px;
+.zp-stats {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin: 0 0 30px;
 }
-.zp-terminal-bar {
-  display: flex; gap: 7px; padding: 13px 16px; background: #0a1020;
-  border-bottom: 1px solid var(--border);
+.zp-stat {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 18px; min-width: 120px;
 }
-.zp-terminal-bar span { width: 11px; height: 11px; border-radius: 50%; background: #2a3550; }
-.zp-terminal-bar span:nth-child(1) { background: #ff5f57; }
-.zp-terminal-bar span:nth-child(2) { background: #febc2e; }
-.zp-terminal-bar span:nth-child(3) { background: #28c840; }
-.zp-terminal-body { padding: 18px 20px; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace; font-size: 13.5px; line-height: 1.9; color: var(--term-text); }
-.zp-cmd-line { white-space: pre-wrap; }
-.zp-prompt { color: var(--comment); user-select: none; }
-.zp-cmd { color: var(--cmd); font-weight: 600; }
-.zp-arg { color: #c7d2e8; }
-.zp-flag { color: var(--flag); }
+.zp-stat-label { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.zp-stat-value { display: block; margin-top: 4px; font-size: 14px; font-weight: 700; color: #d1fae5; }
 
-.zp-docs-link {
-  display: inline-block; margin-top: 34px; text-decoration: none;
-  font-size: 14px; font-weight: 500; color: var(--muted);
-  letter-spacing: .01em; transition: color .18s;
+.zp-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 26px; }
+.zp-btn {
+  flex: 1 1 140px; text-decoration: none; font-size: 14px; font-weight: 700;
+  padding: 13px 18px; border-radius: 12px; color: #04130a;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  box-shadow: 0 14px 30px -14px rgba(34,197,94,.7);
+  transition: transform .15s, box-shadow .15s;
 }
-.zp-docs-link:hover { color: var(--primary); }
+.zp-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -14px rgba(34,197,94,.8); }
 
-.zp-meta {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px;
-  margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);
-  color: var(--faint); font-size: 12px; font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-}
-.zp-meta span { position: relative; }
-
-@media (max-width: 520px) {
-  .zp-title { font-size: 26px; }
-  .zp-logo { font-size: 8px; }
-}
+.zp-links { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: center; }
+.zp-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+.zp-links a:hover { color: var(--primary); }
 </style>";
     }
 
-    /**
-     * @return array<int,string>
-     */
-    private function commandLines(): array
+    private function logoSvg(): string
     {
-        return [
-            'php zero serve',
-            'php zero route:list',
-            'php zero make:controller HomeController',
-            'php zero make:model User',
-            'php zero migrate',
-            'composer install',
-        ];
-    }
-
-    private function highlightCommand(string $line): string
-    {
-        $parts = preg_split('/(\s+)/', $line, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $out = '<div class="zp-cmd-line"><span class="zp-prompt">$ </span>';
-        $first = true;
-        foreach ($parts as $p) {
-            if ($p === '' || trim($p) === '') {
-                $out .= $p;
-                continue;
-            }
-            if ($first) {
-                $out .= '<span class="zp-cmd">' . htmlspecialchars($p, ENT_QUOTES) . '</span>';
-                $first = false;
-            } elseif (str_starts_with($p, '-')) {
-                $out .= '<span class="zp-flag">' . htmlspecialchars($p, ENT_QUOTES) . '</span>';
-            } else {
-                $out .= '<span class="zp-arg">' . htmlspecialchars($p, ENT_QUOTES) . '</span>';
-            }
-        }
-        $out .= '</div>';
-
-        return $out;
-    }
-
-    private function asciiLogo(): string
-    {
-        return <<<LOGO
-███████╗███████╗██████╗  ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗
-╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝
-  ███╔╝ █████╗  ██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██║  ███╗
- ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ██║██║╚██╗██║██║   ██║
-███████╗███████╗██║  ██║╚██████╔╝██║     ██║██║ ╚████║╚██████╔╝
-╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝
-LOGO;
-    }
-
-    private function normalizeStarter(string $type): string
-    {
-        $map = [
-            'empty' => 'empty',
-            'mvc' => 'mvc',
-            'blog' => 'blog',
-            'api' => 'api',
-            'dashboard' => 'dashboard',
-        ];
-
-        return $map[$type] ?? 'empty';
-    }
-
-    private function starterLabel(string $type): string
-    {
-        return match ($type) {
-            'mvc' => 'MVC',
-            'blog' => 'Blog',
-            'api' => 'API',
-            'dashboard' => 'Dashboard',
-            default => 'Empty',
-        };
+        return <<<SVG
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="zp" x1="0" y1="0" x2="48" y2="48">
+      <stop stop-color="#22c55e"/><stop offset="1" stop-color="#16a34a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="22" stroke="url(#zp)" stroke-width="3"/>
+  <path d="M14 24h20M24 14v20" stroke="url(#zp)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="24" cy="24" r="5" fill="url(#zp)"/>
+</svg>
+SVG;
     }
 
     public function cli(): string
@@ -312,7 +200,7 @@ LOGO;
         <div class="cmd"><b>php zero migrate</b> — run database migrations</div>
         <div class="cmd"><b>php zero make:controller</b> — scaffold a controller</div>
         <div class="cmd"><b>php zero make:model</b> — scaffold a model</div>
-        <p><a href="./">← back</a></p>
+        <p><a href="https://zero-ping.duckdns.org/docs/introduction">Documentation</a> · <a href="./">← back</a></p>
     </div>
 </body>
 </html>
@@ -352,7 +240,7 @@ php zero make:controller PostController
 
 # Run migrations
 php zero migrate</pre>
-        <p><a href="./">← back</a></p>
+        <p><a href="https://zero-ping.duckdns.org/getting-started">Getting Started</a> · <a href="./">← back</a></p>
     </div>
 </body>
 </html>

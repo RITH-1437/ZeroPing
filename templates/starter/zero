@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/config/config.php';
+
+use App\Core\Application\App;
+use App\Core\Console\Console;
+
+App::boot();
+
+$console = new Console();
+
+try {
+    $console->run($argv);
+} catch (\Throwable $e) {
+    fwrite(STDERR, "\033[31mError: " . $e->getMessage() . "\033[0m\n");
+    exit(1);
+}
