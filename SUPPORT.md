@@ -2,14 +2,14 @@
 
 ## Documentation
 
-The official ZeroPing documentation is available at [zeroping.dev](https://zeroping.dev):
+The official ZeroPing documentation is available at [zero-ping.duckdns.org](https://zero-ping.duckdns.org):
 
-- [Introduction](https://zeroping.dev/docs/introduction) — What ZeroPing is and why it exists
-- [Installation](https://zeroping.dev/installation) — Install and configure ZeroPing
-- [Getting Started](https://zeroping.dev/getting-started) — Build your first app
-- [CLI Reference](https://zeroping.dev/docs/cli) — Complete CLI command reference
-- [Features](https://zeroping.dev/features) — All framework capabilities
-- [API Reference](https://zeroping.dev/api) — Classes, methods, and namespaces
+- [Introduction](https://zero-ping.duckdns.org/docs/introduction) — What ZeroPing is and why it exists
+- [Installation](https://zero-ping.duckdns.org/installation) — Install and configure ZeroPing
+- [Getting Started](https://zero-ping.duckdns.org/getting-started) — Build your first app
+- [CLI Reference](https://zero-ping.duckdns.org/docs/cli) — Complete CLI command reference
+- [Features](https://zero-ping.duckdns.org/features) — All framework capabilities
+- [API Reference](https://zero-ping.duckdns.org/api) — Classes, methods, and namespaces
 
 ## GitHub Discussions
 
@@ -41,7 +41,7 @@ See [SECURITY.md](SECURITY.md) for the full security policy.
 
 - **GitHub Discussions**: [rith-1437/ZeroPing/discussions](https://github.com/rith-1437/ZeroPing/discussions)
 - **GitHub Issues**: [rith-1437/ZeroPing/issues](https://github.com/rith-1437/ZeroPing/issues)
-- **Documentation**: [zeroping.dev](https://zeroping.dev)
+- **Documentation**: [zero-ping.duckdns.org](https://zero-ping.duckdns.org)
 - **Repository**: [github.com/rith-1437/ZeroPing](https://github.com/rith-1437/ZeroPing)
 
 ## Professional Support

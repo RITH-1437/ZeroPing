@@ -40,7 +40,7 @@
   <rect x="80" y="400" width="520" height="48" rx="10" fill="#111827" stroke="#1F2937" stroke-width="1"/>
   <text x="100" y="430" font-family="JetBrains Mono, monospace" font-size="16" fill="#22D3EE" letter-spacing="-0.01em">$ composer create-project rith-1437/zero-ping blog</text>
   <line x1="80" y1="490" x2="500" y2="490" stroke="#1F2937" stroke-width="1"/>
-  <text x="80" y="530" font-family="Inter, Arial, sans-serif" font-size="16" fill="#52525B" letter-spacing="0.05em">zeroping.dev</text>
+  <text x="80" y="530" font-family="Inter, Arial, sans-serif" font-size="16" fill="#52525B" letter-spacing="0.05em">zero-ping.duckdns.org</text>
   <rect x="460" y="512" width="80" height="28" rx="6" fill="none" stroke="#1F2937" stroke-width="1"/>
   <text x="500" y="532" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#22D3EE" text-anchor="middle">v1.2</text>
   <circle cx="1050" cy="140" r="180" fill="#22D3EE" opacity="0.03"/>

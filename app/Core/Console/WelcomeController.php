@@ -31,7 +31,7 @@ class WelcomeController extends Controller
         $php     = PHP_VERSION;
         $env     = config('app.env', 'local');
         $driver  = strtoupper((string) env('DB_CONNECTION', 'sqlite'));
-        $docsUrl = config('app.docs_url', 'https://localhost:1437/docs');
+        $docsUrl = config('app.docs_url', 'https://zero-ping.duckdns.org');
 
         return $this->renderWelcome($name, $starterType, $starterLabel, $version, $php, $env, $driver, $docsUrl);
     }

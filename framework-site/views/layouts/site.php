@@ -12,8 +12,8 @@ $activePage = $active ?? '';
     <meta name="description" content="ZeroPing Framework official website and documentation.">
     <meta property="og:title" content="ZeroPing — Modern PHP Framework">
     <meta property="og:description" content="Fast. Simple. Elegant. A lightweight PHP framework built from scratch with zero external dependencies.">
-    <meta property="og:image" content="<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev'), '/') ?>/assets/images/og-image.svg">
-    <meta property="og:url" content="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zeroping.dev') ?>">
+    <meta property="og:image" content="<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zero-ping.duckdns.org'), '/') ?>/assets/images/og-image.svg">
+    <meta property="og:url" content="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zero-ping.duckdns.org') ?>">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/svg+xml" href="/assets/images/mascot.svg">
     <link rel="apple-touch-icon" href="/assets/images/app-icon.svg">

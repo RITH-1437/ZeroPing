@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://zeroping.dev">
+  <a href="https://zero-ping.duckdns.org">
     <img src="https://raw.githubusercontent.com/rith-1437/ZeroPing/main/public/assets/images/mascot.svg" alt="ZeroPing" width="120">
   </a>
 </p>
@@ -171,23 +171,23 @@ my-app/
 
 ## Documentation
 
-Full documentation is available at [zeroping.dev](https://zeroping.dev):
+Full documentation is available at [zero-ping.duckdns.org](https://zero-ping.duckdns.org):
 
 | Page | Description |
 |------|-------------|
-| [Introduction](https://zeroping.dev/docs/introduction) | What ZeroPing is and why it exists |
-| [Installation](https://zeroping.dev/installation) | Install and configure ZeroPing |
-| [Getting Started](https://zeroping.dev/getting-started) | Build your first app |
-| [CLI Reference](https://zeroping.dev/docs/cli) | Complete CLI command reference |
-| [Routing](https://zeroping.dev/docs/introduction) | Routes, groups, middleware |
-| [Database & ORM](https://zeroping.dev/docs/database) | Models, relationships, migrations |
-| [Validation](https://zeroping.dev/docs/validation) | Rules, FluentValidator, FormRequest |
-| [Caching](https://zeroping.dev/docs/caching) | File, array, and database cache |
-| [Queues](https://zeroping.dev/docs/queues) | Background job processing |
-| [Scheduler](https://zeroping.dev/docs/scheduler) | Task scheduling |
-| [Security](https://zeroping.dev/docs/security) | Encryption, hashing, CSRF |
-| [API Reference](https://zeroping.dev/api) | Classes, methods, namespaces |
-| [Roadmap](https://zeroping.dev/roadmap) | Where ZeroPing is heading |
+| [Introduction](https://zero-ping.duckdns.org/docs/introduction) | What ZeroPing is and why it exists |
+| [Installation](https://zero-ping.duckdns.org/installation) | Install and configure ZeroPing |
+| [Getting Started](https://zero-ping.duckdns.org/getting-started) | Build your first app |
+| [CLI Reference](https://zero-ping.duckdns.org/docs/cli) | Complete CLI command reference |
+| [Routing](https://zero-ping.duckdns.org/docs/introduction) | Routes, groups, middleware |
+| [Database & ORM](https://zero-ping.duckdns.org/docs/database) | Models, relationships, migrations |
+| [Validation](https://zero-ping.duckdns.org/docs/validation) | Rules, FluentValidator, FormRequest |
+| [Caching](https://zero-ping.duckdns.org/docs/caching) | File, array, and database cache |
+| [Queues](https://zero-ping.duckdns.org/docs/queues) | Background job processing |
+| [Scheduler](https://zero-ping.duckdns.org/docs/scheduler) | Task scheduling |
+| [Security](https://zero-ping.duckdns.org/docs/security) | Encryption, hashing, CSRF |
+| [API Reference](https://zero-ping.duckdns.org/api) | Classes, methods, namespaces |
+| [Roadmap](https://zero-ping.duckdns.org/roadmap) | Where ZeroPing is heading |
 
 ## Starter Templates
 

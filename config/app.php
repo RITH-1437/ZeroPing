@@ -15,7 +15,7 @@ return [
         'version' => $_ENV['FRAMEWORK_VERSION'] ?? \App\Core\Application\App::VERSION,
     ],
 
-    'docs_url' => $_ENV['DOCS_URL'] ?? 'https://zeroping.dev',
+    'docs_url' => $_ENV['DOCS_URL'] ?? 'https://zero-ping.duckdns.org',
 
     'env' => $_ENV['APP_ENV'] ?? 'local',
 
