@@ -26,8 +26,7 @@ class ConfirmPrompt extends BasePrompt
             ? '<fg=gray>[Y/n]</>'
             : '<fg=gray>[y/N]</>';
 
-        $this->write("<fg=cyan>?</> <fg=white>{$this->label}</> {$hint} ");
-        $this->output->write('');
+        $this->writeln("<fg=cyan>?</> <fg=white>{$this->label}</> {$hint} ");
 
         $answer = strtolower($this->readLine());
 

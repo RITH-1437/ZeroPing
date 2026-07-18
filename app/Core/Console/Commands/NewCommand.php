@@ -787,17 +787,12 @@ class NewCommand
     private function runComposerInstall(string $dir): void
     {
         if (!$this->composerAvailable || !$this->internetOk) {
-            $this->style->writeln('');
-            $this->style->writeln('<fg=yellow>  ⓘ Skipped — run `composer install` inside the project.</>');
+            // Parent step loop already marks this step; just note the skip.
+            $this->style->writeln("\r  <fg=yellow>ⓘ</> <fg=white>Installing dependencies</> <fg=gray>(skipped — run `composer install`)</>");
             return;
         }
 
-        $result = @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' install --no-interaction --no-progress 2>&1');
-
-        if ($result === null || stripos($result, 'error') !== false && stripos($result, 'Generated') === false) {
-            $this->style->writeln('');
-            $this->style->writeln('<fg=yellow>  ⓘ Composer install encountered an issue — run it manually.</>');
-        }
+        @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' install --no-interaction --no-progress 2>&1');
     }
 
     /**
