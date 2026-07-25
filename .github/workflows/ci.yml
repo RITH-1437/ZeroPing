@@ -96,6 +96,9 @@ jobs:
           php zero route:list
           php zero config:test
 
+      - name: Generate APP_KEY
+        run: php zero key:generate
+
       - name: Framework Components
         run: |
           php zero validate:test

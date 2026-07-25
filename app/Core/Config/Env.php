@@ -38,6 +38,7 @@ class Env
             if (is_array($items)) {
                 foreach ($items as $key => $value) {
                     $_ENV[$key] = $value;
+                    putenv("{$key}={$value}");
                 }
                 return;
             }
@@ -66,6 +67,7 @@ class Env
 
             $items[$key] = $value;
             $_ENV[$key] = $value;
+            putenv("{$key}={$value}");
         }
 
         self::writeCache($cacheFile, $items);
