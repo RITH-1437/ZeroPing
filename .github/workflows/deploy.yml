@@ -10,21 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check required secrets
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          if [ -z "$EC2_HOST" ] || [ -z "$EC2_USERNAME" ] || [ -z "$EC2_SSH_KEY" ]; then
+            echo "::warning::EC2_HOST, EC2_USERNAME, or EC2_SSH_KEY secret is not set. Skipping deploy."
+            exit 0
+          fi
+          echo "All secrets are set"
 
-      - name: Write SSH key
+      - name: Deploy via SSH
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/zeroping.pem
+          echo "$EC2_SSH_KEY" > ~/.ssh/zeroping.pem
           chmod 600 ~/.ssh/zeroping.pem
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key_path: ~/.ssh/zeroping.pem
-          script: |
-            ~/scripts/deploy.sh
-            curl -f http://localhost/up
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/zeroping.pem
+
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          ssh "$EC2_USERNAME@$EC2_HOST" "~/scripts/deploy.sh && curl -f http://localhost/up"
