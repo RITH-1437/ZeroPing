@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database\Drivers;
 
@@ -10,7 +11,7 @@ use PDO;
  * A driver knows how to turn a connection configuration array into a live
  * PDO instance and how to render engine-specific SQL through its Grammar.
  * Adding SQL Server or Oracle later means writing one more class that
- * implements this interface — the ORM, QueryBuilder and Model never change.
+ * implements this interface â€” the ORM, QueryBuilder and Model never change.
  */
 interface DriverInterface
 {
@@ -37,7 +38,7 @@ interface DriverInterface
     public function grammar(): \App\Core\Database\Grammar\Grammar;
 
     /**
-     * Quote (escape) a single identifier — table or column name.
+     * Quote (escape) a single identifier â€” table or column name.
      */
     public function quoteIdentifier(string $name): string;
 

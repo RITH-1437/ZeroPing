@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Database\Seeders;
+
+class {{ class }}
+{
+    public function run(): void
+    {
+
+    }
+}

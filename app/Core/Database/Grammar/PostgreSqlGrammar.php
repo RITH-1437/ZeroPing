@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database\Grammar;
 
@@ -18,6 +19,11 @@ class PostgreSqlGrammar extends Grammar
     public function autoIncrementPrimary(): string
     {
         return 'BIGSERIAL PRIMARY KEY';
+    }
+
+    public function supportsUnsigned(): bool
+    {
+        return false;
     }
 
     public function typeMap(string $type, ?int $length = null): string

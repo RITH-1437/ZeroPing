@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -7,7 +8,7 @@ namespace App\Core\Database;
  *
  * Unlike the previous class this one does NOT emit SQL. It only records the
  * column's intent (type, length, modifiers). The active Grammar turns it
- * into engine-specific SQL — so the same migration works on SQLite, MySQL,
+ * into engine-specific SQL â€” so the same migration works on SQLite, MySQL,
  * MariaDB and PostgreSQL.
  */
 class ColumnDefinition
@@ -26,7 +27,7 @@ class ColumnDefinition
     ) {
     }
 
-    // ── Fluent modifiers (return $this for chaining) ──────────────────────
+    // â”€â”€ Fluent modifiers (return $this for chaining) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public function nullable(bool $value = true): static
     {
@@ -64,7 +65,7 @@ class ColumnDefinition
     }
 
     /**
-     * For enum() columns — the allowed values.
+     * For enum() columns â€” the allowed values.
      *
      * @param  array<int, string>  $values
      */

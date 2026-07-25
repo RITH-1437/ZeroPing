@@ -1,7 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
+/**
+ * Simple static event dispatcher.
+ *
+ * @deprecated Use App\Core\Events\EventDispatcher instead, which supports
+ *             class-based events and listeners through the service container.
+ *             This class is kept for backwards compatibility but may be
+ *             removed in a future release.
+ */
 class Event
 {
     /**

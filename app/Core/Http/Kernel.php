@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Http;
 
@@ -7,7 +8,7 @@ use App\Core\Routing\Router;
 use Throwable;
 
 /**
- * HTTP kernel — the heart of the request lifecycle.
+ * HTTP kernel â€” the heart of the request lifecycle.
  *
  * Runs global middleware (priority ordered) and then dispatches through
  * the router, which applies per-route middleware and middleware groups.
@@ -34,7 +35,7 @@ class Kernel
     protected array $middlewareGroups = [];
 
     /**
-     * Middleware priority — listed names run first. Unlisted middleware
+     * Middleware priority â€” listed names run first. Unlisted middleware
      * run afterwards in their registration order.
      *
      * @var array<int, class-string|string>

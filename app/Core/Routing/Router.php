@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Routing;
 
 use App\Core\Application\App;
@@ -156,19 +158,34 @@ class Router
     /**
      * Expand group names in a middleware list into their members.
      *
+     * Detects circular references to prevent infinite recursion.
+     *
      * @param array<int, class-string|string> $list
+     * @param array<string, bool>             $resolving Groups currently being resolved (internal)
      * @return array<int, class-string|string>
+     *
+     * @throws \RuntimeException When a circular middleware group reference is detected.
      */
-    public static function expandMiddleware(array $list): array
+    public static function expandMiddleware(array $list, array $resolving = []): array
     {
         $expanded = [];
 
         foreach ($list as $item) {
             if (isset(self::$middlewareGroups[$item])) {
+                // Cycle detection: check if this group is already being resolved
+                if (isset($resolving[$item])) {
+                    throw new \RuntimeException(
+                        "Circular middleware group reference detected: '{$item}' "
+                        . 'is referenced recursively. Check your middlewareGroups configuration.'
+                    );
+                }
+
+                $resolving[$item] = true;
                 $expanded = array_merge(
                     $expanded,
-                    self::expandMiddleware(self::$middlewareGroups[$item])
+                    self::expandMiddleware(self::$middlewareGroups[$item], $resolving)
                 );
+                unset($resolving[$item]);
 
                 continue;
             }
@@ -358,13 +375,6 @@ class Router
         }
     }
 
-    /**
-     * Render a framework error page wrapped in the site layout.
-     *
-     * Passes a rich debug context so the development view can show the
-     * exception, file, line, stack trace, request and environment while
-     * the production view stays minimal.
-     */
     /**
      * Send a route/controller result as the HTTP response.
      *

@@ -8,22 +8,16 @@ use App\Http\Response;
 class HomeController extends Controller
 {
     /**
-     * API root — returns service metadata and available endpoints.
+     * API landing page — renders a browsable welcome page with endpoint docs.
      */
-    public function index(): void
+    public function index(): string
     {
-        Response::json([
-            'name' => config('app.name'),
-            'framework' => 'ZeroPing',
+        return $this->view('welcome', [
+            'title'   => config('app.name', 'API'),
             'version' => \App\Core\Application\App::VERSION,
-            'status' => 'ok',
-            'environment' => config('app.env', 'local'),
-            'endpoints' => [
-                'POST /api/login',
-                'GET /api/users',
-                'GET /api/users/{id}',
-            ],
-        ]);
+            'php'     => PHP_VERSION,
+            'env'     => config('app.env', 'local'),
+        ], null);
     }
 
     /**

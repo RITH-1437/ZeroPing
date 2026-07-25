@@ -68,6 +68,15 @@
                     <p class="text-xs text-zp-desc">Creator &amp; Maintainer</p>
                 </div>
             </div>
+            <div class="rounded-2xl border border-zp-border bg-zp-surface p-5 flex items-center gap-4">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-zp-surface border border-zp-border overflow-hidden">
+                    <img src="/assets/images/lyhor.png" alt="Yong Lyhor" class="h-12 w-12 object-cover">
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-zp-ink">Yong Lyhor</p>
+                    <p class="text-xs text-zp-desc">Contributor &amp; Supportor</p>
+                </div>
+            </div>
             <div class="rounded-2xl border border-dashed border-zp-border bg-zp-surface/40 p-5 flex items-center gap-4">
                 <div class="flex items-center justify-center h-12 w-12 rounded-full bg-zp-surface border border-zp-border text-zp-muted">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>

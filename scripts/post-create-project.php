@@ -35,14 +35,14 @@ $supportsColor = (function (): bool {
     return true;
 })();
 
-$c = function (string $text, string $code) use ($supportsColor): string {
+$c = static function (string $text, string $code) use ($supportsColor): string {
     return $supportsColor ? "\033[{$code}m{$text}\033[0m" : $text;
 };
 
 $line   = static fn (string $m = '') => print($m . PHP_EOL);
-$ok     = static fn (string $m) => print("  " . $GLOBALS['c']('âœ”', '32') . " {$m}" . PHP_EOL);
-$warnFn = static fn (string $m) => print("  " . $GLOBALS['c']('!', '33') . " {$m}" . PHP_EOL);
-$errFn  = static fn (string $m) => print("  " . $GLOBALS['c']('âœ—', '31') . " {$m}" . PHP_EOL);
+$ok     = static fn (string $m) => print('  ' . $c('✔', '32') . " {$m}" . PHP_EOL);
+$warnFn = static fn (string $m) => print('  ' . $c('⚠', '33') . " {$m}" . PHP_EOL);
+$errFn  = static fn (string $m) => print('  ' . $c('✗', '31') . " {$m}" . PHP_EOL);
 
 $warnings = [];
 $errors   = [];
@@ -52,18 +52,18 @@ $errors   = [];
  */
 $line('');
 $line($c('  ZeroPing installer', '1;36'));
-$line($c('  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€', '90'));
+$line($c('  ───────────────────────────────', '90'));
 $line('');
 
-/* â”€â”€ 1. Verify PHP version â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* 1. Verify PHP version */
 if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
     $ok('PHP ' . PHP_VERSION);
 } else {
-    $errFn('PHP ' . PHP_VERSION . ' detected â€” ZeroPing requires PHP 8.1 or higher.');
+    $errFn('PHP ' . PHP_VERSION . ' detected — ZeroPing requires PHP 8.1 or higher.');
     $errors[] = 'Upgrade PHP to 8.1+ and re-run: composer create-project rith-1437/zeroping';
 }
 
-/* â”€â”€ 2. Verify required extensions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* 2. Verify required extensions */
 $required = ['pdo', 'mbstring', 'json', 'ctype', 'tokenizer', 'fileinfo', 'openssl', 'hash'];
 $missing  = array_values(array_filter($required, static fn ($ext) => !extension_loaded($ext)));
 
@@ -79,20 +79,20 @@ if (!extension_loaded('pdo_mysql') && !extension_loaded('pdo_sqlite')) {
     $warnings[] = 'Install a PDO driver before connecting to a database.';
 }
 
-/* â”€â”€ 3. Verify Composer version â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-$composerVer = defined('Composer\\Composer::VERSION') ? \Composer\Composer::VERSION : null;
+/* 3. Verify Composer version */
+$composerVer = defined('Composer\Composer::VERSION') ? \Composer\Composer::VERSION : null;
 if ($composerVer !== null && $composerVer !== '@package_version@') {
     if (version_compare($composerVer, '2.0.0', '>=')) {
         $ok('Composer ' . $composerVer);
     } else {
-        $warnFn('Composer ' . $composerVer . ' detected â€” Composer 2.x is recommended.');
+        $warnFn('Composer ' . $composerVer . ' detected — Composer 2.x is recommended.');
         $warnings[] = 'Upgrade Composer: composer self-update';
     }
 } else {
     $ok('Composer detected');
 }
 
-/* â”€â”€ 4. Create writable runtime directories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* 4. Create writable runtime directories */
 $dirs = [
     'storage/cache',
     'storage/cache/views',
@@ -117,7 +117,7 @@ if ($dirOk) {
     $ok('Runtime directories are writable');
 }
 
-/* â”€â”€ 5. Create .env from .env.example â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* 5. Create .env from .env.example */
 $envPath     = $root . '/.env';
 $examplePath = $root . '/.env.example';
 
@@ -135,7 +135,7 @@ if (!file_exists($envPath) && file_exists($examplePath)) {
     $warnings[] = 'Create a .env file before running the application.';
 }
 
-/* ── 6. Personalize project metadata ────────────────────────────────────────────────────────── */
+/* 6. Personalize project metadata */
 $autoloadPath = $root . '/vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
@@ -163,6 +163,7 @@ if (file_exists($autoloadPath)) {
         }
     }
 }
+
 if (file_exists($envPath)) {
     $env = (string) file_get_contents($envPath);
 
@@ -221,13 +222,13 @@ if ($result !== null && (str_contains($result, 'Generated') || str_contains($res
     $warnings[] = 'Run: composer dump-autoload';
 }
 
-/* â”€â”€ Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Summary */
 $line('');
 
 if ($errors !== []) {
     $line($c('  Installation completed with errors:', '1;31'));
     foreach (array_unique($errors) as $e) {
-        $line('    â€¢ ' . $e);
+        $line('    ✗ ' . $e);
     }
     $line('');
     $line('  Run ' . $c('php zero doctor', '36') . ' after resolving the issues above.');
@@ -236,9 +237,9 @@ if ($errors !== []) {
 }
 
 if ($warnings !== []) {
-    $line($c('  Installation complete â€” with a few notes:', '1;33'));
+    $line($c('  Installation complete, with a few notes:', '1;33'));
     foreach (array_unique($warnings) as $w) {
-        $line('    â€¢ ' . $w);
+        $line('    ⚠ ' . $w);
     }
     $line('');
 }
@@ -252,10 +253,10 @@ if (file_exists($autoloadPath)) {
             $appVersion = \App\Core\Application\App::VERSION;
             $envContent = file_exists($root . '/.env') ? file_get_contents($root . '/.env') : '';
             $envVars = [];
-            foreach (explode("\n", $envContent ?: '') as $line) {
-                $line = trim($line);
-                if ($line !== '' && !str_starts_with($line, '#')) {
-                    $parts = explode('=', $line, 2);
+            foreach (explode("\n", $envContent ?: '') as $l) {
+                $l = trim($l);
+                if ($l !== '' && !str_starts_with($l, '#')) {
+                    $parts = explode('=', $l, 2);
                     if (count($parts) === 2) {
                         $envVars[$parts[0]] = $parts[1];
                     }
@@ -279,15 +280,15 @@ if (file_exists($autoloadPath)) {
 }
 
 if (!$rendererLoaded) {
-    $line($c('  âœ” ZeroPing is ready!', '1;32'));
+    $line($c('  ✔ ZeroPing is ready!', '1;32'));
     $line('');
     $line('  Next steps:');
     $line('    ' . $c('php zero serve', '36') . '     Start the development server');
     $line('    ' . $c('php zero install', '36') . '   Run the interactive setup wizard (optional)');
     $line('    ' . $c('php zero doctor', '36') . '    Verify your environment any time');
     $line('');
-    $line('  Then open ' . $c('http://localhost:1437', '36') . ' in your browser.');
+    $line('  Then open ' . $c('http://127.0.0.1:1437', '36') . ' in your browser.');
     $line('');
-    $line('  Documentation: ' . $c('https://github.com/RITH-1437/ZeroPing/tree/main/docs', '90'));
+    $line('  Documentation: ' . $c('https://zero-ping.duckdns.org/docs/introduction', '90'));
     $line('');
 }

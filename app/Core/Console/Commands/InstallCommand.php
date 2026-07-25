@@ -100,7 +100,7 @@ class InstallCommand extends Command
             : $this->confirm('Enable debug mode?', false);
         $this->env['APP_DEBUG'] = $debug ? 'true' : 'false';
 
-        $url = $this->ask('Application URL', $this->env['APP_URL'] ?? 'http://localhost:1437');
+        $url = $this->ask('Application URL', $this->env['APP_URL'] ?? 'http://127.0.0.1:1437');
         $this->env['APP_URL'] = $url;
 
         $timezone = $this->ask('Application timezone', $this->env['APP_TIMEZONE'] ?? date_default_timezone_get());
@@ -232,8 +232,8 @@ class InstallCommand extends Command
         // Application URL
         $url = trim($this->env['APP_URL'] ?? '');
         if ($url === '' || !preg_match('#^https?://#i', $url)) {
-            $this->env['APP_URL'] = 'http://localhost:1437';
-            $fixed[] = 'APP_URL → http://localhost:1437';
+            $this->env['APP_URL'] = 'http://127.0.0.1:1437';
+            $fixed[] = 'APP_URL → http://127.0.0.1:1437';
         }
 
         // Timezone
@@ -359,7 +359,7 @@ class InstallCommand extends Command
         $this->output->writeln('  <fg=yellow>Start the development server:</>');
         $this->output->writeln('    <fg=green>$</> <fg=white>php zero serve</>');
         $this->output->writeln('');
-        $this->output->writeln('  <fg=gray>Then open</> <fg=cyan>' . ($this->env['APP_URL'] ?? 'http://localhost:1437') . '</> <fg=gray>in your browser.</>');
+        $this->output->writeln('  <fg=gray>Then open</> <fg=cyan>' . ($this->env['APP_URL'] ?? 'http://127.0.0.1:1437') . '</> <fg=gray>in your browser.</>');
         $this->output->writeln('  <fg=gray>Verify anytime with</> <fg=cyan>php zero doctor</>');
         $this->output->writeln('');
     }

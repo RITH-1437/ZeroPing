@@ -8,17 +8,22 @@ class HomeController extends Controller
 {
     public function index(): string
     {
-        $posts = [];
+        $migrated = false;
+        $postCount = 0;
+        $latestPosts = [];
         try {
-            $posts = \App\Models\Post::orderBy('created_at', 'desc')->limit(5)->get();
+            $postCount = \App\Models\Post::count();
+            $latestPosts = \App\Models\Post::orderBy('created_at', 'desc')->limit(3)->get();
+            $migrated = true;
         } catch (\Exception $e) {
-            // Database not configured/migrated yet — show an empty list.
-            $posts = [];
+            // Database not configured/migrated yet
         }
 
         return $this->view('home', [
-            'title' => 'Welcome',
-            'posts' => $posts,
+            'title'       => 'Welcome',
+            'migrated'    => $migrated,
+            'postCount'   => $postCount,
+            'latestPosts' => $latestPosts,
         ], 'app');
     }
 }

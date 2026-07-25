@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Mail\Drivers;
 
@@ -16,12 +17,23 @@ class SMTPDriver implements MailDriver
 
     public function send(Mailable $mailable): bool
     {
-        // This is a simplified implementation. A real implementation would
-        // use a library like PHPMailer or Swift Mailer.
         $to = implode(', ', $mailable->getTo());
         $subject = $mailable->getSubject();
         $body = $mailable->getBody();
-        $headers = 'From: ' . $this->config['from']['address'];
+
+        $fromAddress = $this->config['from']['address'] ?? 'no-reply@localhost';
+        $fromName = $this->config['from']['name'] ?? '';
+
+        $subject = str_replace(["\r", "\n"], '', $subject);
+        $fromAddress = str_replace(["\r", "\n"], '', $fromAddress);
+
+        $headers = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-Type: text/html; charset=UTF-8' . "\r\n";
+        if ($fromName !== '') {
+            $headers .= 'From: ' . $fromName . ' <' . $fromAddress . '>' . "\r\n";
+        } else {
+            $headers .= 'From: ' . $fromAddress . "\r\n";
+        }
 
         Log::info("Sending email to {$to} with subject '{$subject}' using SMTP driver.");
 

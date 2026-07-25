@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\ORM;
 
 use ArrayAccess;
@@ -286,6 +288,27 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         });
     }
 
+    public function pop(): mixed
+    {
+        return array_pop($this->items);
+    }
+
+    public function push(mixed $value): static
+    {
+        $this->items[] = $value;
+        return $this;
+    }
+
+    public function reverse(): static
+    {
+        return new static(array_reverse($this->items));
+    }
+
+    public function implode(string $glue): string
+    {
+        return implode($glue, $this->items);
+    }
+
     /**
      * Get the number of items in the collection.
      *
@@ -414,6 +437,60 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function offsetUnset($offset): void
     {
         unset($this->items[$offset]);
+    }
+
+    protected function operatorForWhere(string $key, string $operator, mixed $value = null): callable
+    {
+        if (func_num_args() === 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+
+        return function ($item) use ($key, $operator, $value) {
+            $retrieved = $this->data_get($item, $key);
+            return match ($operator) {
+                '=' => $retrieved == $value,
+                '==' => $retrieved == $value,
+                '!=' => $retrieved != $value,
+                '<>' => $retrieved != $value,
+                '<' => $retrieved < $value,
+                '>' => $retrieved > $value,
+                '<=' => $retrieved <= $value,
+                '>=' => $retrieved >= $value,
+                '===' => $retrieved === $value,
+                '!==' => $retrieved !== $value,
+                default => $retrieved == $value,
+            };
+        };
+    }
+
+    protected function data_get(mixed $target, string $key, mixed $default = null): mixed
+    {
+        if (is_array($target)) {
+            return $target[$key] ?? $default;
+        }
+
+        if (is_object($target)) {
+            return $target->{$key} ?? $default;
+        }
+
+        return $default;
+    }
+
+    protected function useAsCallable(mixed $value): bool
+    {
+        return is_callable($value);
+    }
+
+    protected function valueRetriever(callable|string $value): callable
+    {
+        if (is_callable($value)) {
+            return $value;
+        }
+
+        return function ($item) use ($value) {
+            return $this->data_get($item, $value);
+        };
     }
 
     /**

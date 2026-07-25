@@ -1,0 +1,279 @@
+<?php
+
+use App\Core\Application\App;
+use App\Core\Cache\CacheManager;
+use App\Core\Config\Config;
+use App\Core\Debug\Dumper;
+use App\Core\Debug\Performance;
+use App\Core\Filesystem\FilesystemManager;
+use App\Core\Http\ResponseFactory;
+use App\Core\Localization\Translator;
+use App\Core\Queue\Dispatcher;
+use App\Core\Queue\Job;
+use App\Core\Routing\Router;
+use App\Core\Support\Log;
+use App\Core\View\View;
+
+if (!function_exists('class_basename')) {
+
+    function class_basename(string $class): string
+    {
+        return basename(
+            str_replace('\\', '/', $class)
+        );
+    }
+}
+
+if (!function_exists('base_path')) {
+    function base_path(string $path = ''): string
+    {
+        return BASE_PATH . ($path ? '/' . $path : '');
+    }
+}
+
+if (!function_exists('config')) {
+
+    function config(
+        string $key,
+        mixed $default = null
+    ): mixed {
+
+        return \App\Core\Support\Config::get(
+            $key,
+            $default
+        );
+    }
+}
+
+if (!function_exists('cache')) {
+    function cache()
+    {
+        $manager = App::container()->make(CacheManager::class);
+
+        $arguments = func_get_args();
+
+        if (empty($arguments)) {
+            return $manager;
+        }
+
+        if (is_string($arguments[0])) {
+            return $manager->get($arguments[0], $arguments[1] ?? null);
+        }
+
+        if (is_array($arguments[0])) {
+            return $manager->put(key($arguments[0]), reset($arguments[0]), $arguments[1] ?? null);
+        }
+
+        throw new \InvalidArgumentException(
+            'When calling the cache helper with arguments, you must specify a key.'
+        );
+    }
+}
+
+if (!function_exists('storage')) {
+    function storage(?string $disk = null)
+    {
+        return App::container()->make(FilesystemManager::class)->disk($disk);
+    }
+}
+
+if (!function_exists('storage_path')) {
+    function storage_path(string $path = ''): string
+    {
+        return BASE_PATH . '/storage' . ($path ? '/' . $path : '');
+    }
+}
+
+if (!function_exists('database_path')) {
+    function database_path(string $path = ''): string
+    {
+        return BASE_PATH . '/database' . ($path ? '/' . $path : '');
+    }
+}
+
+if (!function_exists('public_path')) {
+    function public_path(string $path = ''): string
+    {
+        return BASE_PATH . '/public' . ($path ? '/' . $path : '');
+    }
+}
+
+if (!function_exists('view')) {
+    function view(string $view, array $data = []): string
+    {
+        return View::render($view, $data);
+    }
+}
+
+if (!function_exists('response')) {
+    /**
+     * Get a response factory, or build a response directly.
+     *
+     *   response()                 -> ResponseFactory
+     *   response($content, 200)   -> Response
+     */
+    function response(mixed $content = null, int $status = 200, array $headers = []): mixed
+    {
+        $factory = new ResponseFactory();
+
+        if (func_num_args() === 0) {
+            return $factory;
+        }
+
+        return $factory->make($content, $status, $headers);
+    }
+}
+
+if (!function_exists('redirect')) {
+    function redirect(string $to, int $status = 302): \App\Core\Http\Response
+    {
+        return (new ResponseFactory())->redirect($to, $status);
+    }
+}
+
+if (!function_exists('trans')) {
+    function trans(string $key, array $replace = [], ?string $locale = null): string
+    {
+        return app(Translator::class)->get($key, $replace, $locale);
+    }
+}
+
+if (!function_exists('__')) {
+    function __(string $key, array $replace = [], ?string $locale = null): string
+    {
+        return trans($key, $replace, $locale);
+    }
+}
+
+if (!function_exists('dispatch')) {
+    function dispatch(Job $job): void
+    {
+        Dispatcher::dispatch($job);
+    }
+}
+
+if (!function_exists('route')) {
+    function route(string $name, array $parameters = [], bool $absolute = true, ?int $expiration = null): string
+    {
+        $router = App::container()->make(Router::class);
+        $url = $router->route($name, $parameters);
+
+        if ($absolute) {
+            $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            ? 'https'
+            : 'http';
+            $url = $scheme . "://{$_SERVER['HTTP_HOST']}" . $url;
+        }
+
+        if ($expiration) {
+            $url .= (strpos($url, '?') === false ? '?' : '&') . 'expires=' . (time() + $expiration);
+        }
+
+        return $url;
+    }
+}
+
+if (!function_exists('app')) {
+    function app($abstract = null)
+    {
+        if (is_null($abstract)) {
+            return App::container();
+        }
+
+        return App::container()->make($abstract);
+    }
+}
+
+if (!function_exists('dd')) {
+    function dd(...$args)
+    {
+        foreach ($args as $arg) {
+            (new Dumper())->dump($arg);
+        }
+        die(1);
+    }
+}
+
+if (!function_exists('dump')) {
+    function dump(...$args)
+    {
+        foreach ($args as $arg) {
+            (new Dumper())->dump($arg);
+        }
+    }
+}
+
+if (!function_exists('ray')) {
+    function ray(...$args): void
+    {
+        (new \App\Core\Debug\Dumper())->dump($args);
+    }
+}
+
+if (!function_exists('logger')) {
+    function logger(?string $message = null, array $context = [])
+    {
+        if (is_null($message)) {
+            return app(Log::class);
+        }
+
+        return app(Log::class)->debug($message, $context);
+    }
+}
+
+if (!function_exists('validator')) {
+    function validator(array $data, array $rules): \App\Core\Validation\Validator
+    {
+        return \App\Core\Validation\Validator::make($data, $rules);
+    }
+}
+
+if (!function_exists('e')) {
+    function e(mixed $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+}
+
+if (!function_exists('env')) {
+    function env(string $key, mixed $default = null): mixed
+    {
+        return $_ENV[$key] ?? getenv($key) ?? $_SERVER[$key] ?? $default;
+    }
+}
+
+if (!function_exists('asset')) {
+    function asset(string $path): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('url')) {
+    function url(?string $path = null): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        if ($path === null) {
+            return $scheme . '://' . $host . ($_SERVER['REQUEST_URI'] ?? '/');
+        }
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('benchmark')) {
+    function benchmark(callable $callback, int $iterations = 1)
+    {
+        $total = 0;
+
+        for ($i = 0; $i < $iterations; $i++) {
+            $start = microtime(true);
+            $callback();
+            $total += microtime(true) - $start;
+        }
+
+        return $total / $iterations;
+    }
+}

@@ -1,0 +1,21 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bannerBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1120"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="bannerAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#4ADE80"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bannerBg)"/>
+  <rect x="60" y="60" width="72" height="72" rx="18" fill="url(#bannerAccent)"/>
+  <text x="96" y="108" font-family="Arial, sans-serif" font-size="44" font-weight="800" fill="#0B1120" text-anchor="middle">Z</text>
+  <text x="150" y="110" font-family="Space Grotesk, Arial, sans-serif" font-size="46" font-weight="700" fill="#F8FAFC" letter-spacing="-0.03em">ZeroPing</text>
+  <text x="60" y="200" font-family="Inter, Arial, sans-serif" font-size="28" fill="#94A3B8" letter-spacing="0.02em">Modern PHP Framework — Fast. Simple. Elegant.</text>
+  <line x1="60" y1="240" x2="500" y2="240" stroke="url(#bannerAccent)" stroke-width="4" stroke-linecap="round"/>
+  <text x="60" y="320" font-family="JetBrains Mono, monospace" font-size="20" fill="#22D3EE">composer create-project rith-1437/zero-ping my-app</text>
+  <text x="60" y="380" font-family="JetBrains Mono, monospace" font-size="18" fill="#4ADE80">cd my-app && php zero serve</text>
+  <text x="60" y="560" font-family="Inter, Arial, sans-serif" font-size="18" fill="#52525B" letter-spacing="0.05em">github.com/rith-1437/zero-ping</text>
+</svg>

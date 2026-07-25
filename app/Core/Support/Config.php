@@ -1,13 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Support;
+
+use App\Core\Config\Config as ConfigFacade;
 
 class Config
 {
     protected static array $items = [];
 
+    /**
+     * Get the underlying config repository, if it has been set up.
+     *
+     * When the app is fully bootstrapped, App\Core\Config\Config holds
+     * a ConfigRepository loaded by App::loadConfig(). We delegate to
+     * that single source of truth so that config reads are consistent
+     * regardless of which Config facade is used.
+     *
+     * Falls back to the static array loaded from files when the
+     * ConfigRepository is not available (e.g. before bootstrap).
+     */
+    protected static function getRepository(): ?\App\Core\Config\ConfigRepository
+    {
+        if (method_exists(ConfigFacade::class, 'getRepository')) {
+            $repo = ConfigFacade::getRepository();
+            if ($repo !== null) {
+                return $repo;
+            }
+        }
+
+        return null;
+    }
+
     public static function get(string $key, $default = null)
     {
+        $repo = static::getRepository();
+        if ($repo !== null) {
+            return $repo->get($key, $default);
+        }
+
+        // Bootstrap fallback: load from files if not yet cached
         if (empty(static::$items)) {
             static::load();
         }
@@ -29,6 +62,11 @@ class Config
 
     public static function all(): array
     {
+        $repo = static::getRepository();
+        if ($repo !== null) {
+            return $repo->all();
+        }
+
         if (empty(static::$items)) {
             static::load();
         }
@@ -45,8 +83,6 @@ class Config
         $configDir = BASE_PATH . '/config';
         $cacheFile = BASE_PATH . '/bootstrap/cache/config.php';
 
-        // Share the compiled config cache produced by App::loadConfig /
-        // config:cache so we don't re-glob the config directory on every boot.
         if (
             is_dir($configDir) && file_exists($cacheFile)
             && filemtime($cacheFile) >= self::configDirMtime($configDir)
@@ -96,6 +132,12 @@ class Config
      */
     public static function set(string $key, $value): void
     {
+        $repo = static::getRepository();
+        if ($repo !== null) {
+            $repo->setValue($key, $value);
+            return;
+        }
+
         if (empty(static::$items)) {
             static::load();
         }

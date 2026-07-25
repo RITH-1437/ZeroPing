@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Queue;
 
@@ -50,6 +51,14 @@ abstract class Job
         ]);
     }
 
+    private static ?array $allowedClasses = null;
+
+    public static function allowClass(string $class): void
+    {
+        self::$allowedClasses ??= [];
+        self::$allowedClasses[] = $class;
+    }
+
     public static function fromPayload(string $payload): ?static
     {
         $data = json_decode($payload, true);
@@ -58,6 +67,9 @@ abstract class Job
         }
         $class = $data['_class'];
         if (!class_exists($class) || !is_subclass_of($class, self::class)) {
+            return null;
+        }
+        if (self::$allowedClasses !== null && !in_array($class, self::$allowedClasses, true)) {
             return null;
         }
         $job = new $class($data['job'] ?? []);

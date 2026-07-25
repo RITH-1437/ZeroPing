@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -8,7 +9,7 @@ use App\Core\Database\Grammar\Grammar;
  * A fluent schema blueprint.
  *
  * Blueprint records what a table should look like (columns, primary key,
- * foreign keys, drops). It does NOT know how to write SQL — that is the
+ * foreign keys, drops). It does NOT know how to write SQL â€” that is the
  * Grammar's job. This is what lets a single migration run unchanged on
  * SQLite, MySQL, MariaDB and PostgreSQL.
  */
@@ -74,7 +75,7 @@ class Blueprint
         return $this->grammar;
     }
 
-    // ── Column definitions ───────────────────────────────────────────────
+    // â”€â”€ Column definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public function id(): static
     {
@@ -146,7 +147,7 @@ class Blueprint
 
     public function decimal(string $name, int $precision = 8, int $scale = 2): ColumnDefinition
     {
-        return $this->addColumn('decimal', $name, (int) ($precision . $scale));
+        return $this->addColumn('decimal', $name, ($precision * 1000) + $scale);
     }
 
     public function float(string $name): ColumnDefinition
@@ -246,7 +247,7 @@ class Blueprint
         return $this;
     }
 
-    // ── Compilation (delegated to the Grammar) ─────────────────────────
+    // â”€â”€ Compilation (delegated to the Grammar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /**
      * @return string[]
@@ -274,7 +275,7 @@ class Blueprint
         return $queries;
     }
 
-    // ── Helpers ─────────────────────────────────────────────────────────
+    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private function addColumn(string $type, string $name, ?int $length = null): ColumnDefinition
     {

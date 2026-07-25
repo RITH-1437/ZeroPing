@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database\Drivers;
 
@@ -7,7 +8,7 @@ use PDO;
 use PDOException;
 
 /**
- * SQLite driver — the default engine for new ZeroPing projects.
+ * SQLite driver â€” the default engine for new ZeroPing projects.
  *
  * Requires zero configuration: a single file (or :memory:) is enough to
  * build a fully working application.

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -83,16 +84,16 @@ class MigrationRunner
             $migrationName = basename($file);
 
             if (in_array($migrationName, $executed, true)) {
-                echo "⏩ {$migrationName}\n";
+                echo "â© {$migrationName}\n";
                 continue;
             }
 
-            echo "🚀 {$migrationName} ... ";
+            echo "ðŸš€ {$migrationName} ... ";
             $this->runUp($file, $batch);
-            echo "Done ✅\n";
+            echo "Done âœ…\n";
         }
 
-        echo PHP_EOL . "🎉 Migration completed successfully." . PHP_EOL;
+        echo PHP_EOL . "ðŸŽ‰ Migration completed successfully." . PHP_EOL;
     }
 
     /**
@@ -132,8 +133,6 @@ class MigrationRunner
                 $this->connection->grammar()->compileInsertMigration(),
                 [$migrationName, $batch]
             );
-        } catch (\Throwable $e) {
-            throw $e;
         }
     }
 
@@ -228,9 +227,9 @@ class MigrationRunner
         if ($maxBatch === 0) {
             echo "Nothing to rollback, running migrations...\n\n";
         } else {
-            echo "⬇️  Rolling back all migrations...\n\n";
+            echo "â¬‡ï¸  Rolling back all migrations...\n\n";
             $this->rollbackBatches($maxBatch);
-            echo PHP_EOL . "🔄 Re-running all migrations..." . PHP_EOL . PHP_EOL;
+            echo PHP_EOL . "ðŸ”„ Re-running all migrations..." . PHP_EOL . PHP_EOL;
         }
 
         $this->run();
@@ -249,7 +248,7 @@ class MigrationRunner
         }
 
         $this->rollbackBatches($lastBatch);
-        echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
+        echo PHP_EOL . "ðŸŽ‰ Rollback completed successfully." . PHP_EOL;
     }
 
     public function reset(): void
@@ -264,9 +263,9 @@ class MigrationRunner
             return;
         }
 
-        echo "⬇️  Rolling back all migrations...\n\n";
+        echo "â¬‡ï¸  Rolling back all migrations...\n\n";
         $this->rollbackBatches($maxBatch);
-        echo PHP_EOL . "🎉 Rollback completed successfully." . PHP_EOL;
+        echo PHP_EOL . "ðŸŽ‰ Rollback completed successfully." . PHP_EOL;
     }
 
     /**
@@ -282,21 +281,21 @@ class MigrationRunner
                 $file = $this->findMigrationFile($migrationName);
 
                 if ($file === null || !file_exists($file)) {
-                    echo "⚠️  File not found: {$migrationName}\n";
+                    echo "âš ï¸  File not found: {$migrationName}\n";
                     continue;
                 }
 
                 $migration = require $file;
 
                 if (!$migration instanceof Migration) {
-                    echo "⚠️  Skipping {$migrationName} (no down() method)\n";
+                    echo "âš ï¸  Skipping {$migrationName} (no down() method)\n";
                 } else {
-                    echo "⬇️  {$migrationName} ... ";
+                    echo "â¬‡ï¸  {$migrationName} ... ";
                     try {
                         $migration->down();
-                        echo "Done ✅\n";
+                        echo "Done âœ…\n";
                     } catch (\Throwable $e) {
-                        echo "Failed ❌\n";
+                        echo "Failed âŒ\n";
                         throw $e;
                     }
                 }
@@ -319,16 +318,16 @@ class MigrationRunner
             $this->disableForeignKeys();
             foreach ($tables as $table) {
                 $this->connection->statement($this->connection->grammar()->compileDrop($table));
-                echo "🗑️  Dropped table: {$table}\n";
+                echo "ðŸ—‘ï¸  Dropped table: {$table}\n";
             }
             $this->enableForeignKeys();
         }
 
-        echo PHP_EOL . "🔄 Re-running all migrations..." . PHP_EOL . PHP_EOL;
+        echo PHP_EOL . "ðŸ”„ Re-running all migrations..." . PHP_EOL . PHP_EOL;
         $this->run();
     }
 
-    // ── Grammar helpers ──────────────────────────────────────────────────
+    // â”€â”€ Grammar helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private function grammar(): Grammar
     {

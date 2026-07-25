@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Policies;
+
+class {{ class }}
+{
+    // Add policy methods for your model, for example:
+    //
+    // public function viewAny(/* mixed $user */): bool
+    // {
+    //     return true;
+    // }
+    //
+    // public function create(/* mixed $user */): bool
+    // {
+    //     return true;
+    // }
+    //
+    // public function update(/* mixed $user, Model $model */): bool
+    // {
+    //     return true;
+    // }
+}

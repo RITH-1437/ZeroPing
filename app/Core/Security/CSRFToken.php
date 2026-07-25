@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Security;
 
@@ -22,6 +23,6 @@ class CSRFToken
 
     public static function field(): string
     {
-        return '<input type="hidden" name="_token" value="' . static::get() . '">';
+        return '<input type="hidden" name="_token" value="' . htmlspecialchars(static::get(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Filesystem\Drivers;
 
 use App\Core\Filesystem\Exceptions\FilesystemException;
@@ -11,7 +13,7 @@ class LocalDriver implements FilesystemDriver
 
     public function __construct(array $config)
     {
-        $this->root = $config['root'];
+        $this->root = rtrim(str_replace('/', DIRECTORY_SEPARATOR, $config['root']), DIRECTORY_SEPARATOR);
     }
 
     public function put(string $path, $contents): bool
@@ -189,9 +191,79 @@ class LocalDriver implements FilesystemDriver
         return rmdir($location);
     }
 
+    /**
+     * Resolve a user-supplied path relative to the configured root,
+     * with path-traversal protection.
+     *
+     * The resolved absolute path must start with the root directory;
+     * if it does not, the request is rejected.
+     *
+     * @param string $path
+     * @return string
+     *
+     * @throws FilesystemException When the resolved path escapes the root.
+     */
     protected function applyPathPrefix(string $path): string
     {
-        return rtrim($this->root, '/') . ($path !== '' ? '/' . ltrim($path, '/') : '');
+        $fullPath = $this->root . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $path), '\\/');
+
+        // Resolve ".." and "." segments via realpath when the file exists,
+        // or via a manual resolution for paths that do not yet exist.
+        $realRoot = realpath($this->root);
+        if ($realRoot === false) {
+            throw new FilesystemException("Root directory does not exist: {$this->root}");
+        }
+
+        if (file_exists($fullPath)) {
+            $resolved = realpath($fullPath);
+            if ($resolved === false || !str_starts_with($resolved, $realRoot)) {
+                throw new FilesystemException(
+                    "Path traversal detected: {$path} resolves outside the root directory."
+                );
+            }
+            return $resolved;
+        }
+
+        // For paths that do not yet exist (e.g. for put/makeDirectory),
+        // manually resolve parent ".." segments to prevent escapes.
+        $resolved = $this->resolveWithoutRealpath($fullPath, $realRoot);
+        if (!str_starts_with($resolved, $realRoot)) {
+            throw new FilesystemException(
+                "Path traversal detected: {$path} resolves outside the root directory."
+            );
+        }
+
+        return $resolved;
+    }
+
+    /**
+     * Manually resolve a path without requiring the file to exist.
+     *
+     * @param string $path
+     * @param string $root
+     * @return string
+     */
+    protected function resolveWithoutRealpath(string $path, string $root): string
+    {
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $resolved = [];
+
+        foreach ($parts as $part) {
+            if ($part === '..') {
+                array_pop($resolved);
+            } elseif ($part !== '.' && $part !== '') {
+                $resolved[] = $part;
+            }
+        }
+
+        $resolvedPath = implode(DIRECTORY_SEPARATOR, $resolved);
+
+        // Ensure we never escape the root even if the stack underflows
+        if (!str_starts_with($resolvedPath, $root)) {
+            return $root; // Fall back to root as a safety measure
+        }
+
+        return $resolvedPath;
     }
 
     protected function ensureDirectoryExists(string $path): void

@@ -214,7 +214,7 @@ php zero key:generate
 php zero serve
 ```
 
-Then open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+Then open [http://127.0.0.1:1437](http://127.0.0.1:1437) in your browser.
 
 ## Useful Commands
 

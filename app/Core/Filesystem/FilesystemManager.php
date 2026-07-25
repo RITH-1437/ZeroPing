@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Filesystem;
 
@@ -12,7 +13,7 @@ class FilesystemManager
 
     public function __construct()
     {
-        // Drivers are resolved lazily via resolve() → create*Driver() methods
+        // Drivers are resolved lazily via resolve() â†’ create*Driver() methods
     }
 
     public function disk(?string $name = null): FilesystemRepository

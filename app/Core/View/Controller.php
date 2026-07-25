@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\View;
 
@@ -28,13 +29,28 @@ class Controller
 
     protected function redirect(string $url): never
     {
+        $parsed = parse_url($url);
+        if ($parsed === false) {
+            $url = '/';
+        }
         header('Location: ' . $url);
         exit;
     }
 
     protected function redirectBack(string $fallback = '/'): never
     {
-        $url = $_SERVER['HTTP_REFERER'] ?? $fallback;
+        $url = $fallback;
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $referer = $_SERVER['HTTP_REFERER'];
+            $parsed = parse_url($referer);
+            if ($parsed !== false) {
+                $host = $parsed['host'] ?? '';
+                $expected = parse_url(($_ENV['APP_URL'] ?? 'http://localhost'), PHP_URL_HOST) ?? 'localhost';
+                if ($host === $expected || $host === '') {
+                    $url = $referer;
+                }
+            }
+        }
         header('Location: ' . $url);
         exit;
     }

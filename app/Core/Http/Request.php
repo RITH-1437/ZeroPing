@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Http;
 
@@ -37,7 +38,7 @@ class Request
         return new static($_GET, $_POST, $_SERVER, $_FILES);
     }
 
-    // ── Static proxy helpers ─────────────────────────────────────────────────
+    // â”€â”€ Static proxy helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /**
      * Get the HTTP method of the current request.
@@ -186,7 +187,7 @@ class Request
         return $key === null ? $data : ($data[$key] ?? $default);
     }
 
-    // ── Instance helpers ──────────────────────────────────────────────────────
+    // â”€â”€ Instance helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /**
      * Retrieve a value from the request input.
@@ -223,7 +224,7 @@ class Request
         return strtoupper($this->server['REQUEST_METHOD'] ?? 'GET');
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
+    // â”€â”€ Private helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private function parseHeaders(array $server): array
     {

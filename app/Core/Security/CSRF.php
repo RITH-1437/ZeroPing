@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Security;
 
@@ -21,8 +22,10 @@ class CSRF
     public static function check(string $token): bool
     {
         $tokens = Session::get('_tokens', []);
-        foreach ($tokens as $stored) {
+        foreach ($tokens as $i => $stored) {
             if (hash_equals($stored, $token)) {
+                unset($tokens[$i]);
+                Session::set('_tokens', array_values($tokens));
                 return true;
             }
         }

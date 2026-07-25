@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -12,7 +13,7 @@ use PDO;
  * Wraps the PDO instance together with the driver that built it and the
  * grammar used to compile SQL for this engine. Application code (models,
  * query builder, migrations) only ever talks to this object or the
- * DatabaseManager — never to a raw driver or DSN.
+ * DatabaseManager â€” never to a raw driver or DSN.
  */
 class Connection
 {

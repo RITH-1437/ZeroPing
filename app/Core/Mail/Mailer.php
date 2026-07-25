@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Mail;
 
@@ -34,7 +35,7 @@ class Mailer
     {
         $message = new Message();
         $callback($message);
-        // Raw send — log the message if driver supports it, otherwise no-op
+        // Raw send â€” log the message if driver supports it, otherwise no-op
         if (method_exists($this->driver, 'sendRaw')) {
             return $this->driver->sendRaw($message, $text);
         }

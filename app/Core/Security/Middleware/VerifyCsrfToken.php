@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Security\Middleware;
 
 use App\Core\Http\Request;
@@ -10,14 +12,23 @@ class VerifyCsrfToken
 {
     protected array $except = [];
 
-    public function handle(\Closure $next)
+    /**
+     * Handle the CSRF token verification.
+     *
+     * If the request is a read operation, is in the exception list,
+     * or the CSRF tokens match, the request is allowed through.
+     * Otherwise, a SecurityException is thrown.
+     *
+     * @throws SecurityException When the CSRF token does not match.
+     */
+    public function handle(): void
     {
         if (
             $this->isReading() ||
             $this->inExceptArray() ||
             $this->tokensMatch()
         ) {
-            return $next(new Request());
+            return;
         }
 
         throw new SecurityException('CSRF token mismatch.');

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -13,7 +14,7 @@ use App\Core\Database\Drivers\SQLiteDriver;
  *
  * This is the only place that maps a connection name to a concrete driver
  * class. Adding SQL Server / Oracle later means extending this map (and the
- * DriverInterface implementations) — the ORM is unaffected.
+ * DriverInterface implementations) â€” the ORM is unaffected.
  */
 class ConnectionFactory
 {

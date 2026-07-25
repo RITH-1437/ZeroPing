@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -10,7 +11,7 @@ use Closure;
  * Every operation is routing through the DatabaseManager, so it works on any
  * configured driver. When you obtain an instance via `Schema::connection($name)`
  * or `Schema::connection($connection)` every following call (create / table /
- * drop / hasTable) uses that same connection — never a different one.
+ * drop / hasTable) uses that same connection â€” never a different one.
  */
 class Schema
 {
@@ -64,7 +65,7 @@ class Schema
     }
 
     /**
-     * Alter an existing table (add / drop columns, foreign keys, …).
+     * Alter an existing table (add / drop columns, foreign keys, â€¦).
      */
     public static function table(string $table, Closure $callback): void
     {

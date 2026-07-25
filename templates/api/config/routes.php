@@ -2,7 +2,7 @@
 
 use App\Core\Routing\Router;
 
-Router::get('/', [\App\Core\Console\WelcomeController::class, 'index']);
+Router::get('/', [\App\Controllers\HomeController::class, 'index']);
 Router::get('/health', [\App\Controllers\HomeController::class, 'health']);
 
 Router::post('/api/login', [\App\Controllers\AuthController::class, 'login']);

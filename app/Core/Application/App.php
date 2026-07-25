@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Application;
 
@@ -67,7 +68,7 @@ class App
             \App\Core\Config\Env::load($this->basePath . '/.env');
         }
 
-        // Define DB/app constants — config/constants.php handles runtime checks
+        // Define DB/app constants â€” config/constants.php handles runtime checks
 
         // Load config files into repository
         $this->loadConfig();

@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Events;
+
+use App\Core\Events\Event;
+
+class {{ class }} extends Event
+{
+    public function __construct(
+        // public mixed $data,
+    ) {
+    }
+}

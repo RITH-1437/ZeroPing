@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Core\View\Controller;
+use App\Core\Security\Hash;
+use App\Core\Support\Log;
+
+class {{ class }} extends Controller
+{
+    public function showRegisterForm(): void
+    {
+        $this->view('auth/register');
+    }
+
+    public function register(): void
+    {
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $passwordConfirmation = $_POST['password_confirmation'] ?? '';
+
+        $errors = [];
+
+        if (empty($name)) {
+            $errors[] = 'Name is required.';
+        }
+
+        if (empty($email)) {
+            $errors[] = 'Email is required.';
+        }
+
+        if (empty($password)) {
+            $errors[] = 'Password is required.';
+        }
+
+        if ($password !== $passwordConfirmation) {
+            $errors[] = 'Passwords do not match.';
+        }
+
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            $this->redirect('/register');
+        }
+
+        // $user = User::create([
+        //     'name'     => $name,
+        //     'email'    => $email,
+        //     'password' => Hash::make($password),
+        // ]);
+        //
+        // $_SESSION['user_id'] = $user->id;
+
+        Log::info("User registered: {$email}");
+
+        $this->redirect('/');
+    }
+
+    public function showLoginForm(): void
+    {
+        $this->view('auth/login');
+    }
+
+    public function login(): void
+    {
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            $_SESSION['errors'][] = 'Email and password are required.';
+            $this->redirect('/login');
+        }
+
+        // $user = User::where('email', $email)->first();
+        //
+        // if (!$user || !Hash::check($password, $user->password)) {
+        //     $_SESSION['errors'][] = 'Invalid credentials.';
+        //     $this->redirect('/login');
+        // }
+        //
+        // $_SESSION['user_id'] = $user->id;
+
+        Log::info("User logged in: {$email}");
+
+        $this->redirect('/');
+    }
+
+    public function logout(): void
+    {
+        unset($_SESSION['user_id']);
+        session_destroy();
+        $this->redirect('/');
+    }
+}

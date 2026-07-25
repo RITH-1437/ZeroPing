@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -24,6 +25,8 @@ class QueryBuilder
     protected array $groupBy = [];
 
     protected array $having = [];
+
+    protected array $joins = [];
 
     protected ?int $limit = null;
 
@@ -105,6 +108,22 @@ class QueryBuilder
         $this->where[] = "{$column} IS NOT NULL";
 
         return $this;
+    }
+
+    public function join(string $table, string $first, string $operator, string $second, string $type = 'INNER'): static
+    {
+        $this->joins[] = "{$type} JOIN {$table} ON {$first} {$operator} {$second}";
+        return $this;
+    }
+
+    public function leftJoin(string $table, string $first, string $operator, string $second): static
+    {
+        return $this->join($table, $first, $operator, $second, 'LEFT');
+    }
+
+    public function rightJoin(string $table, string $first, string $operator, string $second): static
+    {
+        return $this->join($table, $first, $operator, $second, 'RIGHT');
     }
 
     public function orderBy(
@@ -238,12 +257,31 @@ class QueryBuilder
 
     public function count(): int
     {
-        return count($this->get());
+        $columns = $this->columns;
+        $this->columns = ['COUNT(*) as aggregate'];
+
+        $stmt = $this->db->prepare($this->toSql());
+        $stmt->execute($this->bindings);
+        $result = (int) $stmt->fetchColumn();
+
+        $this->columns = $columns;
+        $this->reset();
+
+        return $result;
     }
 
     public function exists(): bool
     {
-        return $this->first() !== null;
+        $this->limit(1);
+        $this->columns = ['1 as exists_result'];
+
+        $stmt = $this->db->prepare($this->toSql());
+        $stmt->execute($this->bindings);
+        $result = $stmt->fetchColumn() !== false;
+
+        $this->reset();
+
+        return $result;
     }
 
     public function sum($column)
@@ -447,6 +485,7 @@ class QueryBuilder
         $this->orderBy = [];
         $this->groupBy = [];
         $this->having = [];
+        $this->joins = [];
         $this->limit = null;
         $this->offset = null;
         $this->softDeletes = false;
@@ -457,6 +496,10 @@ class QueryBuilder
     public function toSql(): string
     {
         $sql = "SELECT " . implode(', ', $this->columns) . " FROM {$this->table}";
+
+        if (!empty($this->joins)) {
+            $sql .= " " . implode(' ', $this->joins);
+        }
 
         if ($this->softDeletes === true) {
             $this->where[] = "deleted_at IS NULL";

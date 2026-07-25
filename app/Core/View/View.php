@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\View;
 
@@ -51,7 +52,9 @@ class View
             }
         }
 
-        extract($data);
+        foreach ($data as $key => $val) {
+            ${$key} = $val;
+        }
 
         $viewFile = self::findView($view);
         if ($viewFile === null) {
@@ -62,7 +65,7 @@ class View
         require $viewFile;
         $content = ob_get_clean();
 
-        // A null layout means "render the view as-is" — used for complete,
+        // A null layout means "render the view as-is" â€” used for complete,
         // self-contained pages (e.g. the generated-project welcome page)
         // that already include their own <!DOCTYPE html> document.
         if ($layout === null) {

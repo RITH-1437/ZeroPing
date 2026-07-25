@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($title ?? 'Blog') ?> — <?= e(config('app.name')) ?></title>
+    <title><?= e($title ?? 'Blog') ?> â€” <?= e(config('app.name')) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen">

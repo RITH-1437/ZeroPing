@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Security;
 
@@ -8,19 +9,27 @@ class Signature
 {
     public static function sign(string $url): string
     {
-        $key = Config::get('security.key');
-        $signature = hash_hmac('sha256', $url, $key);
+        $key = self::getKey();
 
-        if (strpos($url, '?') === false) {
-            return $url . '?signature=' . $signature;
+        if (str_contains($url, '?')) {
+            $separator = '&';
+        } else {
+            $separator = '?';
         }
 
-        return $url . '&signature=' . $signature;
+        $signature = hash_hmac('sha256', $url, $key);
+        return $url . $separator . 'signature=' . $signature;
     }
 
     public static function validate(string $url): bool
     {
+        $key = self::getKey();
+
         $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+            return false;
+        }
+
         $signature = '';
         if (isset($parts['query'])) {
             parse_str($parts['query'], $query);
@@ -31,14 +40,27 @@ class Signature
             }
         }
 
-        $urlWithoutSignature = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-        if (isset($parts['query']) && $parts['query']) {
+        $urlWithoutSignature = strtolower($parts['scheme']) . '://' . strtolower($parts['host']);
+        if (isset($parts['port'])) {
+            $urlWithoutSignature .= ':' . $parts['port'];
+        }
+        $urlWithoutSignature .= $parts['path'] ?? '';
+        if (!empty($parts['query'])) {
             $urlWithoutSignature .= '?' . $parts['query'];
         }
 
-        $key = Config::get('security.key');
         $expectedSignature = hash_hmac('sha256', $urlWithoutSignature, $key);
-
         return hash_equals($expectedSignature, $signature);
+    }
+
+    private static function getKey(): string
+    {
+        $key = Config::get('security.key');
+        if ($key === '' || $key === null) {
+            throw new \RuntimeException(
+                'Application key is not set. Run "php zero key:generate" to generate a secure key.'
+            );
+        }
+        return $key;
     }
 }

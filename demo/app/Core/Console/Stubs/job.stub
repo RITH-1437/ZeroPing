@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Jobs;
+
+use App\Core\Queue\Job;
+
+class {{ class }} extends Job
+{
+    public int $tries = 3;
+    public int $timeout = 120;
+
+    public function handle(): void
+    {
+        // TODO: implement {{ class }} logic
+    }
+}

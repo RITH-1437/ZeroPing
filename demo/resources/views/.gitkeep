@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Placeholder for application views.
+ *
+ * ZeroPing resolves views from the project root `views/` directory by default
+ * (see App\Core\View\View). This `resources/views` directory is provided as a
+ * conventional location you may use for IDE organisation; point your
+ * controllers at it by adjusting the view path in your service provider if
+ * you prefer this layout.
+ */

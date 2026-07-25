@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Validation\Rules;
 
@@ -14,7 +15,11 @@ class FileRule extends AbstractRule
             return false;
         }
 
-        return $value['error'] === UPLOAD_ERR_OK;
+        if ($value['error'] !== UPLOAD_ERR_OK) {
+            return false;
+        }
+
+        return is_uploaded_file($value['tmp_name']);
     }
 
     public function message(string $field, array $parameters = []): string

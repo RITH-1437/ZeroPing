@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Mail;
 
@@ -14,7 +15,7 @@ class MailManager
 
     public function __construct()
     {
-        // Drivers are resolved lazily via resolve() → create*Driver() methods
+        // Drivers are resolved lazily via resolve() â†’ create*Driver() methods
     }
 
     public function mailer(?string $name = null): Mailer

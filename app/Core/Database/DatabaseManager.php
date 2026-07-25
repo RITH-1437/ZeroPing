@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Core\Database;
 
@@ -7,8 +8,8 @@ namespace App\Core\Database;
  * the framework use to reach a database.
  *
  * Connections are created lazily (through the ConnectionFactory) and cached.
- * To support a new engine (SQL Server, Oracle, …) you register one more
- * driver in the factory — nothing else in the framework has to change.
+ * To support a new engine (SQL Server, Oracle, â€¦) you register one more
+ * driver in the factory â€” nothing else in the framework has to change.
  */
 class DatabaseManager
 {
