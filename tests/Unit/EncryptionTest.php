@@ -12,14 +12,12 @@ class EncryptionTest extends \Tests\TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $ref = new \ReflectionProperty(\App\Core\Support\Config::class, 'items');
-        $ref->setValue(null, ['security' => ['key' => '0123456789abcdef0123456789abcdef']]);
+        \App\Core\Support\Config::set('security.key', '0123456789abcdef0123456789abcdef');
     }
 
     protected function tearDown(): void
     {
-        $ref = new \ReflectionProperty(\App\Core\Support\Config::class, 'items');
-        $ref->setValue(null, []);
+        \App\Core\Support\Config::set('security.key', '');
         parent::tearDown();
     }
 
@@ -66,14 +64,14 @@ class EncryptionTest extends \Tests\TestCase
         }
     }
 
-    public function testEncryptedDataContainsDelimiter(): void
+    public function testEncryptedDataHasValidGcmFormat(): void
     {
         $encrypted = Encryption::encrypt('test');
 
         $decoded = base64_decode($encrypted, true);
 
         $this->assertNotFalse($decoded);
-        $this->assertStringContainsString('::', $decoded);
+        $this->assertGreaterThanOrEqual(29, strlen($decoded));
     }
 
     public function testMakeAndCheckPasswordHash(): void

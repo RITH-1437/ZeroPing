@@ -19,8 +19,10 @@ class SessionGuard
             ini_set('session.cookie_httponly', '1');
             ini_set('session.cookie_samesite', 'Lax');
             ini_set('session.use_trans_sid', '0');
-            ini_set('session.sid_length', '48');
-            ini_set('session.sid_bits_per_character', '6');
+            if (\PHP_VERSION_ID < 80500) {
+                ini_set('session.sid_length', '48');
+                ini_set('session.sid_bits_per_character', '6');
+            }
 
             session_start();
         }
