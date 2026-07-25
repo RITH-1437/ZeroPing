@@ -120,20 +120,18 @@ class MigrationRunner
         $migrationName = basename($file);
         $migration = require $file;
 
-        try {
-            if ($migration instanceof Migration) {
-                $migration->up();
-            } elseif (is_string($migration)) {
-                foreach (array_filter(array_map('trim', explode(';', $migration))) as $sql) {
-                    $this->connection->statement($sql);
-                }
+        if ($migration instanceof Migration) {
+            $migration->up();
+        } elseif (is_string($migration)) {
+            foreach (array_filter(array_map('trim', explode(';', $migration))) as $sql) {
+                $this->connection->statement($sql);
             }
-
-            $this->connection->statement(
-                $this->connection->grammar()->compileInsertMigration(),
-                [$migrationName, $batch]
-            );
         }
+
+        $this->connection->statement(
+            $this->connection->grammar()->compileInsertMigration(),
+            [$migrationName, $batch]
+        );
     }
 
     private function createMigrationTable(): void
