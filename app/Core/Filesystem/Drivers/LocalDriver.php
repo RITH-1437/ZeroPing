@@ -256,11 +256,12 @@ class LocalDriver implements FilesystemDriver
             }
         }
 
-        $resolvedPath = implode(DIRECTORY_SEPARATOR, $resolved);
+        // Preserve leading slash from absolute paths
+        $prefix = str_starts_with($path, DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '';
+        $resolvedPath = $prefix . implode(DIRECTORY_SEPARATOR, $resolved);
 
-        // Ensure we never escape the root even if the stack underflows
         if (!str_starts_with($resolvedPath, $root)) {
-            return $root; // Fall back to root as a safety measure
+            return $root;
         }
 
         return $resolvedPath;
