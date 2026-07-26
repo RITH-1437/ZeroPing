@@ -62,11 +62,13 @@ class WelcomeController extends Controller
 
         // Secondary doc links
         $html .= "<div class=\"zp-links\">\n";
-        foreach ([
+        foreach (
+            [
             'Features'      => 'https://zero-ping.duckdns.org/features',
             'Installation'  => 'https://zero-ping.duckdns.org/installation',
             'API Reference' => 'https://zero-ping.duckdns.org/api',
-        ] as $label => $url) {
+            ] as $label => $url
+        ) {
             $html .= "<a href=\"" . htmlspecialchars($url, ENT_QUOTES) . "\" rel=\"noopener\">" . htmlspecialchars($label, ENT_QUOTES) . "</a>\n";
         }
         $html .= "</div>\n";
