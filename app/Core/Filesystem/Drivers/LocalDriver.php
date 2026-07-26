@@ -224,10 +224,8 @@ class LocalDriver implements FilesystemDriver
             return $resolved;
         }
 
-        // For paths that do not yet exist (e.g. for put/makeDirectory),
-        // manually resolve parent ".." segments to prevent escapes.
-        $resolved = $this->resolveWithoutRealpath($fullPath, $realRoot);
-        if (!str_starts_with($resolved, $realRoot)) {
+        $resolved = $this->resolveWithoutRealpath($fullPath, $this->root);
+        if (!str_starts_with($resolved, $this->root)) {
             throw new FilesystemException(
                 "Path traversal detected: {$path} resolves outside the root directory."
             );
@@ -245,7 +243,8 @@ class LocalDriver implements FilesystemDriver
      */
     protected function resolveWithoutRealpath(string $path, string $root): string
     {
-        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $normalized = str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $parts = explode(DIRECTORY_SEPARATOR, $normalized);
         $resolved = [];
 
         foreach ($parts as $part) {
@@ -256,8 +255,14 @@ class LocalDriver implements FilesystemDriver
             }
         }
 
-        // Preserve leading slash from absolute paths
-        $prefix = str_starts_with($path, DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '';
+        $prefix = '';
+        if (str_starts_with($normalized, DIRECTORY_SEPARATOR)) {
+            $prefix = DIRECTORY_SEPARATOR;
+        } elseif (isset($parts[0]) && preg_match('/^[A-Za-z]:$/', $parts[0])) {
+            $prefix = $parts[0] . DIRECTORY_SEPARATOR;
+            array_shift($resolved);
+        }
+
         $resolvedPath = $prefix . implode(DIRECTORY_SEPARATOR, $resolved);
 
         if (!str_starts_with($resolvedPath, $root)) {
