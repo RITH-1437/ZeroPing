@@ -1,10 +1,262 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Core/Application/App.php
+
+		-
+			message: '#^Method App\\Core\\Application\\App\:\:handle\(\) has parameter \$request with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Application/App.php
+
+		-
+			message: '#^Method App\\Core\\Application\\App\:\:loadPackageManifest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Application/App.php
+
+		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
 			path: app/Core/Application/App.php
+
+		-
+			message: '#^Method App\\Core\\Auth\\AuthManager\:\:login\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/AuthManager.php
+
+		-
+			message: '#^Method App\\Core\\Auth\\AuthManager\:\:user\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/AuthManager.php
+
+		-
+			message: '#^Method App\\Core\\Benchmark\\Benchmark\:\:results\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Benchmark/Benchmark.php
+
+		-
+			message: '#^Property App\\Core\\Benchmark\\Benchmark\:\:\$results type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Benchmark/Benchmark.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Cache\:\:__callStatic\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Cache.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Cache\:\:__callStatic\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/Cache.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\CacheManager\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/CacheManager.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\CacheManager\:\:createFileDriver\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/CacheManager.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\CacheManager\:\:resolve\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/CacheManager.php
+
+		-
+			message: '#^Property App\\Core\\Cache\\CacheManager\:\:\$stores type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/CacheManager.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:forever\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:get\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:put\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:remember\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Property App\\Core\\Cache\\Drivers\\ArrayCacheDriver\:\:\$storage type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/Drivers/ArrayCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\CacheDriver\:\:forever\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/CacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\CacheDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/CacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\CacheDriver\:\:get\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/CacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\CacheDriver\:\:put\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/CacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\CacheDriver\:\:remember\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/CacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\FileCacheDriver\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Cache/Drivers/FileCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\NullCacheDriver\:\:forever\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/NullCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\NullCacheDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/NullCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\NullCacheDriver\:\:get\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/NullCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\NullCacheDriver\:\:put\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Cache/Drivers/NullCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Cache\\Drivers\\NullCacheDriver\:\:remember\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Cache/Drivers/NullCacheDriver.php
+
+		-
+			message: '#^Method App\\Core\\Config\\ConfigLoader\:\:load\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Config/ConfigLoader.php
+
+		-
+			message: '#^Method App\\Core\\Config\\ConfigRepository\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Config/ConfigRepository.php
+
+		-
+			message: '#^Method App\\Core\\Config\\ConfigRepository\:\:set\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Config/ConfigRepository.php
+
+		-
+			message: '#^Property App\\Core\\Config\\ConfigRepository\:\:\$items type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Config/ConfigRepository.php
+
+		-
+			message: '#^Method App\\Core\\Config\\Env\:\:writeCache\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Config/Env.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Core/Console/Command.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Command\:\:call\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Command.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Command\:\:option\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Console/Command.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Command\:\:replace\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Command.php
+
+		-
+			message: '#^Property App\\Core\\Console\\Command\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Command.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\AboutCommand\:\:config\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Console/Commands/AboutCommand.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\AboutCommand\:\:config\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Console/Commands/AboutCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:flush\(\)\.$#'
@@ -55,16 +307,88 @@ parameters:
 			path: app/Core/Console/Commands/DoctorCommand.php
 
 		-
+			message: '#^Parameter \#1 \$array \(array\{0\?\: ''app\.php''\}\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Core/Console/Commands/DoctorCommand.php
+
+		-
 			message: '#^Call to an undefined static method App\\Core\\Mail\\Mail\:\:raw\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Core/Console/Commands/MailTestCommand.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Console\\Commands\\NewCommand\:\:\$descriptions\.$#'
-			identifier: property.notFound
+			message: '#^Method App\\Core\\Console\\Commands\\NewCommand\:\:ensureParent\(\) is unused\.$#'
+			identifier: method.unused
 			count: 1
 			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\NewCommand\:\:installStarterFiles\(\) has parameter \$a with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\NewCommand\:\:installStarterFiles\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\NewCommand\:\:isFrameworkRepo\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$opts$#'
+			identifier: parameter.notFound
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Property App\\Core\\Console\\Commands\\NewCommand\:\:\$createdItems is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Property App\\Core\\Console\\Commands\\NewCommand\:\:\$templates is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Property App\\Core\\Console\\Commands\\NewCommand\:\:\$templates type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Commands/NewCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/Console/Commands/OrmTestCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$first_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/Console/Commands/OrmTestCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: app/Core/Console/Commands/OrmTestCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/Console/Commands/OrmTestCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\User\:\:first\(\)\.$#'
@@ -79,10 +403,16 @@ parameters:
 			path: app/Core/Console/Commands/OrmTestCommand.php
 
 		-
-			message: '#^Undefined variable\: \$namespace$#'
-			identifier: variable.undefined
+			message: '#^Method App\\Core\\Console\\Commands\\PackageInstallCommand\:\:composer\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: app/Core/Console/Commands/PackageCreateCommand.php
+			path: app/Core/Console/Commands/PackageInstallCommand.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Core/Console/Commands/PackageListCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:forever\(\)\.$#'
@@ -91,10 +421,22 @@ parameters:
 			path: app/Core/Console/Commands/QueueRestartCommand.php
 
 		-
+			message: '#^Access to an undefined property App\\Core\\Queue\\FailedJob\:\:\$payload\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/Console/Commands/QueueRetryCommand.php
+
+		-
 			message: '#^Call to an undefined static method App\\Core\\Cache\\Cache\:\:forget\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Core/Console/Commands/ScheduleClearCommand.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Commands\\ServeCommand\:\:handle\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Commands/ServeCommand.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Filesystem\\Storage\:\:disk\(\)\.$#'
@@ -163,8 +505,470 @@ parameters:
 			path: app/Core/Console/Commands/StorageTestCommand.php
 
 		-
-			message: '#^Call to an undefined static method App\\Core\\Database\\Model\:\:addGlobalScope\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Call to function is_array\(\) with array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Zeroping\\Support\\Console\\Command and ''getDescription'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Console\:\:run\(\) has parameter \$argv with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Console\:\:runPackageCommand\(\) has parameter \$argv with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''arguments'' on array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''description'' on array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''description'' on array\{name\: string, description\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''examples'' on array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''name'' on array\{name\: string, description\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''notes'' on array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Offset ''options'' on array\{description\: string, options\: array\<string, string\>, arguments\: array\<int, array\{name\: string, description\: string\}\>, examples\: array\<string\>, notes\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Console/Console.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Generators\\Generator\:\:generate\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/Generators/Generator.php
+
+		-
+			message: '#^Method App\\Core\\Console\\InstallerSuccessRenderer\:\:nextSteps\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Method App\\Core\\Console\\InstallerSuccessRenderer\:\:section\(\) has parameter \$lines with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Property App\\Core\\Console\\InstallerSuccessRenderer\:\:\$frameworkVersion is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Property App\\Core\\Console\\InstallerSuccessRenderer\:\:\$phpVersion is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Property App\\Core\\Console\\InstallerSuccessRenderer\:\:\$projectPath is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Property App\\Core\\Console\\InstallerSuccessRenderer\:\:\$starterType is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Console/InstallerSuccessRenderer.php
+
+		-
+			message: '#^Constant App\\Core\\Console\\ProjectMetadataGenerator\:\:EXTRA_ENV_KEYS is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: app/Core/Console/ProjectMetadataGenerator.php
+
+		-
+			message: '#^Method App\\Core\\Console\\ProjectMetadataGenerator\:\:replacements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Console/ProjectMetadataGenerator.php
+
+		-
+			message: '#^Method App\\Core\\Console\\Prompts\\BasePrompt\:\:stdin\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Console/Prompts/BasePrompt.php
+
+		-
+			message: '#^Property App\\Core\\Console\\Prompts\\BasePrompt\:\:\$stdinHandle has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Core/Console/Prompts/BasePrompt.php
+
+		-
+			message: '#^Property App\\Core\\Container\\Container\:\:\$bindings type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Container/Container.php
+
+		-
+			message: '#^Property App\\Core\\Container\\Container\:\:\$instances type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Container/Container.php
+
+		-
+			message: '#^Property App\\Core\\Container\\Container\:\:\$reflectionCache with generic class ReflectionClass does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Container/Container.php
+
+		-
+			message: '#^Method App\\Core\\Contracts\\Arrayable\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Contracts/Arrayable.php
+
+		-
+			message: '#^Offset ''name'' on array\{name\: string, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Database/Blueprint.php
+
+		-
+			message: '#^Method App\\Core\\Database\\ColumnDefinition\:\:__construct\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/ColumnDefinition.php
+
+		-
+			message: '#^Method App\\Core\\Database\\ColumnDefinition\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/ColumnDefinition.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Connection\:\:affectingStatement\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Connection.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Connection\:\:select\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Connection.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Connection\:\:select\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Connection.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Connection\:\:statement\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Connection.php
+
+		-
+			message: '#^Method App\\Core\\Database\\ConnectionFactory\:\:availableDrivers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/ConnectionFactory.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Database\:\:addLog\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Database.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Database\:\:getLog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Database.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Database\:\:\$log type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Database.php
+
+		-
+			message: '#^Method App\\Core\\Database\\DatabaseManager\:\:availableDrivers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/DatabaseManager.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:compileAdd\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:compileColumn\(\) has parameter \$column with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:compileCommand\(\) has parameter \$command with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:compileDropColumn\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:compileForeign\(\) has parameter \$command with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\Grammar\:\:quoteDefault\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Offset ''name'' on array\{name\: string, type\: string, length\: int\|null, unsigned\: bool, nullable\: bool, unique\: bool, default\: mixed, useCurrent\: bool, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Offset ''primaryKey'' on array\{name\: string, type\: string, length\: int\|null, unsigned\: bool, nullable\: bool, unique\: bool, default\: mixed, useCurrent\: bool, \.\.\.\} in empty\(\) does not exist\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: app/Core/Database/Grammar/Grammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Grammar\\SQLiteGrammar\:\:compileCommand\(\) has parameter \$command with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Grammar/SQLiteGrammar.php
+
+		-
+			message: '#^Method App\\Core\\Database\\MigrationRunner\:\:executedMigrations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/MigrationRunner.php
+
+		-
+			message: '#^Method App\\Core\\Database\\MigrationRunner\:\:getMigrations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/MigrationRunner.php
+
+		-
+			message: '#^Method App\\Core\\Database\\MigrationRunner\:\:getMigrationsInBatch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/MigrationRunner.php
+
+		-
+			message: '#^Method App\\Core\\Database\\MigrationRunner\:\:getRanMigrations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/MigrationRunner.php
+
+		-
+			message: '#^Method App\\Core\\Database\\MigrationRunner\:\:grammar\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Core/Database/MigrationRunner.php
+
+		-
+			message: '#^Call to function is_null\(\) with null will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Class App\\Core\\Database\\Model implements generic interface ArrayAccess but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:__callStatic\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:__callStatic\(\) has parameter \$method with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:__callStatic\(\) has parameter \$parameters with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:__construct\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:create\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:fill\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:filterFillable\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:filterFillable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:forceFill\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:fresh\(\) has parameter \$with with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:getAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:replicate\(\) has parameter \$except with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Model\:\:update\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$attributes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$dispatchesEvents type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$fillable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$guarded type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Model\:\:\$relations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Model.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
 			count: 1
 			path: app/Core/Database/Model.php
 
@@ -181,10 +985,652 @@ parameters:
 			path: app/Core/Database/Model.php
 
 		-
+			message: '#^Method App\\Core\\Database\\ProfiledStatement\:\:execute\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/ProfiledStatement.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:aggregate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:aggregate\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:aggregate\(\) has parameter \$function with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:avg\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:avg\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:find\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:find\(\) has parameter \$columns with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:find\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:findOrFail\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:findOrFail\(\) has parameter \$columns with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:findOrFail\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:first\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:groupBy\(\) has parameter \$columns with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:insert\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:max\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:max\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:min\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:min\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:select\(\) has parameter \$columns with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:sum\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:sum\(\) has parameter \$column with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:update\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\QueryBuilder\:\:whereIn\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$bindings type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$columns type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$groupBy type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$having type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$joins type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$orderBy type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Database\\QueryBuilder\:\:\$where type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/QueryBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Repository\:\:create\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Repository.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Repository\:\:find\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Repository.php
+
+		-
+			message: '#^Method App\\Core\\Database\\Repository\:\:update\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Database/Repository.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Schema\:\:\$connectionName is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Database/Schema.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Schema\:\:\$instance \(App\\Core\\Database\\Connection\|null\) is never assigned App\\Core\\Database\\Connection so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: app/Core/Database/Schema.php
+
+		-
+			message: '#^Property App\\Core\\Database\\Schema\:\:\$instance is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Database/Schema.php
+
+		-
+			message: '#^Property App\\Core\\Debug\\DebugBar\:\:\$collectors type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Debug/DebugBar.php
+
+		-
+			message: '#^Method App\\Core\\Debug\\Dumper\:\:dump\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Debug/Dumper.php
+
+		-
+			message: '#^Method App\\Core\\Debug\\Dumper\:\:dump\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Debug/Dumper.php
+
+		-
+			message: '#^Method App\\Core\\Debug\\Performance\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Debug/Performance.php
+
+		-
+			message: '#^Method App\\Core\\Debug\\Performance\:\:get\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Debug/Performance.php
+
+		-
+			message: '#^Property App\\Core\\Debug\\Performance\:\:\$timers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Debug/Performance.php
+
+		-
+			message: '#^Parameter \#1 \$string of function htmlspecialchars expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Debug/PrettyException.php
+
+		-
+			message: '#^Property App\\Core\\Event\:\:\$listeners type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Event.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:directories\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:download\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:files\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\FilesystemDriver\:\:put\(\) has parameter \$contents with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Filesystem/Drivers/FilesystemDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:directories\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:download\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:files\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\LocalDriver\:\:put\(\) has parameter \$contents with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Core/Filesystem/Drivers/LocalDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:directories\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:download\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:files\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Drivers\\NullDriver\:\:put\(\) has parameter \$contents with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Filesystem/Drivers/NullDriver.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemManager\:\:__call\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemManager\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemManager\:\:createLocalDriver\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemManager\:\:resolve\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Property App\\Core\\Filesystem\\FilesystemManager\:\:\$disks type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:directories\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:download\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:files\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\FilesystemRepository\:\:put\(\) has parameter \$contents with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Filesystem/FilesystemRepository.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Storage\:\:__callStatic\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Filesystem/Storage.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\Storage\:\:__callStatic\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/Storage.php
+
+		-
+			message: '#^Method App\\Core\\Filesystem\\UploadedFile\:\:__construct\(\) has parameter \$file with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Filesystem/UploadedFile.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:__construct\(\) has parameter \$files with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:__construct\(\) has parameter \$post with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:__construct\(\) has parameter \$query with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:__construct\(\) has parameter \$server with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:except\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:except\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:only\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:only\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:parseHeaders\(\) has parameter \$server with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Request\:\:parseHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Request\:\:\$files type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Request\:\:\$headers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Request\:\:\$post type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Request\:\:\$query type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Request\:\:\$server type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Request.php
+
+		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
 			path: app/Core/Http/Request.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:additional\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:items\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:resolve\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:with\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:\$additional type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Resources\\AnonymousResourceCollection\:\:\$with type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/AnonymousResourceCollection.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\JsonResource\:\:additional\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\JsonResource\:\:resolve\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\JsonResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Resources\\JsonResource\:\:with\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Resources\\JsonResource\:\:\$additional type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Resources\\JsonResource\:\:\$with type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Resources/JsonResource.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -193,8 +1639,266 @@ parameters:
 			path: app/Core/Http/Resources/JsonResource.php
 
 		-
+			message: '#^Method App\\Core\\Http\\Response\:\:__construct\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Response\:\:getHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Response\:\:lastSent\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Method App\\Core\\Http\\Response\:\:withHeaders\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Response\:\:\$headers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Property App\\Core\\Http\\Response\:\:\$lastSent type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/Response.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:download\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:html\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:json\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:make\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:view\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Http\\ResponseFactory\:\:view\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Http/ResponseFactory.php
+
+		-
+			message: '#^Method App\\Core\\Localization\\Translator\:\:arrayGet\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Localization/Translator.php
+
+		-
+			message: '#^Method App\\Core\\Localization\\Translator\:\:get\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Localization/Translator.php
+
+		-
+			message: '#^Method App\\Core\\Localization\\Translator\:\:load\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Localization/Translator.php
+
+		-
+			message: '#^Method App\\Core\\Localization\\Translator\:\:replace\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Localization/Translator.php
+
+		-
+			message: '#^Property App\\Core\\Localization\\Translator\:\:\$loaded type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Localization/Translator.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Attachment\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Attachment.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Attachment\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Attachment.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Drivers\\ArrayDriver\:\:sentMessages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Drivers/ArrayDriver.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Drivers\\ArrayDriver\:\:\$sentMessages type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Drivers/ArrayDriver.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Drivers\\SMTPDriver\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Drivers/SMTPDriver.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Drivers\\SMTPDriver\:\:\$config type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Drivers/SMTPDriver.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mail\:\:__callStatic\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Mail/Mail.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mail\:\:__callStatic\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mail.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\MailManager\:\:__call\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Mail/MailManager.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\MailManager\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/MailManager.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\MailManager\:\:createSmtpDriver\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/MailManager.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\MailManager\:\:resolve\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/MailManager.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\MailManager\:\:\$mailers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/MailManager.php
+
+		-
 			message: '#^Call to an undefined static method App\\Core\\Filesystem\\Storage\:\:get\(\)\.$#'
 			identifier: staticMethod.notFound
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:attach\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:attachData\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:attachFromStorage\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:attachMany\(\) has parameter \$files with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:getTo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Method App\\Core\\Mail\\Mailable\:\:view\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$attachments type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$bcc type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$cc type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$from type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$replyTo type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$to type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Mailable.php
+
+		-
+			message: '#^Property App\\Core\\Mail\\Mailable\:\:\$viewData type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Core/Mail/Mailable.php
 
@@ -205,40 +1909,160 @@ parameters:
 			path: app/Core/Mail/Mailer.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:data_get\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Core/ORM/Collection.php
+			message: '#^Property App\\Core\\Mail\\Message\:\:\$to type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Mail/Message.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:operatorForWhere\(\)\.$#'
+			message: '#^Call to an undefined method App\\Core\\Mail\\MailManager\:\:send\(\)\.$#'
 			identifier: method.notFound
+			count: 1
+			path: app/Core/Notifications/Channels/MailChannel.php
+
+		-
+			message: '#^Trait App\\Core\\Notifications\\Notifiable is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Notifications/Notifiable.php
+
+		-
+			message: '#^Method App\\Core\\Notifications\\Notification\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Notifications/Notification.php
+
+		-
+			message: '#^Method App\\Core\\Notifications\\Notification\:\:toDatabase\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Notifications/Notification.php
+
+		-
+			message: '#^Method App\\Core\\Notifications\\Notification\:\:toLog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Notifications/Notification.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Builder\:\:getOrders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Builder.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Builder\:\:getWheres\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Builder.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Builder\:\:\$orders type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Builder.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Builder\:\:\$wheres type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Builder.php
+
+		-
+			message: '#^Class App\\Core\\ORM\\Collection implements generic interface ArrayAccess but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
 			count: 1
 			path: app/Core/ORM/Collection.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:reverse\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Class App\\Core\\ORM\\Collection implements generic interface IteratorAggregate but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
 			count: 1
 			path: app/Core/ORM/Collection.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:useAsCallable\(\)\.$#'
-			identifier: method.notFound
-			count: 2
+			message: '#^Method App\\Core\\ORM\\Collection\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
 			path: app/Core/ORM/Collection.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\ORM\\Collection\:\:valueRetriever\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Method App\\Core\\ORM\\Collection\:\:getArrayableItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Collection\:\:getIterator\(\) return type with generic class ArrayIterator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Collection\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Collection\:\:pluck\(\) has parameter \$value with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Collection\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$value$#'
+			identifier: parameter.notFound
+			count: 1
+			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Collection\:\:\$items type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Core/ORM/Collection.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
-			count: 5
+			count: 6
 			path: app/Core/ORM/Collection.php
+
+		-
+			message: '#^Call to an undefined method App\\Core\\ORM\\Model\:\:fill\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Core/ORM/Hydrator.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Hydrator\:\:hydrate\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Hydrator.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Hydrator\:\:hydrateMany\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Hydrator.php
+
+		-
+			message: '#^Call to an undefined method App\\Core\\ORM\\Builder\:\:all\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Call to an undefined method App\\Core\\ORM\\Builder\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Core/ORM/Model.php
 
 		-
 			message: '#^Call to an undefined method App\\Core\\ORM\\Model\:\:fill\(\)\.$#'
@@ -253,10 +2077,184 @@ parameters:
 			path: app/Core/ORM/Model.php
 
 		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:__construct\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:create\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:getAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:getCasts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:getFillable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:getGuarded\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:getOriginal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Method App\\Core\\ORM\\Model\:\:update\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Model\:\:\$attributes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Model\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 2
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Model\:\:\$fillable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Model\:\:\$guarded type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Property App\\Core\\ORM\\Model\:\:\$original type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/ORM/Model.php
+
+		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 2
 			path: app/Core/ORM/Model.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Database\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/ORM/Relations/BelongsToMany.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\PackageConfig\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/PackageConfig.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\PackageConfig\:\:write\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/PackageConfig.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\ProviderRepository\:\:buildManifest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/ProviderRepository.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\ProviderRepository\:\:cache\(\) has parameter \$manifest with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/ProviderRepository.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\ProviderRepository\:\:getCached\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/ProviderRepository.php
+
+		-
+			message: '#^Method App\\Core\\Packages\\ProviderRepository\:\:resolveProviders\(\) has parameter \$manifest with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Packages/ProviderRepository.php
+
+		-
+			message: '#^Method App\\Core\\Profiler\\Profiler\:\:spans\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Profiler/Profiler.php
+
+		-
+			message: '#^Property App\\Core\\Profiler\\Profiler\:\:\$spans type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Profiler/Profiler.php
+
+		-
+			message: '#^Property App\\Core\\Queue\\Drivers\\ArrayDriver\:\:\$jobs type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/Drivers/ArrayDriver.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\Job\:\:__construct\(\) has parameter \$job with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/Job.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\Job\:\:fromPayload\(\) should return static\(App\\Core\\Queue\\Job\)\|null but returns App\\Core\\Queue\\Job\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Core/Queue/Job.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\Job\:\:payload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/Job.php
+
+		-
+			message: '#^Property App\\Core\\Queue\\Job\:\:\$allowedClasses type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/Job.php
+
+		-
+			message: '#^Property App\\Core\\Queue\\Job\:\:\$job type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/Job.php
 
 		-
 			message: '#^Class App\\Core\\Queue\\Drivers\\DatabaseDriver constructor invoked with 1 parameter, 0 required\.$#'
@@ -265,16 +2263,274 @@ parameters:
 			path: app/Core/Queue/QueueManager.php
 
 		-
+			message: '#^Method App\\Core\\Queue\\QueueManager\:\:__call\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Queue/QueueManager.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\QueueManager\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/QueueManager.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\QueueManager\:\:createDatabaseDriver\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/QueueManager.php
+
+		-
+			message: '#^Method App\\Core\\Queue\\QueueManager\:\:resolve\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/QueueManager.php
+
+		-
+			message: '#^Property App\\Core\\Queue\\QueueManager\:\:\$connections type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Queue/QueueManager.php
+
+		-
+			message: '#^While loop condition is always true\.$#'
+			identifier: while.alwaysTrue
+			count: 1
+			path: app/Core/Queue/Worker.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Route\:\:__construct\(\) has parameter \$action with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Routing/Route.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Route\:\:__construct\(\) has parameter \$middleware with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Route.php
+
+		-
+			message: '#^Property App\\Core\\Routing\\Route\:\:\$action has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Core/Routing/Route.php
+
+		-
+			message: '#^Property App\\Core\\Routing\\Route\:\:\$middleware type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Route.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:get\(\) has parameter \$action with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:get\(\) has parameter \$middleware with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:middleware\(\) has parameter \$middleware with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:middlewareGroup\(\) has parameter \$middleware with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:post\(\) has parameter \$action with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:post\(\) has parameter \$middleware with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:route\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Method App\\Core\\Routing\\Router\:\:routes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Property App\\Core\\Routing\\Router\:\:\$groupMiddleware type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
+			message: '#^Property App\\Core\\Routing\\Router\:\:\$routes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Routing/Router.php
+
+		-
 			message: '#^Variable \$frameworkPath might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
 			path: app/Core/Routing/Router.php
 
 		-
+			message: '#^Property App\\Core\\Scheduling\\CallbackEvent\:\:\$callback has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Core/Scheduling/CallbackEvent.php
+
+		-
 			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$date \(DateTimeInterface\) is implicitly nullable via default value null\.$#'
 			identifier: parameter.implicitlyNullable
 			count: 1
 			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\CronExpression\:\:matches\(\) has parameter \$field with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\CronExpression\:\:parse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\CronExpression\:\:parseField\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\CronExpression\:\:parseRange\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\CronExpression\:\:rangeForPosition\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\CronExpression\:\:\$fields type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/CronExpression.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\Event\:\:environments\(\) has parameter \$environments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$between type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$environments type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$onOneServer \(string\|null\) does not accept true\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$parameters type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$skip type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$unlessBetween type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$weekdays type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$weekends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Event\:\:\$when type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Event.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\Schedule\:\:events\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Schedule.php
+
+		-
+			message: '#^Property App\\Core\\Scheduling\\Schedule\:\:\$events type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/Schedule.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\ScheduleManager\:\:__call\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Scheduling/ScheduleManager.php
+
+		-
+			message: '#^Method App\\Core\\Scheduling\\ScheduleManager\:\:__call\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Scheduling/ScheduleManager.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Core/Security/DatabaseTokenRepository.php
+
+		-
+			message: '#^Property App\\Core\\Security\\Middleware\\VerifyCsrfToken\:\:\$except type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/Middleware/VerifyCsrfToken.php
 
 		-
 			message: '#^Anonymous function has an unused use \$token\.$#'
@@ -291,6 +2547,72 @@ parameters:
 		-
 			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
 			identifier: staticMethod.notFound
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:emailResetLink\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:emailResetLink\(\) has parameter \$token with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:emailResetLink\(\) has parameter \$user with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:getUser\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:getUser\(\) has parameter \$credentials with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:reset\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:reset\(\) has parameter \$credentials with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:sendResetLink\(\) has parameter \$credentials with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:tokens\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:validateReset\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Security/PasswordBroker.php
+
+		-
+			message: '#^Method App\\Core\\Security\\PasswordBroker\:\:validateReset\(\) has parameter \$credentials with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Core/Security/PasswordBroker.php
 
@@ -319,13 +2641,1099 @@ parameters:
 			path: app/Core/Security/RateLimiter.php
 
 		-
-			message: '#^Path in require\(\) "D\:\\Personal\\my\-project\\zero\\zero\-ping/bootstrap/cache/config\.php" is not a file or it does not exist\.$#'
-			identifier: require.fileNotFound
+			message: '#^Method App\\Core\\Security\\URLSigner\:\:signedRoute\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/URLSigner.php
+
+		-
+			message: '#^Method App\\Core\\Security\\URLSigner\:\:temporarySignedRoute\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Security/URLSigner.php
+
+		-
+			message: '#^Method App\\Core\\Session\\Flash\:\:get\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Session/Flash.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''App\\\\Core\\\\Config\\\\Config'' and ''getRepository'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Config\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Config\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Config\:\:get\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Config\:\:set\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Config\:\:setItems\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Property App\\Core\\Support\\Config\:\:\$items type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between App\\Core\\Config\\ConfigRepository and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Core/Support/Config.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Validator\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Validator\:\:__construct\(\) has parameter \$rules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Validator\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Validator\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Support\\Validator\:\:validate\(\) has parameter \$rules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Support/Validator.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\Console\\ConsoleAssertions is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/Console/ConsoleAssertions.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\Database\\RefreshDatabase is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/Database/RefreshDatabase.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\Database\\Transaction is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/Database/Transaction.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\Expect\:\:__construct\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Testing/Expect.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\Expect\:\:toBe\(\) has parameter \$expected with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Testing/Expect.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\Expect\:\:toContain\(\) has parameter \$needle with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Core/Testing/Expect.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\Expect\:\:\$value has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Core/Testing/Expect.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\HTTP\\HTTPAssertions is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/HTTP/HTTPAssertions.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestRequest\:\:__construct\(\) has parameter \$cookies with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestRequest\:\:__construct\(\) has parameter \$files with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestRequest\:\:__construct\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestRequest\:\:__construct\(\) has parameter \$server with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Parameter \#1 \$app of class App\\Core\\Http\\Kernel constructor expects App\\Core\\Application\\App, App\\Core\\Container\\Container given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\HTTP\\TestRequest\:\:\$cookies type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\HTTP\\TestRequest\:\:\$files type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\HTTP\\TestRequest\:\:\$parameters type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\HTTP\\TestRequest\:\:\$server type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestRequest.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestResponse\:\:__construct\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestResponse.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\HTTP\\TestResponse\:\:assertJson\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestResponse.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\HTTP\\TestResponse\:\:\$headers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/HTTP/TestResponse.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\ORM\\ORMAssertions is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/ORM/ORMAssertions.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\ORM\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:assertDatabaseHas\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:assertDatabaseMissing\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:call\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:call\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:delete\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:format\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:get\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:post\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:post\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:put\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:put\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestCase\:\:query\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestCase.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestResponse\:\:__construct\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestResponse.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestResponse\:\:assertJson\(\) has parameter \$fragment with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestResponse.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestResponse\:\:json\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestResponse.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Core\\Testing\\TestCase and ''setUp'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Core/Testing/TestRunner.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Core\\Testing\\TestCase and ''tearDown'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Core/Testing/TestRunner.php
+
+		-
+			message: '#^Call to protected method setUp\(\) of class PHPUnit\\Framework\\TestCase\.$#'
+			identifier: method.protected
+			count: 1
+			path: app/Core/Testing/TestRunner.php
+
+		-
+			message: '#^Call to protected method tearDown\(\) of class PHPUnit\\Framework\\TestCase\.$#'
+			identifier: method.protected
+			count: 1
+			path: app/Core/Testing/TestRunner.php
+
+		-
+			message: '#^Method App\\Core\\Testing\\TestSuite\:\:tests\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestSuite.php
+
+		-
+			message: '#^Property App\\Core\\Testing\\TestSuite\:\:\$tests type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Testing/TestSuite.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\Traits\\InteractsWithDatabase is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/Traits/InteractsWithDatabase.php
+
+		-
+			message: '#^Trait App\\Core\\Testing\\Traits\\UsesFactories is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Core/Testing/Traits/UsesFactories.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FieldRuleBuilder\:\:in\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FieldRuleBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FieldRuleBuilder\:\:notIn\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FieldRuleBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FieldRuleBuilder\:\:\$rules is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Core/Validation/FieldRuleBuilder.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FieldRuleBuilder\:\:\$rules type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FieldRuleBuilder.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:getMessages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:getRules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:make\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FluentValidator\:\:setData\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FluentValidator\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FluentValidator\:\:\$messages type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FluentValidator\:\:\$rules type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FluentValidator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:messages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\FormRequest\:\:validated\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\FormRequest\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/FormRequest.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\RuleParser\:\:parse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/RuleParser.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\AbstractRule\:\:parameter\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/AbstractRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ArrayRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ArrayRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ArrayRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ArrayRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ArrayRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ArrayRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\BetweenRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/BetweenRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\BetweenRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/BetweenRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\BetweenRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/BetweenRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ConfirmedRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ConfirmedRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ConfirmedRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ConfirmedRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ConfirmedRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ConfirmedRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\EmailRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/EmailRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\EmailRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/EmailRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\EmailRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/EmailRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ExistsRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ExistsRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ExistsRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ExistsRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ExistsRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ExistsRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\FileRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/FileRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\FileRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/FileRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\FileRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/FileRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ImageRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ImageRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ImageRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ImageRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\ImageRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/ImageRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\InRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/InRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\InRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/InRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\InRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/InRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\IntegerRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/IntegerRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\IntegerRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/IntegerRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\IntegerRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/IntegerRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MaxRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MaxRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MaxRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MaxRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MaxRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MaxRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MimesRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MimesRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MimesRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MimesRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MimesRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MimesRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MinRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MinRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MinRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MinRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\MinRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/MinRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NotInRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NotInRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NotInRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NotInRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NotInRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NotInRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NullableRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NullableRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NullableRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NullableRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NullableRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NullableRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NumericRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NumericRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NumericRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NumericRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\NumericRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/NumericRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RegexRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RegexRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RegexRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RegexRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RegexRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RegexRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RequiredRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RequiredRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RequiredRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RequiredRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\RequiredRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/RequiredRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\Rule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/Rule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\Rule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/Rule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\Rule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/Rule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SameRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SameRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SameRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SameRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SameRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SameRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SizeRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SizeRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SizeRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SizeRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\SizeRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/SizeRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\StringRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/StringRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\StringRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/StringRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\StringRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/StringRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\UniqueRule\:\:message\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/UniqueRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\UniqueRule\:\:validate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/UniqueRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Rules\\UniqueRule\:\:validate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Rules/UniqueRule.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\ValidationException\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/ValidationException.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\ValidationException\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/ValidationException.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\ValidationResult\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/ValidationResult.php
+
+		-
+			message: '#^Property App\\Core\\Validation\\ValidationResult\:\:\$errors type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/ValidationResult.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:__construct\(\) has parameter \$messages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:__construct\(\) has parameter \$rules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:errors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:make\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:make\(\) has parameter \$messages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\Validation\\Validator\:\:make\(\) has parameter \$rules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Validation/Validator.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
 			path: app/Core/Validation/Validator.php
+
+		-
+			message: '#^Method App\\Core\\View\\Controller\:\:view\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/View/Controller.php
+
+		-
+			message: '#^Method App\\Core\\View\\View\:\:render\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/View/View.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function __\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function app\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function app\(\) has parameter \$abstract with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function benchmark\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function cache\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function dd\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function dd\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function dump\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function dump\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function logger\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function logger\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function ray\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function response\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function route\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function storage\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function trans\(\) has parameter \$replace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function validator\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function validator\(\) has parameter \$rules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
+
+		-
+			message: '#^Function view\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/helpers.php
