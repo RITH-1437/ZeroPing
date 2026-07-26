@@ -248,7 +248,7 @@ class Blueprint
         return $this;
     }
 
-    // â”€â”€ Compilation (delegated to the Grammar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Compilation (delegated to the Grammar) --
 
     /**
      * @return string[]

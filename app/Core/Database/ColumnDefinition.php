@@ -28,7 +28,7 @@ class ColumnDefinition
     ) {
     }
 
-    // â”€â”€ Fluent modifiers (return $this for chaining) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Fluent modifiers (return $this for chaining) --
 
     public function nullable(bool $value = true): static
     {

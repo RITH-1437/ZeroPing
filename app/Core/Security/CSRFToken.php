@@ -24,6 +24,7 @@ class CSRFToken
 
     public static function field(): string
     {
-        return '<input type="hidden" name="_token" value="' . htmlspecialchars(static::get(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
+        $token = htmlspecialchars(static::get(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return '<input type="hidden" name="_token" value="' . $token . '">';
     }
 }

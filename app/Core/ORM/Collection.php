@@ -84,7 +84,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         }
 
         return $this->filter(function ($item) use ($key, $operator, $value) {
-            $retrieved = $this->data_get($item, $key);
+            $retrieved = $this->dataGet($item, $key);
 
             switch ($operator) {
                 default:
@@ -175,7 +175,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function value($key, $default = null)
     {
         if ($item = $this->first()) {
-            return $this->data_get($item, $key, $default);
+            return $this->dataGet($item, $key, $default);
         }
 
         return $default;
@@ -447,7 +447,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         }
 
         return function ($item) use ($key, $operator, $value) {
-            $retrieved = $this->data_get($item, $key);
+            $retrieved = $this->dataGet($item, $key);
             return match ($operator) {
                 '=' => $retrieved == $value,
                 '==' => $retrieved == $value,
@@ -464,7 +464,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         };
     }
 
-    protected function data_get(mixed $target, string $key, mixed $default = null): mixed
+    protected function dataGet(mixed $target, string $key, mixed $default = null): mixed
     {
         if (is_array($target)) {
             return $target[$key] ?? $default;
@@ -489,7 +489,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         }
 
         return function ($item) use ($value) {
-            return $this->data_get($item, $value);
+            return $this->dataGet($item, $value);
         };
     }
 
