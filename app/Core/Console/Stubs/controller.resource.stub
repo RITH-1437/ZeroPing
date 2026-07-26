@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Controllers;
 
-use App\Core\Http\Controller;
+use App\Core\View\Controller;
 
 class {{ class }} extends Controller
 {

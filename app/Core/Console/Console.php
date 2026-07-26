@@ -77,6 +77,10 @@ use App\Core\Console\Commands\TestCommand;
 use App\Core\Console\Commands\ValidateTestCommand;
 use App\Core\Console\Commands\ViewCacheCommand;
 use App\Core\Console\Commands\ViewClearCommand;
+use App\Core\Console\Commands\MakeResourceCommand;
+use App\Core\Console\Commands\MakeRuleCommand;
+use App\Core\Console\Commands\MakeScopeCommand;
+use App\Core\Console\Commands\MakeExceptionCommand;
 
 class Console
 {
@@ -243,6 +247,22 @@ class Console
                 (new MakeEnumCommand())->handle($argv[2] ?? '');
                 break;
 
+            case 'make:resource':
+                (new MakeResourceCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:rule':
+                (new MakeRuleCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:scope':
+                (new MakeScopeCommand())->handle($argv[2] ?? '');
+                break;
+
+            case 'make:exception':
+                (new MakeExceptionCommand())->handle($argv[2] ?? '');
+                break;
+
             case 'package:list':
                 (new PackageListCommand())->handle();
                 break;
@@ -405,10 +425,6 @@ class Console
                 (new MonitorCommand())->handle();
                 break;
 
-            case 'install':
-                (new InstallCommand())->handle();
-                break;
-
             case 'security:test':
                 (new SecurityTestCommand())->handle();
                 break;
@@ -513,8 +529,8 @@ class Console
                 'serve' => [
                     'description' => 'Run the development server',
                     'options' => [],
-                    'arguments' => [['name' => 'port', 'description' => 'Port to listen on (default 8000)']],
-                    'examples' => ['php zero serve', 'php zero serve 8000'],
+                    'arguments' => [['name' => 'port', 'description' => 'Port to listen on (default 1437)']],
+                    'examples' => ['php zero serve', 'php zero serve 1437'],
                     'notes' => 'Press Ctrl+C to stop.',
                 ],
             ],
@@ -716,6 +732,34 @@ class Console
                     'arguments' => [['name' => 'name', 'description' => 'Enum class name']],
                     'examples' => ['php zero make:enum Status'],
                     'notes' => 'Generates a string-backed enum in app/Enums.',
+                ],
+                'make:resource' => [
+                    'description' => 'Create a new API resource class',
+                    'options' => $force,
+                    'arguments' => [['name' => 'name', 'description' => 'Resource class name']],
+                    'examples' => ['php zero make:resource UserResource'],
+                    'notes' => 'Generates a JSON resource in app/Http/Resources.',
+                ],
+                'make:rule' => [
+                    'description' => 'Create a new custom validation rule',
+                    'options' => $force,
+                    'arguments' => [['name' => 'name', 'description' => 'Rule class name']],
+                    'examples' => ['php zero make:rule UppercaseRule'],
+                    'notes' => 'Generates a validation rule in app/Core/Validation/Rules.',
+                ],
+                'make:scope' => [
+                    'description' => 'Create a new global query scope',
+                    'options' => $force,
+                    'arguments' => [['name' => 'name', 'description' => 'Scope class name']],
+                    'examples' => ['php zero make:scope ActiveScope'],
+                    'notes' => 'Generates a global scope in app/Core/ORM/Scopes.',
+                ],
+                'make:exception' => [
+                    'description' => 'Create a new custom exception class',
+                    'options' => $force,
+                    'arguments' => [['name' => 'name', 'description' => 'Exception class name']],
+                    'examples' => ['php zero make:exception PaymentException'],
+                    'notes' => 'Generates a custom exception in app/Exceptions.',
                 ],
             ],
             'Packages' => [

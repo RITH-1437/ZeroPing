@@ -6,11 +6,8 @@ use App\Core\Console\Command;
 
 class MakeMigrationCommand extends Command
 {
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected string $signature = 'make:migration';
+
     protected string $description = 'Create a new migration file';
 
     public function handle(string $name): void
@@ -35,33 +32,10 @@ class MakeMigrationCommand extends Command
 
         $table = $this->guessTable($name);
 
-        $content = <<<PHP
-<?php
-
-use App\Core\Database\Migration;
-use App\Core\Database\Schema;
-use App\Core\Database\Blueprint;
-
-return new class extends Migration
-{
-    public function up(): void
-    {
-        Schema::create('{$table}', function (Blueprint \$table) {
-
-            \$table->id();
-
-            \$table->timestamps();
-
-        });
-    }
-
-    public function down(): void
-    {
-        Schema::drop('{$table}');
-    }
-};
-
-PHP;
+        $content = $this->replace(
+            $this->stub('migration.stub'),
+            ['table' => $table]
+        );
 
         $this->writeGenerated($file, $content, 'Migration');
     }

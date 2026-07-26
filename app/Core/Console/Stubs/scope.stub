@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core\ORM\Scopes;
+
+use App\Core\Database\QueryBuilder;
+
+class {{ class }}
+{
+    public function apply(QueryBuilder $query): void
+    {
+        //
+    }
+}
