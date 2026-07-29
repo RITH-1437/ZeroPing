@@ -168,7 +168,7 @@ class View
     private static function isSafeViewName(string $name, bool $allowNamespace): bool
     {
         $namespace = $allowNamespace ? '(?:[A-Za-z_][A-Za-z0-9_]*::)?' : '';
-        return preg_match('/^' . $namespace . '[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_0-9][A-Za-z0-9_]*)*$/D', $name) === 1;
+        return preg_match('/^' . $namespace . '[A-Za-z_][A-Za-z0-9_]*(?:[.\/][A-Za-z_0-9][A-Za-z0-9_-]*)*$/D', $name) === 1;
     }
 
     private static function cacheKey(string $view, ?string $layout): string
