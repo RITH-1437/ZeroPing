@@ -200,7 +200,7 @@ class NewCommand
 
         if (!$ok && extension_loaded('curl')) {
             $ch = curl_init('https://github.com');
-            curl_setopt_array($ch, [CURLOPT_TIMEOUT => 3, CURLOPT_NOBODY => true, CURLOPT_SSL_VERIFYPEER => false]);
+            curl_setopt_array($ch, [CURLOPT_TIMEOUT => 3, CURLOPT_NOBODY => true]);
             $ok = (bool) @curl_exec($ch);
             curl_close($ch);
         }
@@ -341,30 +341,35 @@ class NewCommand
 
         $steps = [];
 
-        $steps['Downloading starter'] = function () use ($frameworkDir, $targetDir, $a) {
+        $steps['Downloading starter'] = function () use ($frameworkDir, $targetDir, $a): bool {
             $this->copyAll($frameworkDir, $targetDir, $a);
+            return true;
         };
 
-        $steps['Installing dependencies'] = function () use ($targetDir) {
-            $this->runComposerInstall($targetDir);
-        };
-
-        $steps['Creating environment'] = function () use ($targetDir, $a) {
+        $steps['Creating environment'] = function () use ($targetDir, $a): bool {
             $this->prepareEnv($targetDir, (string) $a['name']);
             $this->configureDatabase($targetDir, $a);
             $this->personalize($targetDir, $a);
+            return true;
         };
 
-        $steps['Generating application key'] = function () use ($targetDir) {
+        $steps['Installing dependencies'] = function () use ($targetDir): bool {
+            return $this->runComposerInstall($targetDir);
+        };
+
+        $steps['Generating application key'] = function () use ($targetDir): bool {
             $this->ensureKey($targetDir);
+            return true;
         };
 
-        $steps['Preparing storage'] = function () use ($targetDir) {
+        $steps['Preparing storage'] = function () use ($targetDir): bool {
             $this->ensureStorage($targetDir);
+            return true;
         };
 
-        $steps['Optimizing framework'] = function () use ($targetDir) {
+        $steps['Optimizing framework'] = function () use ($targetDir): bool {
             $this->optimizeFramework($targetDir);
+            return true;
         };
 
         $failed = false;
@@ -372,8 +377,12 @@ class NewCommand
         foreach ($steps as $label => $work) {
             $this->style->write("  <fg=cyan>⟳</> <fg=white>{$label}</> ...");
             try {
-                $work();
-                $this->style->writeln("\r  <fg=green>✔</> <fg=white>{$label}</>");
+                $completed = $work();
+                if ($completed === false) {
+                    $this->style->writeln("\r  <fg=yellow>ⓘ</> <fg=white>{$label}</> <fg=gray>(run `composer install` in the project when available)</>");
+                } else {
+                    $this->style->writeln("\r  <fg=green>✔</> <fg=white>{$label}</>");
+                }
             } catch (\Throwable $e) {
                 $this->style->writeln("\r  <fg=red>✗</> <fg=white>{$label}</> <fg=gray>( {$e->getMessage()} )</>");
                 $failed = true;
@@ -562,6 +571,19 @@ class NewCommand
             'app/Controllers/HomeController.php',
             'app/Controllers/TestController.php',
             'app/Controllers/UserController.php',
+            'app/Models/Coffee.php',
+            'app/Models/Test.php',
+            'app/Models/User.php',
+            'app/Services/AuthenticationService.php',
+            'app/Services/CoffeeService.php',
+            'app/Services/TestService.php',
+            'app/Repositories/CoffeeRepository.php',
+            'app/Repositories/TestRepository.php',
+            'app/Repositories/UserRepository.php',
+            'app/Events/UserRegistered.php',
+            'app/Listeners/LogUserRegistered.php',
+            'app/Jobs/TestJob.php',
+            'app/Mail/TestMail.php',
             'views/site',
             'views/home',
             'views/components',
@@ -571,6 +593,21 @@ class NewCommand
             'public/assets/images/og-image.svg',
             'public/assets/images/mascot.svg',
             'public/assets/images/app-icon.svg',
+            // Framework repo's own dev/test fixtures — never ship these to
+            // generated projects. Templates supply their own (empty or
+            // sample) tests, migrations, storage and caches via the
+            // template overlay copied afterwards.
+            'tests',
+            'database/migrations',
+            'database/seeders',
+            'database/database.sqlite',
+            'storage/logs',
+            'storage/cache',
+            'storage/framework',
+            'storage/test.txt',
+            'storage/test2.txt',
+            'storage/test3.txt',
+            'bootstrap/cache',
         ];
 
         foreach ($excluded as $path) {
@@ -781,30 +818,56 @@ class NewCommand
     }
 
     /**
-     * Install Composer dependencies in the generated project. Skipped (with a
-     * note) when Composer is missing or there is no network connection.
+     * Install Composer dependencies in the generated project. A transient
+     * network failure leaves the generated files intact and instructs the user
+     * to retry Composer locally; all filesystem/scaffold failures still roll
+     * the project back through the normal error path.
      */
-    private function runComposerInstall(string $dir): void
+    private function runComposerInstall(string $dir): bool
     {
         if (!$this->composerAvailable || !$this->internetOk) {
-            // Parent step loop already marks this step; just note the skip.
-            $this->style->writeln("\r  <fg=yellow>ⓘ</> <fg=white>Installing dependencies</> <fg=gray>(skipped — run `composer install`)</>");
-            return;
+            return false;
         }
 
-        @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' install --no-interaction --no-progress 2>&1');
+        try {
+            $this->runComposer($dir, 'install --no-interaction --no-progress');
+            return true;
+        } catch (\RuntimeException) {
+            return false;
+        }
     }
 
-    /**
-     * Optimize the framework autoloader / caches in the generated project.
-     */
+    /** Optimize the generated project's Composer autoloader. */
     private function optimizeFramework(string $dir): void
     {
-        if (!$this->composerAvailable) {
+        if (!$this->composerAvailable || !is_file($dir . '/vendor/autoload.php')) {
             return;
         }
 
-        @shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellcmd($this->composerBin()) . ' dump-autoload --optimize --no-interaction 2>&1');
+        $this->runComposer($dir, 'dump-autoload --optimize --no-interaction');
+    }
+
+    private function runComposer(string $dir, string $arguments): void
+    {
+        $previousDirectory = getcwd();
+        if ($previousDirectory === false || !@chdir($dir)) {
+            throw new \RuntimeException("Unable to enter generated project directory: {$dir}");
+        }
+
+        try {
+            $output = [];
+            $exitCode = 0;
+            exec(escapeshellcmd($this->composerBin()) . ' ' . $arguments . ' 2>&1', $output, $exitCode);
+        } finally {
+            chdir($previousDirectory);
+        }
+
+        if ($exitCode !== 0 || !is_file($dir . '/vendor/autoload.php')) {
+            $details = trim(implode("\n", array_slice($output, -5)));
+            throw new \RuntimeException(
+                'Composer command failed' . ($details === '' ? '.' : ': ' . $details)
+            );
+        }
     }
 
     private function resolveTarget(string $location): string

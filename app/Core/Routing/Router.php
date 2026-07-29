@@ -242,7 +242,7 @@ class Router
 
         $url = self::$nameMap[$name];
         foreach ($parameters as $key => $value) {
-            $url = str_replace("{{$key}}", $value, $url);
+            $url = str_replace("{{$key}}", rawurlencode((string) $value), $url);
         }
 
         return $url;

@@ -12,16 +12,18 @@ if ($appKey === '' || $appKey === 'base64:') {
 }
 
 return [
-
     'key' => $appKey,
-
     'hash_driver' => 'bcrypt',
-
     'rate_limits' => [
         'api' => '60,1',
         'web' => '60,1',
     ],
-
     'csrf_lifetime' => 120,
 
+    // Never trust X-Forwarded-* headers unless the direct peer is listed.
+    // In Docker/Nginx deployments, set TRUSTED_PROXIES to the proxy address.
+    'trusted_proxies' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) (getenv('TRUSTED_PROXIES') ?: ''))
+    ))),
 ];

@@ -33,7 +33,7 @@ class ViewCacheCommand extends Command
 
             $relative = str_replace([$viewsDir . '/', $viewsDir . '\\'], '', $file->getPathname());
             $viewName = str_replace('.php', '', $relative);
-            $viewName = str_replace('\\', '/', $viewName);
+            $viewName = str_replace(['\\', '/'], '.', $viewName);
 
             $skip = false;
             foreach ($skipDirs as $dir) {
@@ -56,16 +56,16 @@ class ViewCacheCommand extends Command
         $this->info("Views cached successfully! ({$count} files)");
     }
 
-    private function detectLayout(string $view): string
+    private function detectLayout(string $view): ?string
     {
-        if (str_starts_with($view, 'layouts/')) {
+        if (str_starts_with($view, 'layouts')) {
             return 'guest';
         }
 
-        if (str_starts_with($view, 'errors/')) {
-            return 'guest';
+        if (str_starts_with($view, 'errors')) {
+            return null;
         }
 
-        return 'site';
+        return 'guest';
     }
 }

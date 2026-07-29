@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Core\View\Controller;
@@ -7,7 +9,7 @@ use App\Http\Response;
 
 class UserController extends Controller
 {
-    public function index(): string
+    public function index(): void
     {
         Response::json([
             'users' => [
@@ -17,7 +19,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function show(int $id): string
+    public function show(int $id): void
     {
         Response::json([
             'user' => [

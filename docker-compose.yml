@@ -10,8 +10,11 @@ services:
     env_file:
       - .env
 
+    # The image contains immutable application code. Only runtime state is
+    # mounted, so local keys and the full working tree never enter the app.
     volumes:
-      - .:/var/www
+      - ./storage:/var/www/storage
+      - ./database:/var/www/database
 
   web:
     image: nginx:1.27-alpine

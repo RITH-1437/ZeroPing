@@ -9,28 +9,15 @@ class View
     private static bool $cacheEnabled = false;
     private static ?string $basePath = null;
 
-    /**
-     * Namespaced view paths registered by packages via
-     * ServiceProvider::loadViewsFrom(). Resolved as "namespace::view".
-     *
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     private static array $namespaces = [];
 
-    /**
-     * Resolved view/layout paths, cached so repeated renders of the same view
-     * (e.g. inside a loop) skip the file_exists() scan.
-     *
-     * @var array<string, string|null>
-     */
+    /** @var array<string, string|null> */
     private static array $pathCache = [];
 
     public static function setBasePath(?string $path): void
     {
         self::$basePath = $path;
-
-        // Cached view/layout paths are absolute and tied to the previous base
-        // path, so they must be invalidated when the base path changes.
         self::$pathCache = [];
     }
 
@@ -39,22 +26,13 @@ class View
         self::$cacheEnabled = $enabled;
     }
 
-    public static function render(
-        string $view,
-        array $data = [],
-        ?string $layout = 'guest'
-    ): string {
-
+    public static function render(string $view, array $data = [], ?string $layout = 'guest'): string
+    {
         if (self::$cacheEnabled) {
-            $cacheKey = self::cacheKey($view, $layout);
-            $cached = self::loadFromCache($cacheKey);
+            $cached = self::loadFromCache(self::cacheKey($view, $layout));
             if ($cached !== null) {
                 return $cached;
             }
-        }
-
-        foreach ($data as $key => $val) {
-            ${$key} = $val;
         }
 
         $viewFile = self::findView($view);
@@ -62,26 +40,30 @@ class View
             throw new \RuntimeException("View {$view} not found.");
         }
 
-        ob_start();
-        require $viewFile;
-        $content = ob_get_clean();
-
-        // A null layout means "render the view as-is" â€” used for complete,
-        // self-contained pages (e.g. the generated-project welcome page)
-        // that already include their own <!DOCTYPE html> document.
-        if ($layout === null) {
-            return $content;
+        $layoutFile = null;
+        if ($layout !== null) {
+            $layoutFile = self::findLayout($layout);
+            if ($layoutFile === null) {
+                throw new \RuntimeException("Layout {$layout} not found.");
+            }
         }
 
-        $layoutFile = self::findLayout($layout);
+        // EXTR_SKIP preserves renderer variables such as $layout and $content.
+        // This prevents untrusted data keys from selecting an arbitrary layout
+        // or otherwise affecting the include paths below.
+        extract($data, EXTR_SKIP);
+
+        ob_start();
+        require $viewFile;
+        $content = (string) ob_get_clean();
+
         if ($layoutFile === null) {
-            throw new \RuntimeException("Layout {$layout} not found.");
+            return $content;
         }
 
         ob_start();
         require $layoutFile;
-        $output = ob_get_clean();
-
+        $output = (string) ob_get_clean();
         $output = str_replace('{{ slot }}', $content, $output);
 
         if (self::$cacheEnabled) {
@@ -98,17 +80,18 @@ class View
 
     public static function findView(string $view): ?string
     {
+        if (!self::isSafeViewName($view, true)) {
+            return null;
+        }
         if (array_key_exists($view, self::$pathCache)) {
             return self::$pathCache[$view];
         }
 
-        // Namespaced view: "namespace::view"
         if (str_contains($view, '::')) {
-            [$ns, $name] = explode('::', $view, 2);
-
-            if (isset(self::$namespaces[$ns])) {
-                $file = self::$namespaces[$ns] . '/' . str_replace('.', '/', $name) . '.php';
-                if (file_exists($file)) {
+            [$namespace, $name] = explode('::', $view, 2);
+            if (isset(self::$namespaces[$namespace])) {
+                $file = self::$namespaces[$namespace] . '/' . str_replace('.', '/', $name) . '.php';
+                if (is_file($file)) {
                     return self::$pathCache[$view] = $file;
                 }
             }
@@ -116,38 +99,44 @@ class View
             return null;
         }
 
-        $path = self::basePath() . "/views/" . str_replace('.', '/', $view) . ".php";
-        if (file_exists($path)) {
-            return self::$pathCache[$view] = $path;
+        $file = self::basePath() . '/views/' . str_replace('.', '/', $view) . '.php';
+        if (is_file($file)) {
+            return self::$pathCache[$view] = $file;
         }
+
         if (self::$basePath !== null) {
-            $frameworkPath = dirname(__DIR__, 3) . "/views/" . str_replace('.', '/', $view) . ".php";
-            if (file_exists($frameworkPath)) {
-                return self::$pathCache[$view] = $frameworkPath;
+            $frameworkFile = dirname(__DIR__, 3) . '/views/' . str_replace('.', '/', $view) . '.php';
+            if (is_file($frameworkFile)) {
+                return self::$pathCache[$view] = $frameworkFile;
             }
         }
-        // Not found: do not cache the miss (a view may appear later).
+
         return null;
     }
 
     public static function findLayout(string $layout): ?string
     {
+        if (!self::isSafeViewName($layout, false)) {
+            return null;
+        }
+
         $key = "layout:{$layout}";
         if (array_key_exists($key, self::$pathCache)) {
             return self::$pathCache[$key];
         }
 
-        $path = self::basePath() . "/views/layouts/{$layout}.php";
-        if (file_exists($path)) {
-            return self::$pathCache[$key] = $path;
+        $file = self::basePath() . "/views/layouts/{$layout}.php";
+        if (is_file($file)) {
+            return self::$pathCache[$key] = $file;
         }
+
         if (self::$basePath !== null) {
-            $frameworkPath = dirname(__DIR__, 3) . "/views/layouts/{$layout}.php";
-            if (file_exists($frameworkPath)) {
-                return self::$pathCache[$key] = $frameworkPath;
+            $frameworkFile = dirname(__DIR__, 3) . "/views/layouts/{$layout}.php";
+            if (is_file($frameworkFile)) {
+                return self::$pathCache[$key] = $frameworkFile;
             }
         }
-        // Not found: do not cache the miss (a layout may appear later).
+
         return null;
     }
 
@@ -156,17 +145,16 @@ class View
         return self::basePath() . '/storage/cache/views';
     }
 
-    /**
-     * Register a namespaced view path (used by ServiceProvider::loadViewsFrom).
-     */
     public static function addNamespace(string $namespace, string $path): void
     {
-        self::$namespaces[$namespace] = rtrim($path, '/');
+        if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $namespace) !== 1) {
+            throw new \InvalidArgumentException("Invalid view namespace: {$namespace}");
+        }
+
+        self::$namespaces[$namespace] = rtrim($path, '/\\');
     }
 
-    /**
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     public static function namespaces(): array
     {
         return self::$namespaces;
@@ -177,28 +165,37 @@ class View
         return self::$cacheEnabled;
     }
 
-    private static function cacheKey(string $view, string $layout): string
+    private static function isSafeViewName(string $name, bool $allowNamespace): bool
     {
-        return md5($view . '|' . $layout);
+        $namespace = $allowNamespace ? '(?:[A-Za-z_][A-Za-z0-9_]*::)?' : '';
+        return preg_match('/^' . $namespace . '[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_0-9][A-Za-z0-9_]*)*$/D', $name) === 1;
+    }
+
+    private static function cacheKey(string $view, ?string $layout): string
+    {
+        return hash('sha256', $view . '|' . ($layout ?? '__none__'));
     }
 
     private static function loadFromCache(string $key): ?string
     {
         $file = self::cachePath() . '/' . $key . '.php';
-        if (!file_exists($file)) {
+        if (!is_file($file)) {
             return null;
         }
 
         $cached = file_get_contents($file);
-        return $cached !== false ? $cached : null;
+        return $cached === false ? null : $cached;
     }
 
     private static function storeToCache(string $key, string $content): void
     {
-        $dir = self::cachePath();
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
+        $directory = self::cachePath();
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            throw new \RuntimeException("Unable to create view cache directory: {$directory}");
         }
-        file_put_contents($dir . '/' . $key . '.php', $content);
+
+        if (file_put_contents($directory . '/' . $key . '.php', $content, LOCK_EX) === false) {
+            throw new \RuntimeException('Unable to write the rendered view cache.');
+        }
     }
 }

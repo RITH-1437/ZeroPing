@@ -104,10 +104,10 @@ server {
     server_name my-app.com;
     root /var/www/my-app/public;
 
-    index router.php;
+    index index.php;
 
     location / {
-        try_files $uri $uri/ /router.php?$query_string;
+        try_files $uri $uri/ /index.php?$query_string;
     }
 
     location ~ \.php$ {

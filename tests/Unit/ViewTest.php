@@ -163,4 +163,10 @@ class ViewTest extends \Tests\TestCase
         ob_end_clean();
         $this->assertSame($output1, $output2);
     }
+
+    public function testTraversalStyleViewAndLayoutNamesAreRejected(): void
+    {
+        $this->assertNull(View::findView('../outside'));
+        $this->assertNull(View::findLayout('../guest'));
+    }
 }

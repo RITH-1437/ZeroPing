@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Core\View\Controller;
@@ -7,7 +9,7 @@ use App\Http\Response;
 
 class AuthController extends Controller
 {
-    public function login(): string
+    public function login(): void
     {
         $data = json_decode(file_get_contents('php://input'), true);
 

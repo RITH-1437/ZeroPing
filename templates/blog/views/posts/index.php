@@ -18,6 +18,4 @@
     <?php endforeach; ?>
 </div>
 
-<?php if (function_exists('paginate_links')) : ?>
-    <div class="mt-8"><?= paginate_links($posts) ?></div>
-<?php endif; ?>
+

@@ -327,4 +327,4 @@ php zero optimize
 php zero doctor
 ```
 
-For more, see the [documentation](https://github.com/RITH-1437/ZeroPing/tree/main/docs).
+For more, see the [documentation](https://zero-ping.duckdns.org).

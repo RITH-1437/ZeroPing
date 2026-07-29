@@ -33,7 +33,8 @@ RUN composer install \
   --optimize-autoloader \
   --classmap-authoritative
 
-RUN chown -R $user:$user /var/www
+RUN mkdir -p /var/www/storage/cache /var/www/storage/logs /var/www/storage/framework/cache /var/www/database && \
+    chown -R $user:$user /var/www
 
 USER $user
 

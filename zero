@@ -1,7 +1,15 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+declare(strict_types=1);
+
+$autoload = __DIR__ . '/vendor/autoload.php';
+if (!is_file($autoload)) {
+    fwrite(STDERR, "Dependencies are missing. Run `composer install` in " . __DIR__ . ".\n");
+    exit(1);
+}
+
+require_once $autoload;
 require_once __DIR__ . '/config/config.php';
 
 use App\Core\Application\App;
@@ -9,10 +17,8 @@ use App\Core\Console\Console;
 
 App::boot();
 
-$console = new Console();
-
 try {
-    $console->run($argv);
+    (new Console())->run($argv);
 } catch (\Throwable $e) {
     fwrite(STDERR, "\033[31mError: " . $e->getMessage() . "\033[0m\n");
     exit(1);

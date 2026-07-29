@@ -13,8 +13,7 @@ cd my-app
 ## Run the development server
 
 ```bash
-php -S localhost:8000 router.php
+php zero serve
 ```
 
-Then open `http://localhost:8000/` to see the welcome page, or
-`http://localhost:8000/docs/introduction` for the documentation viewer.
+Then open `http://localhost:1437/` to see the welcome page.

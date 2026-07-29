@@ -33,7 +33,7 @@ class ThrottleRequests
     {
         return sha1(
             Request::method() .
-            '|' . Request::url() .
+            '|' . Request::path() .
             '|' . Request::ip()
         );
     }

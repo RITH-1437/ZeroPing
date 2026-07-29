@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Validation;
 
 use App\Core\Database\Database;
+use App\Core\Database\Identifier;
 use PDO;
 
 class DatabasePresenceVerifier
@@ -46,8 +47,8 @@ class DatabasePresenceVerifier
         string $column,
         mixed $value
     ): int {
-        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
-        $column = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
+        $table = Identifier::table($table);
+        $column = Identifier::column($column);
 
         $stmt = $this->db->prepare("
             SELECT COUNT(*)

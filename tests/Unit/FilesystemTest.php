@@ -96,4 +96,11 @@ class FilesystemTest extends TestCase
 
         $this->assertSame('ok', storage('tmp')->get('via-helper.txt'));
     }
+
+    public function testTraversalIsRejected(): void
+    {
+        $this->expectException(\App\Core\Filesystem\Exceptions\FilesystemException::class);
+
+        $this->repo()->put('../outside.txt', 'blocked');
+    }
 }

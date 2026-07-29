@@ -62,19 +62,24 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('/', Request::path());
     }
 
-    public function testIpReturnsXForwardedFor(): void
+    public function testIpIgnoresForwardedHeadersFromUntrustedSources(): void
     {
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '1.2.3.4';
+        $_SERVER['HTTP_CLIENT_IP'] = '5.6.7.8';
+        $_SERVER['REMOTE_ADDR'] = '9.10.11.12';
 
-        $this->assertSame('1.2.3.4', Request::ip());
+        $this->assertSame('9.10.11.12', Request::ip());
     }
 
-    public function testIpReturnsClientIp(): void
+    public function testIpUsesForwardedHeaderFromConfiguredProxy(): void
     {
-        unset($_SERVER['HTTP_X_FORWARDED_FOR']);
-        $_SERVER['HTTP_CLIENT_IP'] = '5.6.7.8';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '1.2.3.4, 10.0.0.2';
+        $_SERVER['REMOTE_ADDR'] = '10.0.0.2';
+        \App\Core\Support\Config::set('security.trusted_proxies', ['10.0.0.2']);
 
-        $this->assertSame('5.6.7.8', Request::ip());
+        $this->assertSame('1.2.3.4', Request::ip());
+
+        \App\Core\Support\Config::set('security.trusted_proxies', []);
     }
 
     public function testIpReturnsRemoteAddr(): void

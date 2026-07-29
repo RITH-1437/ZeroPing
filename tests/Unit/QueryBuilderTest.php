@@ -309,4 +309,34 @@ class QueryBuilderTest extends \Tests\TestCase
 
         $this->assertSame($qb, $result);
     }
+
+    public function testRejectsUnsafeIdentifiersAndOperators(): void
+    {
+        $qb = $this->createQueryBuilderWithoutDb();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $qb->where('name; DROP TABLE users', 'John');
+    }
+
+    public function testRejectsUnsafeOperator(): void
+    {
+        $qb = $this->createQueryBuilderWithoutDb();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $qb->where('name', 'John', '= 1; DROP TABLE users');
+    }
+
+    public function testEmptyWhereInCompilesToNoResults(): void
+    {
+        $sql = $this->createQueryBuilderWithoutDb()->whereIn('id', [])->toSql();
+
+        $this->assertStringContainsString('WHERE 0 = 1', $sql);
+    }
+
+    public function testSoftDeleteSqlDoesNotAccumulateAcrossCompilation(): void
+    {
+        $qb = $this->createQueryBuilderWithoutDb()->softDeletes();
+
+        $this->assertSame($qb->toSql(), $qb->toSql());
+    }
 }

@@ -12,8 +12,8 @@ $activePage = $active ?? '';
     <meta name="description" content="ZeroPing Framework official website and documentation.">
     <meta property="og:title" content="ZeroPing — Modern PHP Framework">
     <meta property="og:description" content="Fast. Simple. Elegant. A lightweight PHP framework built from scratch with zero external dependencies.">
-    <meta property="og:image" content="<?= rtrim((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zero-ping.duckdns.org'), '/') ?>/assets/images/og-image.svg">
-    <meta property="og:url" content="<?= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'zero-ping.duckdns.org') ?>">
+    <meta property="og:image" content="https://zero-ping.duckdns.org/assets/images/og-image.svg">
+    <meta property="og:url" content="https://zero-ping.duckdns.org">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/svg+xml" href="/assets/images/mascot.svg">
     <link rel="apple-touch-icon" href="/assets/images/app-icon.svg">
@@ -536,6 +536,7 @@ $activePage = $active ?? '';
             let searchTimeout = null;
             const RECENT_KEY = 'zp-recent-searches';
             const MAX_RECENT = 5;
+            const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character]));
 
             function getRecentSearches() {
                 try {
@@ -559,7 +560,7 @@ $activePage = $active ?? '';
                 recent.forEach(q => {
                     html += '<button type="button" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left" data-recent-search>' +
                         '<svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
-                        '<span class="text-sm text-slate-700 dark:text-slate-300">' + q + '</span>' +
+                        '<span class="text-sm text-slate-700 dark:text-slate-300">' + escapeHtml(q) + '</span>' +
                         '</button>';
                 });
                 searchResults.innerHTML = html;
@@ -583,8 +584,8 @@ $activePage = $active ?? '';
                         if (data.results && data.results.length > 0) {
                             let html = '<div class="px-3 py-2 text-xs font-medium text-slate-400">Found ' + data.count + ' result' + (data.count !== 1 ? 's' : '') + '</div>';
                             data.results.forEach(r => {
-                                html += '<a href="' + r.url + '" class="flex flex-col gap-1 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" data-search-close>' +
-                                    '<span class="text-sm font-medium text-slate-800 dark:text-slate-200">' + r.title + '</span>' +
+                                html += '<a href="' + escapeHtml(r.url) + '" class="flex flex-col gap-1 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" data-search-close>' +
+                                    '<span class="text-sm font-medium text-slate-800 dark:text-slate-200">' + escapeHtml(r.title) + '</span>' +
                                     '<span class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">' + r.content + '</span>' +
                                     '</a>';
                             });
@@ -594,7 +595,7 @@ $activePage = $active ?? '';
                             searchResults.innerHTML =
                                 '<div class="p-6 text-center">' +
                                 '<svg class="h-8 w-8 mx-auto text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>' +
-                                '<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">No results found for <strong>"' + query + '"</strong></p>' +
+                                '<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">No results found for <strong>"' + escapeHtml(query) + '"</strong></p>' +
                                 '<p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Try different keywords or browse the documentation sidebar.</p>' +
                                 '</div>';
                         }

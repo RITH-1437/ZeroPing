@@ -3,6 +3,13 @@
 /.git/
 /arena/
 /.idea/
+/.mimocode/
 /.phpunit.cache/
-/database/
+/database/*.sqlite
 /storage/
+.env
+.env.*
+!.env.example
+*.pem
+EC2_SSH_KEY
+id_ed25519

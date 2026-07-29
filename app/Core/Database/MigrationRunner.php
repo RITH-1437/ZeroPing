@@ -7,28 +7,14 @@ namespace App\Core\Database;
 use App\Core\Database\Grammar\Grammar;
 use PDO;
 
-/**
- * Runs the database migrations.
- *
- * All SQL this runner produces is compiled through the active Grammar, so the
- * same migrations run on SQLite, MySQL, MariaDB and PostgreSQL without
- * modification.
- */
 class MigrationRunner
 {
-    /**
-     * Package migration directories pushed in by service providers via
-     * loadMigrationsFrom() (see Zeroping\Support\Foundation\MigrationLoader).
-     *
-     * @var string[]
-     */
+    /** @var string[] */
     private static array $extraPaths = [];
 
     private Connection $connection;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private array $migrationPaths;
 
     public function __construct(?Connection $connection = null)
@@ -46,9 +32,6 @@ class MigrationRunner
         $this->migrationPaths = $paths;
     }
 
-    /**
-     * Register an additional migration directory (called by package providers).
-     */
     public static function addPath(string $path): void
     {
         $path = rtrim($path, '/');
@@ -58,9 +41,6 @@ class MigrationRunner
         }
     }
 
-    /**
-     * Clear the registered package paths (used by tests / optimize:clear).
-     */
     public static function clearPaths(): void
     {
         self::$extraPaths = [];
@@ -85,21 +65,19 @@ class MigrationRunner
             $migrationName = basename($file);
 
             if (in_array($migrationName, $executed, true)) {
-                echo "â© {$migrationName}\n";
+                echo "[SKIP] {$migrationName}\n";
                 continue;
             }
 
-            echo "ðŸš€ {$migrationName} ... ";
+            echo "[RUN]  {$migrationName} ... ";
             $this->runUp($file, $batch);
-            echo "Done âœ…\n";
+            echo "Done.\n";
         }
 
-        echo PHP_EOL . "ðŸŽ‰ Migration completed successfully." . PHP_EOL;
+        echo PHP_EOL . "Migration completed successfully." . PHP_EOL;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return list<string> */
     public function pendingMigrationFiles(): array
     {
         $this->createMigrationTable();
@@ -141,9 +119,7 @@ class MigrationRunner
         $this->connection->statement($sql);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return list<string> */
     private function migrationFiles(): array
     {
         $files = [];
@@ -157,9 +133,6 @@ class MigrationRunner
         return $files;
     }
 
-    /**
-     * Locate a migration file by name across all registered paths.
-     */
     private function findMigrationFile(string $name): ?string
     {
         foreach ($this->migrationPaths as $path) {
@@ -226,9 +199,9 @@ class MigrationRunner
         if ($maxBatch === 0) {
             echo "Nothing to rollback, running migrations...\n\n";
         } else {
-            echo "â¬‡ï¸  Rolling back all migrations...\n\n";
+            echo "Rolling back all migrations...\n\n";
             $this->rollbackBatches($maxBatch);
-            echo PHP_EOL . "ðŸ”„ Re-running all migrations..." . PHP_EOL . PHP_EOL;
+            echo PHP_EOL . "Re-running all migrations..." . PHP_EOL . PHP_EOL;
         }
 
         $this->run();
@@ -247,7 +220,7 @@ class MigrationRunner
         }
 
         $this->rollbackBatches($lastBatch);
-        echo PHP_EOL . "ðŸŽ‰ Rollback completed successfully." . PHP_EOL;
+        echo PHP_EOL . "Rollback completed successfully." . PHP_EOL;
     }
 
     public function reset(): void
@@ -262,15 +235,11 @@ class MigrationRunner
             return;
         }
 
-        echo "â¬‡ï¸  Rolling back all migrations...\n\n";
+        echo "Rolling back all migrations...\n\n";
         $this->rollbackBatches($maxBatch);
-        echo PHP_EOL . "ðŸŽ‰ Rollback completed successfully." . PHP_EOL;
+        echo PHP_EOL . "Rollback completed successfully." . PHP_EOL;
     }
 
-    /**
-     * Roll back batches from $maxBatch down to 1, running each migration's
-     * down() method and removing its tracking row.
-     */
     private function rollbackBatches(int $maxBatch): void
     {
         for ($batch = $maxBatch; $batch >= 1; $batch--) {
@@ -280,21 +249,21 @@ class MigrationRunner
                 $file = $this->findMigrationFile($migrationName);
 
                 if ($file === null || !file_exists($file)) {
-                    echo "âš ï¸  File not found: {$migrationName}\n";
+                    echo "[WARN] File not found: {$migrationName}\n";
                     continue;
                 }
 
                 $migration = require $file;
 
                 if (!$migration instanceof Migration) {
-                    echo "âš ï¸  Skipping {$migrationName} (no down() method)\n";
+                    echo "[WARN] Skipping {$migrationName} (no down() method)\n";
                 } else {
-                    echo "â¬‡ï¸  {$migrationName} ... ";
+                    echo "  [ROLL] {$migrationName} ... ";
                     try {
                         $migration->down();
-                        echo "Done âœ…\n";
+                        echo "Done.\n";
                     } catch (\Throwable $e) {
-                        echo "Failed âŒ\n";
+                        echo "Failed.\n";
                         throw $e;
                     }
                 }
@@ -317,16 +286,14 @@ class MigrationRunner
             $this->disableForeignKeys();
             foreach ($tables as $table) {
                 $this->connection->statement($this->connection->grammar()->compileDrop($table));
-                echo "ðŸ—‘ï¸  Dropped table: {$table}\n";
+                echo "Dropped table: {$table}\n";
             }
             $this->enableForeignKeys();
         }
 
-        echo PHP_EOL . "ðŸ”„ Re-running all migrations..." . PHP_EOL . PHP_EOL;
+        echo PHP_EOL . "Re-running all migrations..." . PHP_EOL . PHP_EOL;
         $this->run();
     }
-
-    // â”€â”€ Grammar helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private function grammar(): Grammar
     {

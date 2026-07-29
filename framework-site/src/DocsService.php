@@ -327,11 +327,24 @@ class DocsService
         );
         $escaped = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $escaped);
         $escaped = preg_replace('/\*([^*]+)\*/', '<em>$1</em>', $escaped);
-        $escaped = preg_replace(
+        $escaped = preg_replace_callback(
             '/\[(.*?)\]\((.*?)\)/',
-            '<a href="$2" class="text-zp-link hover:underline '
-                . 'focus-visible:outline-none focus-visible:ring-2 '
-                . 'focus-visible:ring-cyan-500 rounded-sm">$1</a>',
+            static function (array $matches): string {
+                $url = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
+                $isLocalPath = str_starts_with($url, '/') && !str_starts_with($url, '//');
+                $isSafe = $isLocalPath
+                    || str_starts_with($url, '#')
+                    || preg_match('#^(https?://|mailto:)#i', $url) === 1;
+
+                if (!$isSafe) {
+                    return $matches[1];
+                }
+
+                return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8')
+                    . '" class="text-zp-link hover:underline '
+                    . 'focus-visible:outline-none focus-visible:ring-2 '
+                    . 'focus-visible:ring-cyan-500 rounded-sm">' . $matches[1] . '</a>';
+            },
             $escaped
         );
 

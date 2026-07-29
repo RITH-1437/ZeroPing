@@ -3,6 +3,7 @@
 namespace FrameworkSite;
 
 use App\Core\View\Controller;
+use App\Core\View\View;
 use FrameworkSite\DocsService;
 
 /**
@@ -15,6 +16,11 @@ use FrameworkSite\DocsService;
  */
 class WebsiteController extends Controller
 {
+    public function __construct()
+    {
+        View::setBasePath(dirname(__DIR__));
+    }
+
     public function home(): string
     {
         return $this->view('site/home', [

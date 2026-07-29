@@ -192,84 +192,64 @@ class LocalDriver implements FilesystemDriver
     }
 
     /**
-     * Resolve a user-supplied path relative to the configured root,
-     * with path-traversal protection.
-     *
-     * The resolved absolute path must start with the root directory;
-     * if it does not, the request is rejected.
-     *
-     * @param string $path
-     * @return string
-     *
-     * @throws FilesystemException When the resolved path escapes the root.
+     * Resolve a relative path beneath the configured root. Paths are rejected
+     * rather than rewritten when they contain traversal or absolute segments.
+     * Resolving the nearest existing ancestor also blocks symlinks that point
+     * outside the disk root.
      */
     protected function applyPathPrefix(string $path): string
     {
-        $fullPath = $this->root . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $path), '\\/');
-
-        // Resolve ".." and "." segments via realpath when the file exists,
-        // or via a manual resolution for paths that do not yet exist.
-        $realRoot = realpath($this->root);
-        if ($realRoot === false) {
+        $root = realpath($this->root);
+        if ($root === false) {
             throw new FilesystemException("Root directory does not exist: {$this->root}");
         }
 
-        if (file_exists($fullPath)) {
-            $resolved = realpath($fullPath);
-            if ($resolved === false || !str_starts_with($resolved, $realRoot)) {
-                throw new FilesystemException(
-                    "Path traversal detected: {$path} resolves outside the root directory."
-                );
+        $normalized = str_replace('\\', '/', $path);
+        if (
+            str_contains($normalized, "\0")
+            || str_starts_with($normalized, '/')
+            || preg_match('/^[A-Za-z]:\//', $normalized) === 1
+        ) {
+            throw new FilesystemException("Absolute or invalid path rejected: {$path}");
+        }
+
+        $segments = [];
+        foreach (explode('/', $normalized) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
             }
-            return $resolved;
+            if ($segment === '..') {
+                throw new FilesystemException("Path traversal detected: {$path}");
+            }
+            $segments[] = $segment;
         }
 
-        $resolved = $this->resolveWithoutRealpath($fullPath, $this->root);
-        if (!str_starts_with($resolved, $this->root)) {
-            throw new FilesystemException(
-                "Path traversal detected: {$path} resolves outside the root directory."
-            );
+        $candidate = $root . ($segments === [] ? '' : DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments));
+        $probe = $candidate;
+        while (!file_exists($probe) && !is_link($probe)) {
+            $parent = dirname($probe);
+            if ($parent === $probe) {
+                break;
+            }
+            $probe = $parent;
         }
 
-        return $resolved;
+        $resolvedProbe = realpath($probe);
+        if ($resolvedProbe === false || !$this->isWithinRoot($resolvedProbe, $root)) {
+            throw new FilesystemException("Path traversal detected: {$path} resolves outside the root directory.");
+        }
+
+        return $candidate;
     }
 
-    /**
-     * Manually resolve a path without requiring the file to exist.
-     *
-     * @param string $path
-     * @param string $root
-     * @return string
-     */
-    protected function resolveWithoutRealpath(string $path, string $root): string
+    private function isWithinRoot(string $path, string $root): bool
     {
-        $normalized = str_replace('/', DIRECTORY_SEPARATOR, $path);
-        $parts = explode(DIRECTORY_SEPARATOR, $normalized);
-        $resolved = [];
-
-        foreach ($parts as $part) {
-            if ($part === '..') {
-                array_pop($resolved);
-            } elseif ($part !== '.' && $part !== '') {
-                $resolved[] = $part;
-            }
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $path = strtolower($path);
+            $root = strtolower($root);
         }
 
-        $prefix = '';
-        if (str_starts_with($normalized, DIRECTORY_SEPARATOR)) {
-            $prefix = DIRECTORY_SEPARATOR;
-        } elseif (isset($parts[0]) && preg_match('/^[A-Za-z]:$/', $parts[0])) {
-            $prefix = $parts[0] . DIRECTORY_SEPARATOR;
-            array_shift($resolved);
-        }
-
-        $resolvedPath = $prefix . implode(DIRECTORY_SEPARATOR, $resolved);
-
-        if (!str_starts_with($resolvedPath, $root)) {
-            return $root;
-        }
-
-        return $resolvedPath;
+        return $path === $root || str_starts_with($path, $root . DIRECTORY_SEPARATOR);
     }
 
     protected function ensureDirectoryExists(string $path): void

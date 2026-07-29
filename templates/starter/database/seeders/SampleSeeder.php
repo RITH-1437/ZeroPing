@@ -2,20 +2,20 @@
 
 namespace App\Database\Seeders;
 
+use App\Models\Sample;
+
 /**
- * SampleSeeder — illustrative database seeder.
- *
- * Seeders populate the database with sample data. Run with `php zero db:seed`.
- * Implement run() and insert rows via your models.
+ * SampleSeeder populates the generated samples table with one visible record.
+ * Run it with `php zero db:seed` after running migrations.
  */
-class SampleSeeder extends Seeder
+class SampleSeeder
 {
     public function run(): void
     {
-        // \App\Models\Sample::create([
-        //     'title' => 'Hello ZeroPing',
-        //     'body' => 'Seeded example record.',
-        //     'published' => true,
-        // ]);
+        Sample::create([
+            'title' => 'Hello, ZeroPing',
+            'body' => 'This sample record was created by SampleSeeder.',
+            'published' => true,
+        ]);
     }
 }

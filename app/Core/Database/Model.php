@@ -167,18 +167,20 @@ abstract class Model implements \ArrayAccess
 
         foreach ($this->attributes as $column => $value) {
             if ($column !== 'id') {
-                $fields[] = "{$column} = ?";
+                $fields[] = Identifier::column((string) $column) . ' = ?';
                 $values[] = $value;
             }
         }
 
-        $sql = implode(', ', $fields);
-        $values[] = $this->attributes['id'];
+        if ($fields === []) {
+            return true;
+        }
 
+        $values[] = $this->attributes['id'];
         $stmt = $this->db->prepare(
-            "UPDATE {$this->table}
-             SET {$sql}
-             WHERE id = ?"
+            'UPDATE ' . Identifier::table($this->table)
+            . ' SET ' . implode(', ', $fields)
+            . ' WHERE id = ?'
         );
 
         $result = $stmt->execute($values);
@@ -199,12 +201,19 @@ abstract class Model implements \ArrayAccess
             return false;
         }
 
-        $columns = implode(',', array_keys($this->attributes));
-        $placeholders = implode(',', array_fill(0, count($this->attributes), '?'));
+        if ($this->attributes === []) {
+            throw new \InvalidArgumentException('Cannot insert an empty model.');
+        }
+
+        $columns = array_map(
+            static fn (mixed $column): string => Identifier::column((string) $column),
+            array_keys($this->attributes)
+        );
+        $placeholders = implode(',', array_fill(0, count($columns), '?'));
 
         $stmt = $this->db->prepare(
-            "INSERT INTO {$this->table} ({$columns})
-             VALUES ({$placeholders})"
+            'INSERT INTO ' . Identifier::table($this->table)
+            . ' (' . implode(',', $columns) . ') VALUES (' . $placeholders . ')'
         );
 
         $result = $stmt->execute(array_values($this->attributes));

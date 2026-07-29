@@ -25,12 +25,12 @@ class DocsRouteTest extends TestCase
         $response->assertSee('Installation');
     }
 
-    public function testDocsRouteRendersReleaseNotes(): void
+    public function testDocsRouteRendersInstallation(): void
     {
-        $response = $this->get('/docs/release-2.0.0-beta');
+        $response = $this->get('/docs/installation');
 
         $response->assertOk();
-        $response->assertSee('2.0.0-beta');
+        $response->assertSee('Install');
     }
 
     public function testUnknownDocsPageReturns500(): void

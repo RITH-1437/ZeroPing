@@ -8,7 +8,7 @@
 
 <p align="center">
   <strong>Clean. Expressive. Familiar.</strong><br>
-  A modern PHP framework built from scratch with zero external dependencies.
+  A modern PHP framework built from scratch.
 </p>
 
 <p align="center">
@@ -21,37 +21,11 @@
 
 ---
 
-## 📚 Documentation
-
-| Guide | Description |
-|-------|-------------|
-| 🚀 [Installation](INSTALLATION.md) | Install ZeroPing using Zero CLI, Composer, Docker, or from source. |
-| 📈 [Performance](PERFORMANCE.md) | Performance optimizations and best practices. |
-| 🗺️ [Roadmap](ROADMAP.md) | Current release, upcoming milestones, and future plans. |
-| 📦 [Release Process](RELEASING.md) | Release workflow and versioning strategy. |
-| 📝 [Changelog](CHANGELOG.md) | Version history and release notes. |
-| 🤝 [Contributing](CONTRIBUTING.md) | Contribution guidelines for developers. |
-| 🛡️ [Security Policy](SECURITY.md) | Report vulnerabilities and supported versions. |
-| ❤️ [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards and expected behavior. |
-| 💬 [Support](SUPPORT.md) | Get help via docs, discussions, and issues. |
-| ⬆️ [Upgrade Guide](UPGRADE.md) | Upgrade between ZeroPing versions. |
-| 📄 [License](LICENSE) | MIT License. |
-
 ## Introduction
 
 ZeroPing is a lightweight, modern PHP framework built from scratch with a clean MVC architecture, a fast dependency-injection container, an expressive ORM, validation, caching, a background queue, a task scheduler, and developer-friendly CLI tooling.
 
 It is free, open-source, and created by **Rin Nairith**.
-
-ZeroPing aims to be approachable for newcomers while remaining powerful enough for production applications — with zero magic, readable source, and no hidden configuration.
-
-## Why ZeroPing?
-
-- **Zero external runtime dependencies** — the framework runs on PHP alone.
-- **Readable source** — every component is designed to be understood by reading the code.
-- **Stable APIs** — breaking changes are rare and well-documented.
-- **375 tests, 900 assertions, 0 failures** — battle-tested from day one.
-- **Production-ready** — security, caching, queues, scheduling, and error handling built in.
 
 ## Features
 
@@ -67,9 +41,7 @@ ZeroPing aims to be approachable for newcomers while remaining powerful enough f
 | **Developer Experience** | CLI Tooling, Starter Templates, Debug Toolbar, Logging |
 | **Testing** | PHPUnit Integration, HTTP Assertions, Database Transactions |
 
-## Quick Start
-
-### Installation
+## Installation
 
 **Zero CLI** (recommended):
 
@@ -87,9 +59,9 @@ cd my-app
 php zero serve
 ```
 
-Open [http://localhost:1437](http://localhost:1437) — that's it.
+Open [http://localhost:1437](http://localhost:1437).
 
-### Build Your First App
+## Quick Start
 
 **1. Define a route** (`config/routes.php`):
 
@@ -133,42 +105,6 @@ php zero serve
 # open http://localhost:1437/hello
 ```
 
-## CLI Reference
-
-ZeroPing ships a batteries-included CLI. The most common commands:
-
-| Command | Description |
-|---------|-------------|
-| `php zero new my-app` | Create a new project |
-| `php zero serve` | Start the development server |
-| `php zero migrate` | Run database migrations |
-| `php zero make:controller HomeController` | Scaffold a controller |
-| `php zero make:model Post` | Scaffold a model |
-| `php zero route:list` | List registered routes |
-| `php zero doctor` | Verify your installation |
-| `php zero --help` | List all commands |
-
-## Project Structure
-
-```
-my-app/
-├── app/                  # Application code
-│   ├── Controllers/      # HTTP controllers
-│   ├── Models/           # ORM models
-│   ├── Middleware/       # HTTP middleware
-│   ├── Services/         # Business logic
-│   └── Providers/        # Service providers
-├── config/               # Configuration files
-├── public/               # Web entry point
-├── views/                # View templates
-├── database/
-│   └── migrations/       # Database migrations
-├── storage/              # Cache, logs, uploads
-├── tests/                # Unit & feature tests
-├── zero                  # CLI binary
-└── .env                  # Environment config
-```
-
 ## Documentation
 
 Full documentation is available at [zero-ping.duckdns.org](https://zero-ping.duckdns.org):
@@ -179,44 +115,16 @@ Full documentation is available at [zero-ping.duckdns.org](https://zero-ping.duc
 | [Installation](https://zero-ping.duckdns.org/installation) | Install and configure ZeroPing |
 | [Getting Started](https://zero-ping.duckdns.org/getting-started) | Build your first app |
 | [CLI Reference](https://zero-ping.duckdns.org/docs/cli) | Complete CLI command reference |
-| [Routing](https://zero-ping.duckdns.org/docs/introduction) | Routes, groups, middleware |
 | [Database & ORM](https://zero-ping.duckdns.org/docs/database) | Models, relationships, migrations |
 | [Validation](https://zero-ping.duckdns.org/docs/validation) | Rules, FluentValidator, FormRequest |
 | [Caching](https://zero-ping.duckdns.org/docs/caching) | File, array, and database cache |
 | [Queues](https://zero-ping.duckdns.org/docs/queues) | Background job processing |
 | [Scheduler](https://zero-ping.duckdns.org/docs/scheduler) | Task scheduling |
 | [Security](https://zero-ping.duckdns.org/docs/security) | Encryption, hashing, CSRF |
-| [API Reference](https://zero-ping.duckdns.org/api) | Classes, methods, namespaces |
-| [Roadmap](https://zero-ping.duckdns.org/roadmap) | Where ZeroPing is heading |
-
-## Starter Templates
-
-Scaffold a complete project from a pre-built template:
-
-```bash
-php zero new empty       # minimal skeleton
-php zero new mvc         # full CRUD with user management
-php zero new blog        # blog with posts and pagination
-php zero new api         # RESTful API boilerplate
-```
-
-## Community
-
-- **Discussions**: [GitHub Discussions](https://github.com/rith-1437/ZeroPing/discussions) — ask questions and share ideas
-- **Issues**: [GitHub Issues](https://github.com/rith-1437/ZeroPing/issues) — report bugs and request features
-- **Security**: [Security Policy](SECURITY.md) — report vulnerabilities privately
 
 ## Contributing
 
-Thank you for considering contributing to ZeroPing! Please read the [contribution guide](CONTRIBUTING.md) before opening a pull request.
-
-## Code of Conduct
-
-To ensure the ZeroPing community stays welcoming to everyone, please review and abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within ZeroPing, please review our [security policy](SECURITY.md) for responsible disclosure instructions. You can report issues privately to **Rin Nairith** at [nairithrin143@gmail.com](mailto:nairithrin143@gmail.com).
+Thank you for considering contributing to ZeroPing! Please read the [contribution guide](CONTRIBUTING.md).
 
 ## License
 
