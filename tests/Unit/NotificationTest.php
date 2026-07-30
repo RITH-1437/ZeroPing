@@ -29,8 +29,36 @@ class NotificationTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->logFile = BASE_PATH . '/storage/logs/zeroping.log';
+        // Use the path configured in config/logging.php (app.log), falling
+        // back to the FileLogger default. Never hardcode zeroping.log.
+        $configured = function_exists('config') ? config('logging.path') : null;
+        $this->logFile = (is_string($configured) && $configured !== '')
+            ? $configured
+            : BASE_PATH . '/storage/logs/app.log';
+
+        // Ensure the log directory exists then truncate the file so each test
+        // starts from a clean slate and assertions only cover what this test
+        // wrote — not left-over content from earlier tests or prior runs.
+        $logDir = dirname($this->logFile);
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        file_put_contents($this->logFile, '');
+
+        // Inject a fresh FileLogger pointing at the known path so the Log
+        // facade never resolves a stale cached instance from a prior test or
+        // from the bootstrap App instance.
+        \App\Core\Support\Log::setLogger(
+            new \App\Core\Logging\FileLogger($this->logFile)
+        );
+
         Config::set('mail.default', 'array');
+    }
+
+    protected function tearDown(): void
+    {
+        // Reset static logger cache after each test to avoid cross-test leakage.
+        \App\Core\Support\Log::setLogger(null);
     }
 
     private function mailManager(): MailManager
