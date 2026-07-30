@@ -1,15 +1,16 @@
 <?php require_once __DIR__ . '/../components/component.php'; ?>
 <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-animate>
     <?php render_component('breadcrumb', ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Documentation']]]); ?>
-    <h1 class="mt-6 text-4xl sm:text-5xl font-extrabold tracking-tight text-zp-ink">Documentation Portal</h1>
-    <p class="mt-4 text-zp-desc">Search-ready docs with markdown rendering, table of contents, copyable code blocks, and sequential navigation.</p>
-
-    <div class="mt-8 grid sm:grid-cols-2 gap-4" data-animate-stagger>
-        <?php foreach (($documents ?? []) as $doc): ?>
-            <a href="/docs/<?= htmlspecialchars($doc['slug'], ENT_QUOTES, 'UTF-8') ?>" class="group block relative rounded-2xl border border-zp-border bg-zp-surface p-5 shadow-sm hover:shadow-lg hover:shadow-cyan-500/5 dark:hover:shadow-cyan-500/5 hover:-translate-y-0.5 focus-ring transition-all duration-300">
-                <h2 class="font-semibold text-lg text-zp-ink group-hover:text-zp-link transition-colors"><?= htmlspecialchars($doc['title'], ENT_QUOTES, 'UTF-8') ?></h2>
-                <p class="mt-2 text-sm text-zp-desc"><?= htmlspecialchars($doc['description'], ENT_QUOTES, 'UTF-8') ?></p>
-            </a>
+    <div class="mt-6 grid gap-8 rounded-3xl border border-zp-border bg-zp-surface/75 p-7 shadow-sm sm:p-10 lg:grid-cols-[1fr_310px] lg:items-end">
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-zp-link">Documentation</p><h1 class="mt-3 font-display text-4xl font-bold tracking-[-.045em] text-zp-ink sm:text-5xl">Answers that keep you in flow.</h1><p class="mt-4 max-w-2xl text-lg leading-8 text-zp-desc">Start with a guided path, search from anywhere, or go straight to the framework surface you need.</p></div>
+        <button type="button" data-search-open class="group flex w-full items-center justify-between rounded-xl border border-zp-border bg-zp-bg px-4 py-3 text-left text-sm text-zp-muted transition hover:border-teal-500/35 hover:bg-teal-500/5 focus-ring" aria-label="Search documentation"><span class="flex items-center gap-3"><svg class="h-4 w-4 text-zp-link" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m2.2-5.3a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>Search documentation</span><kbd>Ctrl K</kbd></button>
+    </div>
+    <div class="mt-8 grid gap-4 md:grid-cols-3">
+        <?php foreach ([['New to ZeroPing?', 'Install and build your first feature.', '/getting-started', 'Start here'], ['Building an app?', 'Routing, database, validation, and security guides.', '/docs/introduction', 'Read guides'], ['Extending ZeroPing?', 'Packages, service providers, and conventions.', '/docs/extending', 'Extend it']] as [$title, $copy, $href, $cta]): ?>
+            <a href="<?= $href ?>" class="group rounded-2xl border border-zp-border bg-zp-surface/65 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/5 focus-ring"><h2 class="font-semibold text-zp-ink"><?= $title ?></h2><p class="mt-2 text-sm leading-6 text-zp-desc"><?= $copy ?></p><span class="mt-4 inline-flex text-sm font-bold text-zp-link group-hover:gap-2 transition-all"><?= $cta ?> <span aria-hidden="true">→</span></span></a>
         <?php endforeach; ?>
     </div>
+    <div class="mt-14"><div class="flex items-baseline justify-between gap-4"><h2 class="font-display text-2xl font-bold tracking-[-.03em] text-zp-ink">Browse all guides</h2><span class="text-xs text-zp-muted"><?= count($documents ?? []) ?> topics</span></div><div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-animate-stagger>
+        <?php foreach (($documents ?? []) as $doc): ?><a href="/docs/<?= htmlspecialchars($doc['slug'], ENT_QUOTES, 'UTF-8') ?>" class="group rounded-2xl border border-zp-border bg-zp-surface/70 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/5 focus-ring"><h3 class="font-semibold text-zp-ink group-hover:text-zp-link"><?= htmlspecialchars($doc['title'], ENT_QUOTES, 'UTF-8') ?></h3><p class="mt-2 text-sm leading-6 text-zp-desc"><?= htmlspecialchars($doc['description'], ENT_QUOTES, 'UTF-8') ?></p><span class="mt-4 inline-flex text-xs font-bold uppercase tracking-wider text-zp-link">Read guide <span class="ml-1" aria-hidden="true">→</span></span></a><?php endforeach; ?>
+    </div></div>
 </section>

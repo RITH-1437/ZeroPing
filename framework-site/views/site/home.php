@@ -114,9 +114,9 @@
     <?php
     $ecosystem = [
       ['title' => 'ZeroPing Framework', 'desc' => 'Core framework with MVC, ORM, CLI, and all batteries included.', 'icon' => 'package.png', 'href' => '/'],
-      ['title' => 'ZeroPing Arena', 'desc' => 'Performance benchmarking and optimization playground.', 'icon' => 'core.png', 'href' => '/arena', 'disabled' => true],
-      ['title' => 'CLI Tooling', 'desc' => 'Scaffolding, migrations, testing, and maintenance from the terminal.', 'icon' => 'cli.png', 'href' => '#'],
-      ['title' => 'Packages', 'desc' => 'Modular packages extending ZeroPing with queues, mail, and more.', 'icon' => 'container.png', 'href' => '#'],
+      ['title' => 'ZeroPing Arena', 'desc' => 'Performance benchmarking and optimization playground.', 'icon' => 'core.png', 'href' => '/arena'],
+      ['title' => 'CLI Tooling', 'desc' => 'Scaffolding, migrations, testing, and maintenance from the terminal.', 'icon' => 'cli.png', 'href' => '/docs/cli'],
+      ['title' => 'Packages', 'desc' => 'Modular packages extending ZeroPing with queues, mail, and more.', 'icon' => 'container.png', 'href' => '/packages'],
       ['title' => 'Documentation', 'desc' => 'Comprehensive docs with search, examples, and guided navigation.', 'icon' => 'documentation.png', 'href' => '/docs/introduction'],
       ['title' => 'Community', 'desc' => 'GitHub discussions, issues, and contributions from the community.', 'icon' => 'community.png', 'href' => 'https://github.com/RITH-1437/ZeroPing/discussions'],
     ];

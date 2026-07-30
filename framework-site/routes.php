@@ -4,28 +4,25 @@ use App\Core\Routing\Router;
 use FrameworkSite\SearchController;
 use FrameworkSite\WebsiteController;
 
-/*
- * Framework website routes.
- *
- * This file is loaded ONLY when running the ZeroPing repository itself
- * (i.e. when framework-site/ is present). Generated applications do not ship
- * framework-site/, so these routes are never registered for them.
- */
-
+/* Official ZeroPing framework-site routes. These are registered only from the repository. */
 Router::get('/', [WebsiteController::class, 'home']);
+Router::get('/arena', [WebsiteController::class, 'arena']);
 Router::get('/features', [WebsiteController::class, 'features']);
 Router::get('/installation', [WebsiteController::class, 'installation']);
 Router::get('/getting-started', [WebsiteController::class, 'gettingStarted']);
 Router::get('/docs', [WebsiteController::class, 'documentation']);
-Router::get('/docs/{page}', fn($page) => (new WebsiteController())->docs($page));
+Router::get('/docs/{page}', fn ($page) => (new WebsiteController())->docs($page));
 Router::get('/api', [WebsiteController::class, 'api']);
+Router::get('/packages', [WebsiteController::class, 'packages']);
+Router::get('/examples', [WebsiteController::class, 'examples']);
+Router::get('/changelog', [WebsiteController::class, 'changelog']);
+Router::get('/blog', [WebsiteController::class, 'blog']);
 Router::get('/roadmap', [WebsiteController::class, 'roadmap']);
 Router::get('/github', [WebsiteController::class, 'github']);
 Router::get('/community', [WebsiteController::class, 'community']);
+Router::get('/sponsors', [WebsiteController::class, 'sponsors']);
 Router::get('/search', [SearchController::class, 'search']);
 
-Router::get('/up', function () {
-    return response()
-        ->json(['status' => 'ok', 'timestamp' => time()])
-        ->send();
+Router::get('/up', static function () {
+    return response()->json(['status' => 'ok', 'timestamp' => time()])->send();
 });

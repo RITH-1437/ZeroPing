@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../components/component.php';
 $pageTitle = $title ?? 'ZeroPing Framework';
 $activePage = $active ?? '';
+$pageDescription = $description ?? 'ZeroPing Framework official website and documentation.';
+$pageStyles = $pageStyles ?? [];
+$pageScripts = $pageScripts ?? [];
+$footerComponent = $footerComponent ?? 'arena-terminal-footer';
+$bodyClass = $bodyClass ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -9,17 +14,15 @@ $activePage = $active ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="description" content="ZeroPing Framework official website and documentation.">
-    <meta property="og:title" content="ZeroPing — Modern PHP Framework">
-    <meta property="og:description" content="Fast. Simple. Elegant. A lightweight PHP framework built from scratch with zero external dependencies.">
+    <meta name="description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:image" content="https://zero-ping.duckdns.org/assets/images/og-image.svg">
     <meta property="og:url" content="https://zero-ping.duckdns.org">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/svg+xml" href="/assets/images/mascot.svg">
     <link rel="apple-touch-icon" href="/assets/images/app-icon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- System font stack avoids render-blocking third-party font requests. -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
@@ -397,18 +400,45 @@ $activePage = $active ?? '';
             }
         })();
     </script>
+    <link rel="stylesheet" href="/assets/css/framework-site.css">
+    <link rel="stylesheet" href="/assets/css/terminal-footer.css">
+    <?php foreach ($pageStyles as $stylesheet): ?>
+        <link rel="stylesheet" href="<?= htmlspecialchars((string) $stylesheet, ENT_QUOTES, 'UTF-8') ?>">
+    <?php endforeach; ?>
+    <script>
+        (function () {
+            if (localStorage.getItem('zp-theme') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                var main = document.querySelector('main');
+                if (main) main.id = 'main-content';
+                document.querySelectorAll('[data-search-open]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        var modal = document.getElementById('search-modal');
+                        var input = document.getElementById('search-modal-input');
+                        if (!modal) return;
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                        document.body.style.overflow = 'hidden';
+                        window.setTimeout(function () { if (input) input.focus(); }, 50);
+                    });
+                });
+            });
+        })();
+    </script>
 </head>
-<body class="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased scrollbar-stable">
+<body class="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased scrollbar-stable <?= htmlspecialchars($bodyClass, ENT_QUOTES, 'UTF-8') ?>">
     <div class="fixed inset-0 -z-10 bg-radial-gradient"></div>
     <div class="fixed inset-0 -z-10 bg-grid"></div>
 
     <?php render_component('navbar', ['active' => $activePage]); ?>
 
-    <main class="pb-20 page-fade-in">
+    <main id="main-content" class="pb-20 page-fade-in">
         <?= $content ?>
     </main>
 
-    <?php render_component('footer'); ?>
+    <?php render_component($footerComponent); ?>
 
     <div id="search-modal" class="fixed inset-0 z-[100] hidden items-start justify-center pt-[15vh]" role="dialog" aria-modal="true" aria-label="Search documentation">
         <div class="search-modal-overlay absolute inset-0" data-search-close></div>
@@ -468,6 +498,88 @@ $activePage = $active ?? '';
                 }
             });
         });
+
+        // Smart desktop dropdowns: open immediately on hover, but close with a
+        // short intent buffer so the pointer can cross into the popover safely.
+        const navDropdowns = Array.from(document.querySelectorAll('[data-nav-dropdown]'));
+        const hoverNavigation = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+        const dropdownCloseTimers = new WeakMap();
+
+        const clearDropdownTimer = (menu) => {
+            const timer = dropdownCloseTimers.get(menu);
+            if (timer) window.clearTimeout(timer);
+            dropdownCloseTimers.delete(menu);
+        };
+
+        const closeDropdown = (menu) => {
+            clearDropdownTimer(menu);
+            menu.open = false;
+        };
+
+        const openDropdown = (menu) => {
+            clearDropdownTimer(menu);
+            navDropdowns.forEach((other) => {
+                if (other !== menu) closeDropdown(other);
+            });
+            menu.open = true;
+        };
+
+        navDropdowns.forEach((menu) => {
+            const summary = menu.querySelector('summary');
+            if (!summary) return;
+
+            menu.addEventListener('pointerenter', () => {
+                if (hoverNavigation.matches) openDropdown(menu);
+            });
+
+            menu.addEventListener('pointerleave', () => {
+                if (!hoverNavigation.matches) return;
+                clearDropdownTimer(menu);
+                dropdownCloseTimers.set(menu, window.setTimeout(() => {
+                    const focused = document.activeElement;
+                    if (!menu.contains(focused) || focused === summary) closeDropdown(menu);
+                }, 140));
+            });
+
+            // A mouse click on an already hover-open summary should not toggle it
+            // closed. Keyboard activation (detail === 0) and touch remain native.
+            summary.addEventListener('click', (event) => {
+                if (hoverNavigation.matches && event.detail > 0) {
+                    event.preventDefault();
+                    openDropdown(menu);
+                }
+            });
+
+            menu.addEventListener('focusin', () => clearDropdownTimer(menu));
+            menu.addEventListener('focusout', () => {
+                window.setTimeout(() => {
+                    if (!menu.contains(document.activeElement)) closeDropdown(menu);
+                }, 0);
+            });
+
+            menu.addEventListener('keydown', (event) => {
+                if (event.key !== 'Escape') return;
+                event.preventDefault();
+                closeDropdown(menu);
+                summary.focus();
+            });
+
+            menu.addEventListener('toggle', () => {
+                if (!menu.open) return;
+                navDropdowns.forEach((other) => {
+                    if (other !== menu) closeDropdown(other);
+                });
+            });
+        });
+
+        document.addEventListener('pointerdown', (event) => {
+            if (navDropdowns.some((menu) => menu.contains(event.target))) return;
+            navDropdowns.forEach(closeDropdown);
+        });
+
+        const resetDropdowns = () => navDropdowns.forEach(closeDropdown);
+        if (hoverNavigation.addEventListener) hoverNavigation.addEventListener('change', resetDropdowns);
+        else if (hoverNavigation.addListener) hoverNavigation.addListener(resetDropdowns);
 
         // Copy code (improved)
         document.querySelectorAll('.copy-code-btn').forEach((btn) => {
@@ -685,5 +797,8 @@ $activePage = $active ?? '';
             }
         });
     </script>
+    <?php foreach ($pageScripts as $script): ?>
+        <script src="<?= htmlspecialchars((string) $script, ENT_QUOTES, 'UTF-8') ?>" defer></script>
+    <?php endforeach; ?>
 </body>
 </html>
