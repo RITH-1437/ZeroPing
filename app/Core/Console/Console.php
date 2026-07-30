@@ -131,7 +131,7 @@ class Console
         $params = $reflection->getParameters();
 
         if (count($params) === 0) {
-            $instance->handle();
+            $reflection->invoke($instance);
             return;
         }
 
@@ -139,7 +139,7 @@ class Console
         $type = $firstParam->getType();
 
         if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
-            $instance->handle($args);
+            $reflection->invoke($instance, $args);
             return;
         }
 
@@ -150,16 +150,16 @@ class Console
                 $secondParam = $params[1];
                 $secondType = $secondParam->getType();
                 if ($secondType instanceof \ReflectionNamedType && $secondType->getName() === 'array') {
-                    $instance->handle($firstArg, array_slice($args, 1));
+                    $reflection->invoke($instance, $firstArg, array_slice($args, 1));
                     return;
                 }
             }
 
-            $instance->handle($firstArg);
+            $reflection->invoke($instance, $firstArg);
             return;
         }
 
-        $instance->handle();
+        $reflection->invoke($instance);
     }
 
     /**
@@ -178,7 +178,7 @@ class Console
         $params = $reflection->getParameters();
 
         if (count($params) === 0) {
-            $instance->handle();
+            $reflection->invoke($instance);
             return;
         }
 
@@ -187,7 +187,7 @@ class Console
 
         // handle(array $args) — pass the full args array
         if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
-            $instance->handle($args);
+            $reflection->invoke($instance, $args);
             return;
         }
 
@@ -200,17 +200,17 @@ class Console
                 $secondParam = $params[1];
                 $secondType = $secondParam->getType();
                 if ($secondType instanceof \ReflectionNamedType && $secondType->getName() === 'array') {
-                    $instance->handle($firstArg, array_slice($args, 1));
+                    $reflection->invoke($instance, $firstArg, array_slice($args, 1));
                     return;
                 }
             }
 
-            $instance->handle($firstArg);
+            $reflection->invoke($instance, $firstArg);
             return;
         }
 
         // Fallback: call with no args
-        $instance->handle();
+        $reflection->invoke($instance);
     }
 
     /**

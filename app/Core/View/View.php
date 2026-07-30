@@ -205,9 +205,9 @@ class View
      *
      * Convenience method that enforces a non-null layout parameter.
      *
-     * @param string $view   Dot-notation view name or namespaced view.
-     * @param array  $data   Variables available in the view.
-     * @param string $layout Layout name (e.g. "app", "guest", "admin").
+     * @param string               $view   Dot-notation view name or namespaced view.
+     * @param array<string, mixed> $data   Variables available in the view.
+     * @param string               $layout Layout name (e.g. "app", "guest", "admin").
      *
      * @return string The fully rendered HTML output.
      *

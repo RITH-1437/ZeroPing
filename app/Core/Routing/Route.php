@@ -45,10 +45,10 @@ class Route
     /**
      * Create a new Route instance.
      *
-     * @param string         $method      HTTP method.
-     * @param string         $uri         URI pattern.
-     * @param array|\Closure $action      Controller action or closure.
-     * @param array          $middleware  Middleware list.
+     * @param string                                   $method      HTTP method.
+     * @param string                                   $uri         URI pattern.
+     * @param array{0: class-string, 1: string}|\Closure $action      Controller action or closure.
+     * @param array<int, string>                        $middleware  Middleware list.
      */
     public function __construct(
         string $method,
@@ -134,7 +134,7 @@ class Route
     /**
      * Get the action (controller pair or closure).
      *
-     * @return array|\Closure
+     * @return array{0: class-string, 1: string}|\Closure
      */
     public function getAction(): array|\Closure
     {

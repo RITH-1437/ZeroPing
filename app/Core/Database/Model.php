@@ -41,7 +41,7 @@ use PDO;
  *
  * @method static QueryBuilder where(string $column, mixed $value, ?string $operator = null)
  * @method static QueryBuilder orWhere(string $column, mixed $value, ?string $operator = null)
- * @method static QueryBuilder whereIn(string $column, array $values)
+ * @method static QueryBuilder whereIn(string $column, array<int, mixed> $values)
  * @method static QueryBuilder whereNull(string $column)
  * @method static QueryBuilder whereNotNull(string $column)
  * @method static QueryBuilder orderBy(string $column, string $direction = 'ASC')
@@ -49,14 +49,14 @@ use PDO;
  * @method static QueryBuilder oldest(string $column = 'created_at')
  * @method static QueryBuilder limit(int $limit)
  * @method static QueryBuilder offset(int $offset)
- * @method static QueryBuilder select(string|array $columns = ['*'])
- * @method static QueryBuilder join(
- *     string $table, string $first, string $operator, string $second, string $type = 'INNER'
- * )
+ * @method static QueryBuilder select(string|array<int, string> $columns = ['*'])
+ * @method static QueryBuilder join(string $table, string $first, string $operator, string $second, string $type = 'INNER')
  * @method static QueryBuilder leftJoin(string $table, string $first, string $operator, string $second)
- * @method static QueryBuilder groupBy(string|array $columns)
+ * @method static QueryBuilder groupBy(string|array<int, string> $columns)
  * @method static QueryBuilder having(string $column, string $operator, mixed $value)
  * @method static \App\Core\ORM\Pagination\Paginator paginate(int $perPage = 15, int $currentPage = 1)
+ *
+ * @property mixed $id
  */
 abstract class Model implements \ArrayAccess
 {

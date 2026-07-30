@@ -456,6 +456,9 @@ class QueryBuilder
     /**
      * Find a record by primary key or throw.
      *
+     * @param mixed                 $id
+     * @param string|array<int, string> $columns
+     *
      * @throws ModelNotFoundException
      */
     public function findOrFail(mixed $id, string|array $columns = ['*']): mixed

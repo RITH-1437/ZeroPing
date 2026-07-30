@@ -363,7 +363,6 @@ if (!function_exists('cache')) {
      * Called with a string key: retrieves the cached value.
      * Called with an array: stores the key/value pair.
      *
-     * @param  mixed  ...$arguments
      * @return mixed  CacheManager instance or cached value.
      *
      * @throws \InvalidArgumentException When arguments are invalid.

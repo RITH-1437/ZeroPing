@@ -34,6 +34,9 @@ abstract class Command
      */
     protected string $description = '';
 
+    // handle() is defined by each subclass with its own parameter signature.
+    // The Console dispatcher uses reflection to match arguments at runtime.
+
     /**
      * Parsed CLI options (flags and key=value pairs).
      *
@@ -464,7 +467,11 @@ abstract class Command
      */
     protected function autoDiscoverEnabled(): bool
     {
-        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?: 'true';
+        $envVal = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? null;
+        if ($envVal === null) {
+            $envVal = getenv('PACKAGE_AUTO_DISCOVER');
+        }
+        $flag = ($envVal !== false && $envVal !== '') ? (string) $envVal : 'true';
 
         return $flag !== 'false' && $flag !== '0';
     }
@@ -472,6 +479,7 @@ abstract class Command
     /**
      * Call another console command programmatically.
      *
+     * @param string             $command   The command name to call.
      * @param array<int, string> $arguments Additional arguments to pass.
      */
     protected function call(string $command, array $arguments = []): void

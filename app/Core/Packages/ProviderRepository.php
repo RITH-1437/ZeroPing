@@ -99,7 +99,7 @@ class ProviderRepository
             }
 
             foreach (($pkg['providers'] ?? []) as $provider) {
-                if (is_string($provider) && $provider !== '') {
+                if ($provider !== '') {
                     $providers[] = $provider;
                 }
             }

@@ -25,7 +25,11 @@ if (file_exists($configFile)) {
     $enabled = is_array($enabled) ? $enabled : [];
 }
 
-$flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?? 'true';
+$envVal = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? null;
+if ($envVal === null) {
+    $envVal = getenv('PACKAGE_AUTO_DISCOVER');
+}
+$flag = ($envVal !== false && $envVal !== '') ? (string) $envVal : 'true';
 $autoDiscover = $flag !== 'false' && $flag !== '0';
 
 $manifest = $repo->buildManifest($enabled, $autoDiscover);

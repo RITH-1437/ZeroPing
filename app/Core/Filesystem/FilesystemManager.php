@@ -32,7 +32,7 @@ class FilesystemManager
     /**
      * Custom driver resolvers.
      *
-     * @var array<string, callable(array): FilesystemDriver>
+     * @var array<string, callable(array<string, mixed>): mixed>
      */
     protected array $customDrivers = [];
 

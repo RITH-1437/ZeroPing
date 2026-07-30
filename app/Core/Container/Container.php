@@ -240,10 +240,8 @@ class Container
     /**
      * Resolve a class from the container.
      *
-     * @template T of object
-     *
-     * @param class-string<T>|string $abstract The abstract type or class name.
-     * @return T|object The resolved instance.
+     * @param class-string|string $abstract The abstract type or class name.
+     * @return object The resolved instance.
      *
      * @throws Exception When the class cannot be resolved or built.
      */
@@ -268,10 +266,8 @@ class Container
      * and convention-based auto-discovery of interface implementations
      * (e.g. Foo\BarInterface → Foo\Bar).
      *
-     * @template T of object
-     *
-     * @param class-string<T>|string $abstract The abstract type or class name.
-     * @return T|object The resolved instance.
+     * @param class-string|string $abstract The abstract type or class name.
+     * @return object The resolved instance.
      *
      * @throws Exception When the class cannot be resolved or built.
      */

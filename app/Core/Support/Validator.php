@@ -24,8 +24,8 @@ class Validator
     /**
      * Create a new Validator instance.
      *
-     * @param array<string, mixed>    $data  The data to validate.
-     * @param array<string, string[]> $rules The validation rules.
+     * @param array<string, mixed>                      $data  The data to validate.
+     * @param array<string, string|array<int, string>>  $rules The validation rules.
      */
     public function __construct(array $data = [], array $rules = [])
     {
@@ -37,8 +37,8 @@ class Validator
      *
      * Creates a fresh validator instance and checks if validation passes.
      *
-     * @param array<string, mixed>    $data  The data to validate.
-     * @param array<string, string[]> $rules The validation rules.
+     * @param array<string, mixed>                      $data  The data to validate.
+     * @param array<string, string|array<int, string>>  $rules The validation rules.
      *
      * @return bool True if validation passes.
      */

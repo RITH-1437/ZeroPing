@@ -42,9 +42,9 @@ class Validator
     /**
      * Create a new validator instance.
      *
-     * @param array<string, mixed>  $data     The data to validate.
-     * @param array<string, string> $rules    The validation rules keyed by field name.
-     * @param array<string, string> $messages Custom error messages keyed by "field.rule" notation.
+     * @param array<string, mixed>                      $data     The data to validate.
+     * @param array<string, string|array<int, string>>  $rules    The validation rules keyed by field name.
+     * @param array<string, string>                     $messages Custom error messages keyed by "field.rule" notation.
      */
     public function __construct(
         protected array $data,
@@ -57,9 +57,9 @@ class Validator
     /**
      * Create a new validator instance statically.
      *
-     * @param array<string, mixed>  $data     The data to validate.
-     * @param array<string, string> $rules    The validation rules keyed by field name.
-     * @param array<string, string> $messages Custom error messages keyed by "field.rule" notation.
+     * @param array<string, mixed>                      $data     The data to validate.
+     * @param array<string, string|array<int, string>>  $rules    The validation rules keyed by field name.
+     * @param array<string, string>                     $messages Custom error messages keyed by "field.rule" notation.
      *
      * @return static
      */
@@ -200,14 +200,18 @@ class Validator
     }
 
     /**
-     * Split a pipe-delimited rule string into individual rule definitions.
+     * Split a pipe-delimited rule string (or array) into individual rule definitions.
      *
-     * @param string $ruleString The pipe-delimited rule string.
+     * @param string|array<int, string> $ruleString The pipe-delimited rule string or array of rules.
      *
      * @return string[] The individual rule strings.
      */
-    protected function splitRules(string $ruleString): array
+    protected function splitRules(string|array $ruleString): array
     {
+        if (is_array($ruleString)) {
+            return $ruleString;
+        }
+
         return array_filter(
             array_map('trim', explode('|', $ruleString)),
             static fn(string $rule): bool => $rule !== ''
@@ -258,7 +262,7 @@ class Validator
      * @param string                              $field      The field name.
      * @param string                              $ruleName   The rule name.
      * @param \App\Core\Validation\Rules\Rule     $rule       The rule instance.
-     * @param array                               $parameters The rule parameters.
+     * @param array<int, string>                   $parameters The rule parameters.
      *
      * @return string The resolved error message.
      */

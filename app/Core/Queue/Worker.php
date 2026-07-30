@@ -137,7 +137,7 @@ class Worker
         if ($timeout > 0 && function_exists('pcntl_alarm')) {
             pcntl_alarm($timeout);
 
-            $previousHandler = pcntl_signal(SIGALRM, function () use ($job, $timeout): void {
+            pcntl_signal(SIGALRM, function () use ($job, $timeout): void {
                 throw new \RuntimeException(sprintf(
                     'Job [%s] has timed out after %d seconds.',
                     get_class($job),
@@ -149,9 +149,7 @@ class Worker
                 $job->handle();
             } finally {
                 pcntl_alarm(0);
-                if ($previousHandler !== false) {
-                    pcntl_signal(SIGALRM, $previousHandler);
-                }
+                pcntl_signal(SIGALRM, SIG_DFL);
             }
         } else {
             $job->handle();

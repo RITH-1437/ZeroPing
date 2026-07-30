@@ -196,7 +196,7 @@ trait Frequency
     {
         $dayOfWeek = max(0, min(6, $dayOfWeek));
         $parts = explode(':', $time);
-        $hour = (int) ($parts[0] ?? 0);
+        $hour = (int) $parts[0];
         $minute = (int) ($parts[1] ?? 0);
 
         return $this->cron("{$minute} {$hour} * * {$dayOfWeek}");
@@ -223,7 +223,7 @@ trait Frequency
     {
         $dayOfMonth = max(1, min(31, $dayOfMonth));
         $parts = explode(':', $time);
-        $hour = (int) ($parts[0] ?? 0);
+        $hour = (int) $parts[0];
         $minute = (int) ($parts[1] ?? 0);
 
         return $this->cron("{$minute} {$hour} {$dayOfMonth} * *");

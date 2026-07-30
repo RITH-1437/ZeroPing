@@ -19,7 +19,11 @@ class CommandRegistry
     /**
      * Map of command signature => fully-qualified class name.
      *
-     * @var array<string, class-string<Command>>
+     * Values may be either class-string<Command> (for auto-discovered commands
+     * that extend the base Command class) or any class-string for standalone
+     * command objects (e.g. NewCommand) that are registered manually.
+     *
+     * @var array<string, class-string>
      */
     private array $commands = [];
 
@@ -31,7 +35,10 @@ class CommandRegistry
     /**
      * Register a command class by its signature.
      *
-     * @param class-string<Command> $class
+     * Accepts any class string — both Command subclasses (auto-discovered)
+     * and standalone command objects (manually registered).
+     *
+     * @param class-string $class
      */
     public function register(string $signature, string $class): void
     {
@@ -41,7 +48,7 @@ class CommandRegistry
     /**
      * Register multiple commands at once.
      *
-     * @param array<string, class-string<Command>> $commands
+     * @param array<string, class-string> $commands
      */
     public function registerMany(array $commands): void
     {
@@ -53,7 +60,7 @@ class CommandRegistry
     /**
      * Resolve a command class by signature, returning null if not found.
      *
-     * @return class-string<Command>|null
+     * @return class-string|null
      */
     public function resolve(string $signature): ?string
     {
@@ -75,7 +82,7 @@ class CommandRegistry
     /**
      * Return all registered commands keyed by signature.
      *
-     * @return array<string, class-string<Command>>
+     * @return array<string, class-string>
      */
     public function all(): array
     {

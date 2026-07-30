@@ -3,7 +3,7 @@
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
-use App\Core\Support\Validator;
+use App\Core\Validation\Validator;
 
 class ValidateTestCommand extends Command
 {
@@ -30,8 +30,6 @@ class ValidateTestCommand extends Command
     {
         $this->info('Testing validator...');
 
-        $validator = new Validator();
-
         $data = [
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
@@ -49,7 +47,7 @@ class ValidateTestCommand extends Command
             'website' => 'nullable|url',
         ];
 
-        $validator->validate($data, $rules);
+        $validator = Validator::make($data, $rules);
 
         $this->assert($validator->passes(), 'validator passes');
 

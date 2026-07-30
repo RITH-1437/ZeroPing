@@ -31,11 +31,12 @@ class QueueListenCommand extends Command
     {
         $worker = new Worker(new QueueManager());
         $worker->run(
-            $this->option('connection') ?? 'sync',
-            $this->option('queue'),
-            0,
-            (int) ($this->option('sleep') ?? 3),
-            (int) ($this->option('tries') ?? 1)
+            (string) ($this->option('connection') ?? 'sync'),
+            $this->option('queue') !== null ? (string) $this->option('queue') : null,
+            new \App\Core\Queue\WorkerOptions(
+                sleep: (int) ($this->option('sleep') ?? 3),
+                maxTries: (int) ($this->option('tries') ?? 1),
+            )
         );
     }
 }

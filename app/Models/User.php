@@ -4,6 +4,18 @@ namespace App\Models;
 
 use App\Core\Database\Model;
 
+/**
+ * @property int|null $id
+ * @property string|null $first_name
+ * @property string|null $last_name
+ * @property string|null $username
+ * @property string|null $email
+ * @property string|null $password
+ * @property string|null $phone
+ * @property string|null $avatar
+ * @property string|null $remember_token
+ * @property string|null $email_verified_at
+ */
 class User extends Model
 {
     protected string $table = 'users';

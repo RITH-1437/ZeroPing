@@ -106,9 +106,9 @@ class Router
     /**
      * Register a GET route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function get(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -119,9 +119,9 @@ class Router
     /**
      * Register a POST route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function post(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -132,9 +132,9 @@ class Router
     /**
      * Register a PUT route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function put(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -145,9 +145,9 @@ class Router
     /**
      * Register a PATCH route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function patch(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -158,9 +158,9 @@ class Router
     /**
      * Register a DELETE route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function delete(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -171,9 +171,9 @@ class Router
     /**
      * Register an OPTIONS route.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function options(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -184,9 +184,9 @@ class Router
     /**
      * Register a route for ALL HTTP methods.
      *
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function any(string $uri, array|\Closure $action, array $middleware = []): Route
@@ -204,10 +204,10 @@ class Router
     /**
      * Register a route that responds to multiple HTTP methods.
      *
-     * @param array<int, string> $methods
-     * @param string             $uri
-     * @param array|\Closure     $action
-     * @param array              $middleware
+     * @param array<int, string>                        $methods
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     public static function match(array $methods, string $uri, array|\Closure $action, array $middleware = []): Route
@@ -546,10 +546,10 @@ class Router
     /**
      * Add a single route to the registry.
      *
-     * @param string         $method
-     * @param string         $uri
-     * @param array|\Closure $action
-     * @param array          $middleware
+     * @param string                                   $method
+     * @param string                                   $uri
+     * @param array{0: class-string, 1: string}|\Closure $action
+     * @param array<int, string>                        $middleware
      * @return Route
      */
     private static function addRoute(string $method, string $uri, array|\Closure $action, array $middleware): Route

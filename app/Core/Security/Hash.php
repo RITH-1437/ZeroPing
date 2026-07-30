@@ -49,10 +49,6 @@ class Hash
 
         $hash = password_hash($value, $algorithm, $options);
 
-        if ($hash === false) {
-            throw new \RuntimeException('Password hashing failed.');
-        }
-
         return $hash;
     }
 
@@ -120,9 +116,9 @@ class Hash
      *
      * Returns PASSWORD_ARGON2ID if available, otherwise PASSWORD_BCRYPT.
      *
-     * @return string|int The algorithm constant.
+     * @return string The algorithm constant.
      */
-    private static function preferredAlgorithm(): string|int
+    private static function preferredAlgorithm(): string
     {
         if (defined('PASSWORD_ARGON2ID')) {
             return PASSWORD_ARGON2ID;

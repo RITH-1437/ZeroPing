@@ -388,7 +388,11 @@ class App
      */
     private function packageAutoDiscoverEnabled(): bool
     {
-        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?: 'true';
+        $envVal = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? null;
+        if ($envVal === null) {
+            $envVal = getenv('PACKAGE_AUTO_DISCOVER');
+        }
+        $flag = ($envVal !== false && $envVal !== '') ? (string) $envVal : 'true';
 
         return $flag !== 'false' && $flag !== '0';
     }
