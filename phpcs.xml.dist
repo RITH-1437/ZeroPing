@@ -65,6 +65,7 @@
     <exclude-pattern>*/Templates/*</exclude-pattern>
     <exclude-pattern>*bootstrap/cache/*</exclude-pattern>
 
+    <arg name="extensions" value="php"/>
     <arg name="colors"/>
     <arg value="s"/>
     <ini name="memory_limit" value="256M"/>

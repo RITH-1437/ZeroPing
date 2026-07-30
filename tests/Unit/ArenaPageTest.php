@@ -51,5 +51,4 @@ class ArenaPageTest extends TestCase
         $this->assertStringNotContainsString('Made with', $html);
         $this->assertStringNotContainsString('Cambodia', $html);
     }
-
 }
