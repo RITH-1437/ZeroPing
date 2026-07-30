@@ -405,7 +405,9 @@ class LocalDriver implements FilesystemDriver
         $permission = match ($visibility) {
             'public' => $this->publicPermission,
             'private' => $this->privatePermission,
-            default => throw new FilesystemException("Invalid visibility: {$visibility}. Must be 'public' or 'private'."),
+            default => throw new FilesystemException(
+                "Invalid visibility: {$visibility}. Must be 'public' or 'private'."
+            ),
         };
 
         return chmod($location, $permission);

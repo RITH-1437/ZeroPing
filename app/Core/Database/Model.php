@@ -50,7 +50,9 @@ use PDO;
  * @method static QueryBuilder limit(int $limit)
  * @method static QueryBuilder offset(int $offset)
  * @method static QueryBuilder select(string|array $columns = ['*'])
- * @method static QueryBuilder join(string $table, string $first, string $operator, string $second, string $type = 'INNER')
+ * @method static QueryBuilder join(
+ *     string $table, string $first, string $operator, string $second, string $type = 'INNER'
+ * )
  * @method static QueryBuilder leftJoin(string $table, string $first, string $operator, string $second)
  * @method static QueryBuilder groupBy(string|array $columns)
  * @method static QueryBuilder having(string $column, string $operator, mixed $value)

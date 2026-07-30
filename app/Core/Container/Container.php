@@ -62,7 +62,10 @@ class Container
      * Stores extracted type info for constructor parameters so reflection
      * is only performed once per class, even across different container instances.
      *
-     * @var array<string, array<int, array{name: string, type: string|null, builtin: bool, hasDefault: bool, default: mixed, declaringClass: string|null}>|null>
+     * @var array<string, array<int, array{
+     *     name: string, type: string|null, builtin: bool,
+     *     hasDefault: bool, default: mixed, declaringClass: string|null
+     * }>|null>
      */
     protected static array $parameterCache = [];
 
@@ -440,7 +443,10 @@ class Container
      *
      * @param string $class
      * @param \ReflectionMethod $constructor
-     * @return array<int, array{name: string, type: string|null, builtin: bool, hasDefault: bool, default: mixed, declaringClass: string|null}>|null
+     * @return array<int, array{
+     *     name: string, type: string|null, builtin: bool,
+     *     hasDefault: bool, default: mixed, declaringClass: string|null
+     * }>|null
      */
     protected function getParameterMeta(string $class, \ReflectionMethod $constructor): ?array
     {
@@ -476,7 +482,10 @@ class Container
     /**
      * Resolve a single constructor parameter from cached metadata.
      *
-     * @param array{name: string, type: string|null, builtin: bool, hasDefault: bool, default: mixed, declaringClass: string|null} $meta
+     * @param array{
+     *     name: string, type: string|null, builtin: bool,
+     *     hasDefault: bool, default: mixed, declaringClass: string|null
+     * } $meta
      * @return mixed The resolved value.
      *
      * @throws Exception When the parameter cannot be resolved.

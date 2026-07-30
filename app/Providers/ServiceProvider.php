@@ -91,7 +91,8 @@ abstract class ServiceProvider
      * Return an associative array where keys are event class names and values
      * are listener class names (or arrays of listener class names).
      *
-     * @return array<class-string, class-string<\App\Core\Events\Listener>|array<int, class-string<\App\Core\Events\Listener>>>
+     * @return array<class-string, class-string<\App\Core\Events\Listener>|array<int,
+     *                              class-string<\App\Core\Events\Listener>>>
      */
     public function listens(): array
     {

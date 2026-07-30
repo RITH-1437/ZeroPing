@@ -272,7 +272,13 @@ class CronExpression
 
         if ($start > $end) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid range "%s" at position %d: start (%d) is greater than end (%d).', $part, $position, $start, $end)
+                sprintf(
+                    'Invalid range "%s" at position %d: start (%d) is greater than end (%d).',
+                    $part,
+                    $position,
+                    $start,
+                    $end
+                )
             );
         }
 

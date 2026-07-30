@@ -26,7 +26,8 @@ class Hash
      * falling back to PASSWORD_BCRYPT with a cost factor of 12.
      *
      * @param string               $value   The plaintext value to hash.
-     * @param array<string, mixed> $options Algorithm-specific options (e.g., 'memory_cost', 'time_cost', 'threads' for Argon2).
+     * @param array<string, mixed> $options Algorithm-specific options
+     *                                       (e.g., 'memory_cost', 'time_cost', 'threads' for Argon2).
      * @return string The hashed value.
      */
     public static function make(string $value, array $options = []): string

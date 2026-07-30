@@ -47,7 +47,8 @@ class View
     /**
      * Pre-compiled regex pattern for view name validation (with namespace).
      */
-    private const VIEW_NAME_PATTERN = '/^(?:[A-Za-z_][A-Za-z0-9_]*::)?[A-Za-z_][A-Za-z0-9_]*(?:[.\/][A-Za-z_0-9][A-Za-z0-9_-]*)*$/D';
+    private const VIEW_NAME_PATTERN =
+        '/^(?:[A-Za-z_][A-Za-z0-9_]*::)?[A-Za-z_][A-Za-z0-9_]*(?:[.\/][A-Za-z_0-9][A-Za-z0-9_-]*)*$/D';
 
     /**
      * Pre-compiled regex pattern for layout name validation (without namespace).
