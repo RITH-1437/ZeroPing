@@ -11,6 +11,8 @@ use App\Core\Packages\StarterKit;
 
 class PackageCreateCommand extends Command
 {
+    protected string $signature = 'package:create';
+
     protected string $description = 'Scaffold a new ZeroPing package';
 
     public function handle(string $name): void

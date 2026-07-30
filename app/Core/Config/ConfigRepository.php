@@ -4,13 +4,24 @@ declare(strict_types=1);
 
 namespace App\Core\Config;
 
+/**
+ * Repository for storing and retrieving configuration values.
+ *
+ * Supports dot-notation for nested key access (e.g., "app.name").
+ * Internally maintains a flat resolution cache for frequently accessed
+ * keys to avoid repeated array traversal on hot paths.
+ */
 class ConfigRepository
 {
+    /**
+     * The raw configuration items (nested array tree).
+     *
+     * @var array<string, mixed>
+     */
     protected array $items = [];
 
     /**
-     * Resolved key => value cache. Config is read many times per request
-     * (often the same keys), so memoizing avoids repeated explode() walks.
+     * Resolved key => value cache to avoid repeated dot-notation walks.
      *
      * @var array<string, mixed>
      */
@@ -25,9 +36,13 @@ class ConfigRepository
     protected array $existsCache = [];
 
     /**
-     * Replace all config items.
+     * Replace all configuration items.
      *
-     * @param array $items
+     * Invalidates the internal resolution caches.
+     *
+     * @param array<string, mixed> $items The full configuration array tree.
+     *
+     * @return void
      */
     public function set(array $items): void
     {
@@ -37,9 +52,9 @@ class ConfigRepository
     }
 
     /**
-     * Return all config items.
+     * Return all configuration items as a nested array.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function all(): array
     {
@@ -47,11 +62,14 @@ class ConfigRepository
     }
 
     /**
-     * Retrieve a config value using dot notation.
+     * Retrieve a configuration value using dot notation.
      *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * Example: $repo->get('database.connections.mysql.host')
+     *
+     * @param string $key     The dot-notated key path.
+     * @param mixed  $default The value to return if the key does not exist.
+     *
+     * @return mixed The resolved configuration value.
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -60,11 +78,10 @@ class ConfigRepository
         }
 
         $segments = explode('.', $key);
-
         $config = $this->items;
 
         foreach ($segments as $segment) {
-            if (!array_key_exists($segment, $config)) {
+            if (!is_array($config) || !array_key_exists($segment, $config)) {
                 $this->cache[$key] = $default;
                 return $default;
             }
@@ -77,10 +94,14 @@ class ConfigRepository
     }
 
     /**
-     * Determine if a config key exists using dot notation.
+     * Determine if a configuration key exists using dot notation.
      *
-     * @param string $key
-     * @return bool
+     * Returns true even if the value is null, as long as the key path
+     * is fully resolvable within the items tree.
+     *
+     * @param string $key The dot-notated key path.
+     *
+     * @return bool True if the key exists in the configuration.
      */
     public function has(string $key): bool
     {
@@ -89,12 +110,11 @@ class ConfigRepository
         }
 
         $segments = explode('.', $key);
-
         $config = $this->items;
         $exists = true;
 
         foreach ($segments as $segment) {
-            if (!array_key_exists($segment, $config)) {
+            if (!is_array($config) || !array_key_exists($segment, $config)) {
                 $exists = false;
                 break;
             }
@@ -107,28 +127,32 @@ class ConfigRepository
     }
 
     /**
-     * Set a config value using dot notation.
+     * Set a configuration value using dot notation.
      *
-     * @param string $key
-     * @param mixed $value
+     * Creates intermediate arrays as needed. Invalidates all caches to
+     * ensure subsequent reads reflect the new value.
+     *
+     * @param string $key   The dot-notated key path.
+     * @param mixed  $value The value to set.
+     *
+     * @return void
      */
     public function setValue(string $key, mixed $value): void
     {
         $segments = explode('.', $key);
-
-        $config =& $this->items;
+        $config = &$this->items;
 
         foreach ($segments as $segment) {
-            if (!isset($config[$segment])) {
+            if (!isset($config[$segment]) || !is_array($config[$segment])) {
                 $config[$segment] = [];
             }
 
-            $config =& $config[$segment];
+            $config = &$config[$segment];
         }
 
         $config = $value;
 
-        // Invalidate the memoization; the key may now resolve differently.
+        // Invalidate memoization; the key may now resolve differently.
         $this->cache = [];
         $this->existsCache = [];
     }

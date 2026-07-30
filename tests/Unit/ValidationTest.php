@@ -11,14 +11,19 @@ use App\Core\Validation\Validator;
 use App\Providers\ValidationServiceProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Core\Validation\Validator
+ * @covers \App\Core\Validation\FormRequest
+ * @covers \App\Core\Validation\ValidationException
+ */
 class ValidationTest extends TestCase
 {
     protected function setUp(): void
     {
-        // Wire the built-in rules into the shared container, exactly as the
-        // framework does when App boots (ValidationServiceProvider::register).
         (new ValidationServiceProvider(App::container()))->register();
     }
+
+    // ─── Passing Validation ──────────────────────────────────────────
 
     public function testPassesForValidData(): void
     {
@@ -31,7 +36,9 @@ class ValidationTest extends TestCase
         $this->assertSame([], $result->errors());
     }
 
-    public function testFailsRequired(): void
+    // ─── Failing Validation ──────────────────────────────────────────
+
+    public function testFailsRequiredRuleForEmptyValue(): void
     {
         $result = Validator::make(
             ['name' => ''],
@@ -42,7 +49,7 @@ class ValidationTest extends TestCase
         $this->assertArrayHasKey('name', $result->errors());
     }
 
-    public function testFailsEmailAndMin(): void
+    public function testFailsEmailAndMinRules(): void
     {
         $validator = Validator::make(
             ['email' => 'not-an-email', 'age' => 10],
@@ -55,20 +62,32 @@ class ValidationTest extends TestCase
         $this->assertStringContainsString('at least 18', implode(' ', $errors['age']));
     }
 
-    public function testInAndNotIn(): void
+    // ─── In / NotIn Rules ────────────────────────────────────────────
+
+    public function testInRulePassesForAllowedValue(): void
     {
         $this->assertTrue(
             Validator::make(['role' => 'admin'], ['role' => 'in:admin,editor'])->passes()
         );
+    }
+
+    public function testInRuleFailsForDisallowedValue(): void
+    {
         $this->assertFalse(
             Validator::make(['role' => 'super'], ['role' => 'in:admin,editor'])->passes()
         );
+    }
+
+    public function testNotInRuleFailsForExcludedValue(): void
+    {
         $this->assertFalse(
             Validator::make(['role' => 'admin'], ['role' => 'not_in:admin'])->passes()
         );
     }
 
-    public function testSameAndConfirmed(): void
+    // ─── Same / Confirmed Rules ──────────────────────────────────────
+
+    public function testSameRulePassesWhenFieldsMatch(): void
     {
         $this->assertTrue(
             Validator::make(
@@ -76,6 +95,10 @@ class ValidationTest extends TestCase
                 ['pw' => 'same:pw2']
             )->passes()
         );
+    }
+
+    public function testConfirmedRuleFailsWhenConfirmationDiffers(): void
+    {
         $this->assertFalse(
             Validator::make(
                 ['password' => 'x', 'password_confirmation' => 'y'],
@@ -84,7 +107,9 @@ class ValidationTest extends TestCase
         );
     }
 
-    public function testNullableSkipsEmpty(): void
+    // ─── Nullable Rule ───────────────────────────────────────────────
+
+    public function testNullableSkipsValidationForEmptyValue(): void
     {
         $this->assertTrue(
             Validator::make(
@@ -94,7 +119,9 @@ class ValidationTest extends TestCase
         );
     }
 
-    public function testCustomMessagesOverride(): void
+    // ─── Custom Messages ─────────────────────────────────────────────
+
+    public function testCustomMessagesOverrideDefaults(): void
     {
         $result = Validator::make(
             ['name' => ''],
@@ -104,6 +131,8 @@ class ValidationTest extends TestCase
 
         $this->assertSame(['Custom: name needed'], $result->errors()['name']);
     }
+
+    // ─── Bail Behavior ───────────────────────────────────────────────
 
     public function testBailStopsAfterFirstFailure(): void
     {
@@ -115,7 +144,9 @@ class ValidationTest extends TestCase
         $this->assertCount(1, $result->errors()['name']);
     }
 
-    public function testValidatorHelperWorks(): void
+    // ─── Helper Function ─────────────────────────────────────────────
+
+    public function testValidatorHelperFunctionReturnsValidatorInstance(): void
     {
         $validator = validator(['email' => 'bad'], ['email' => 'email']);
 
@@ -123,17 +154,23 @@ class ValidationTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    public function testFormRequestValidatesAndThrows(): void
+    // ─── FormRequest ─────────────────────────────────────────────────
+
+    public function testFormRequestReturnsValidatedDataOnSuccess(): void
     {
-        $good = new class (['name' => 'Ada']) extends FormRequest {
+        $request = new class (['name' => 'Ada']) extends FormRequest {
             public function rules(): array
             {
                 return ['name' => 'required|string'];
             }
         };
-        $this->assertSame(['name' => 'Ada'], $good->validated());
 
-        $bad = new class (['name' => '']) extends FormRequest {
+        $this->assertSame(['name' => 'Ada'], $request->validated());
+    }
+
+    public function testFormRequestThrowsValidationExceptionOnFailure(): void
+    {
+        $request = new class (['name' => '']) extends FormRequest {
             public function rules(): array
             {
                 return ['name' => 'required|string'];
@@ -141,6 +178,6 @@ class ValidationTest extends TestCase
         };
 
         $this->expectException(ValidationException::class);
-        $bad->validated();
+        $request->validated();
     }
 }

@@ -6,19 +6,29 @@ namespace App\Core\Cache;
 
 use App\Core\Cache\Drivers\CacheDriver;
 
+/**
+ * Cache repository wrapping a CacheDriver with a per-request in-memory layer.
+ *
+ * Within a single request the same cache key is frequently read many times
+ * (e.g. config, view paths). The local layer serves those reads from memory,
+ * avoiding repeated I/O and deserialization in the underlying driver.
+ *
+ * Each local entry stores its value alongside an absolute expiry timestamp
+ * so expired items are transparently dropped, mirroring the driver's TTL.
+ *
+ * @since 1.0.0
+ * @author Rin Nairith
+ * @link https://zero-ping.duckdns.org/docs/caching
+ */
 class CacheRepository
 {
+    /**
+     * The underlying cache driver implementation.
+     */
     protected CacheDriver $driver;
 
     /**
      * Per-request in-memory cache.
-     *
-     * Within a single request the same cache key is frequently read many
-     * times (e.g. config, view paths). Hitting memory instead of the file/
-     * array driver removes repeated (de)serialization and I/O.
-     *
-     * Each entry stores its value alongside an absolute expiry timestamp so
-     * expired items are transparently dropped, mirroring the driver's TTL.
      *
      * @var array<string, array{value: mixed, expires: int}>
      */
@@ -27,7 +37,7 @@ class CacheRepository
     /**
      * Create a new cache repository instance.
      *
-     * @param CacheDriver $driver
+     * @param CacheDriver $driver The cache driver to wrap.
      */
     public function __construct(CacheDriver $driver)
     {
@@ -37,11 +47,14 @@ class CacheRepository
     /**
      * Retrieve an item from the cache.
      *
-     * @param string $key
-     * @param mixed $default
+     * Checks the local memory layer first, then falls back to the driver.
+     *
+     * @param string $key     The cache key.
+     * @param mixed  $default The default value if the key is not found.
+     *
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (array_key_exists($key, $this->local)) {
             if (time() >= $this->local[$key]['expires']) {
@@ -57,15 +70,18 @@ class CacheRepository
     /**
      * Store an item in the cache.
      *
-     * @param string $key
-     * @param mixed $value
-     * @param int $seconds
-     * @return bool
+     * Stores in both the local memory layer and the underlying driver.
+     *
+     * @param string $key     The cache key.
+     * @param mixed  $value   The value to store.
+     * @param int    $seconds Time-to-live in seconds.
+     *
+     * @return bool True on success.
      */
-    public function put(string $key, $value, int $seconds): bool
+    public function put(string $key, mixed $value, int $seconds): bool
     {
         $this->local[$key] = [
-            'value' => $value,
+            'value'   => $value,
             'expires' => time() + $seconds,
         ];
 
@@ -73,14 +89,15 @@ class CacheRepository
     }
 
     /**
-     * Get an item or store the result of a callback.
+     * Get an item from the cache, or execute the callback and store the result.
      *
-     * @param string $key
-     * @param int $seconds
-     * @param callable $callback
-     * @return mixed
+     * @param string   $key      The cache key.
+     * @param int      $seconds  Time-to-live in seconds.
+     * @param callable $callback The callback to execute if the key is not found.
+     *
+     * @return mixed The cached or freshly computed value.
      */
-    public function remember(string $key, int $seconds, callable $callback)
+    public function remember(string $key, int $seconds, callable $callback): mixed
     {
         if (array_key_exists($key, $this->local)) {
             if (time() >= $this->local[$key]['expires']) {
@@ -93,7 +110,7 @@ class CacheRepository
         $value = $this->driver->remember($key, $seconds, $callback);
 
         $this->local[$key] = [
-            'value' => $value,
+            'value'   => $value,
             'expires' => time() + $seconds,
         ];
 
@@ -101,13 +118,14 @@ class CacheRepository
     }
 
     /**
-     * Get an item or store the result of a callback indefinitely.
+     * Get an item from the cache, or execute the callback and store indefinitely.
      *
-     * @param string $key
-     * @param callable $callback
-     * @return mixed
+     * @param string   $key      The cache key.
+     * @param callable $callback The callback to execute if the key is not found.
+     *
+     * @return mixed The cached or freshly computed value.
      */
-    public function rememberForever(string $key, callable $callback)
+    public function rememberForever(string $key, callable $callback): mixed
     {
         if (array_key_exists($key, $this->local)) {
             if (time() >= $this->local[$key]['expires']) {
@@ -122,42 +140,46 @@ class CacheRepository
         $this->driver->forever($key, $value);
 
         $this->local[$key] = [
-            'value' => $value,
-            'expires' => time() + 315360000,
+            'value'   => $value,
+            'expires' => time() + 315_360_000,
         ];
 
         return $value;
     }
 
     /**
-     * Store an item in the cache indefinitely.
+     * Store an item in the cache indefinitely (10-year TTL).
      *
-     * @param string $key
-     * @param mixed $value
-     * @return bool
+     * @param string $key   The cache key.
+     * @param mixed  $value The value to store.
+     *
+     * @return bool True on success.
      */
     public function forever(string $key, mixed $value): bool
     {
-        // Store with a very long TTL (10 years)
         $this->local[$key] = [
-            'value' => $value,
-            'expires' => time() + 315360000,
+            'value'   => $value,
+            'expires' => time() + 315_360_000,
         ];
 
-        return $this->driver->put($key, $value, 315360000);
+        return $this->driver->forever($key, $value);
     }
 
     /**
-     * Determine if an item exists in the cache.
+     * Determine if an item exists in the cache and has not expired.
      *
-     * @param string $key
-     * @return bool
+     * @param string $key The cache key.
+     *
+     * @return bool True if the key exists and its value is not null.
      */
     public function has(string $key): bool
     {
         if (array_key_exists($key, $this->local)) {
-            return time() < $this->local[$key]['expires']
-                && $this->local[$key]['value'] !== null;
+            if (time() < $this->local[$key]['expires'] && $this->local[$key]['value'] !== null) {
+                return true;
+            }
+
+            unset($this->local[$key]);
         }
 
         return $this->driver->has($key);
@@ -166,8 +188,9 @@ class CacheRepository
     /**
      * Remove an item from the cache.
      *
-     * @param string $key
-     * @return bool
+     * @param string $key The cache key to remove.
+     *
+     * @return bool True on success.
      */
     public function forget(string $key): bool
     {
@@ -179,7 +202,7 @@ class CacheRepository
     /**
      * Remove all items from the cache.
      *
-     * @return bool
+     * @return bool True on success.
      */
     public function flush(): bool
     {
@@ -191,11 +214,14 @@ class CacheRepository
     /**
      * Increment the value of a cache item.
      *
-     * @param string $key
-     * @param int $value
-     * @return int|bool
+     * Invalidates the local cache for the key to ensure consistency.
+     *
+     * @param string $key   The cache key.
+     * @param int    $value The amount to increment by.
+     *
+     * @return int|false The new value on success, or false on failure.
      */
-    public function increment(string $key, int $value = 1): int|bool
+    public function increment(string $key, int $value = 1): int|false
     {
         unset($this->local[$key]);
 
@@ -205,11 +231,14 @@ class CacheRepository
     /**
      * Decrement the value of a cache item.
      *
-     * @param string $key
-     * @param int $value
-     * @return int|bool
+     * Invalidates the local cache for the key to ensure consistency.
+     *
+     * @param string $key   The cache key.
+     * @param int    $value The amount to decrement by.
+     *
+     * @return int|false The new value on success, or false on failure.
      */
-    public function decrement(string $key, int $value = 1): int|bool
+    public function decrement(string $key, int $value = 1): int|false
     {
         unset($this->local[$key]);
 

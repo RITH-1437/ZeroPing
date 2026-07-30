@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeFactoryCommand extends Generator
 {
+    protected string $signature = 'make:factory';
+
     protected string $description = 'Create a model factory';
 
     public function handle(string $name): void

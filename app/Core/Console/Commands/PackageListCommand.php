@@ -10,6 +10,8 @@ use App\Core\Packages\ProviderRepository;
 
 class PackageListCommand extends Command
 {
+    protected string $signature = 'package:list';
+
     protected string $description = 'List installed ZeroPing packages';
 
     public function handle(): void

@@ -13,6 +13,8 @@ use App\Core\Console\Command;
  */
 class VendorPublishCommand extends Command
 {
+    protected string $signature = 'vendor:publish';
+
     protected string $description = 'Publish package assets (config, views, migrations, ...)';
 
     public function handle(): void

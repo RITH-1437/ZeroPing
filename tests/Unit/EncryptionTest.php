@@ -7,6 +7,10 @@ namespace Tests\Unit;
 use App\Core\Security\Encryption;
 use App\Core\Security\Hash;
 
+/**
+ * @covers \App\Core\Security\Encryption
+ * @covers \App\Core\Security\Hash
+ */
 class EncryptionTest extends \Tests\TestCase
 {
     protected function setUp(): void
@@ -21,7 +25,9 @@ class EncryptionTest extends \Tests\TestCase
         parent::tearDown();
     }
 
-    public function testEncryptReturnsString(): void
+    // ─── Encryption ──────────────────────────────────────────────────
+
+    public function testEncryptReturnsNonEmptyString(): void
     {
         $encrypted = Encryption::encrypt('test-value');
 
@@ -38,7 +44,7 @@ class EncryptionTest extends \Tests\TestCase
         $this->assertSame($original, $decrypted);
     }
 
-    public function testEncryptReturnsDifferentResultsEachTime(): void
+    public function testEncryptProducesDifferentCiphertextEachTime(): void
     {
         $value = 'hello';
 
@@ -48,7 +54,7 @@ class EncryptionTest extends \Tests\TestCase
         $this->assertNotSame($a, $b);
     }
 
-    public function testDecryptDifferentValues(): void
+    public function testDecryptHandlesVariousInputTypes(): void
     {
         $data = [
             'password123',
@@ -64,15 +70,18 @@ class EncryptionTest extends \Tests\TestCase
         }
     }
 
-    public function testEncryptedDataHasValidGcmFormat(): void
+    public function testEncryptedDataHasValidBase64GcmFormat(): void
     {
         $encrypted = Encryption::encrypt('test');
 
         $decoded = base64_decode($encrypted, true);
 
         $this->assertNotFalse($decoded);
+        // AES-GCM: 12-byte IV + 16-byte tag + at least 1 byte ciphertext = 29 min
         $this->assertGreaterThanOrEqual(29, strlen($decoded));
     }
+
+    // ─── Hashing ─────────────────────────────────────────────────────
 
     public function testMakeAndCheckPasswordHash(): void
     {

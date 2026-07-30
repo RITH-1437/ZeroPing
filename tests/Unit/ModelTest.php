@@ -7,6 +7,9 @@ namespace Tests\Unit;
 use App\Core\Database\Model;
 use App\Core\Database\QueryBuilder;
 
+/**
+ * @covers \App\Core\Database\Model
+ */
 class ModelTest extends \Tests\TestCase
 {
     protected function setUp(): void
@@ -27,13 +30,15 @@ class ModelTest extends \Tests\TestCase
         parent::tearDown();
     }
 
+    // ─── Table & Key ─────────────────────────────────────────────────
+
     public function testGetTableReturnsTableProperty(): void
     {
         $model = new TestModel();
         $this->assertSame('test_models', $model->getTable());
     }
 
-    public function testGetKeyReturnsId(): void
+    public function testGetKeyReturnsIdWhenPresent(): void
     {
         $model = new TestModel(['id' => 99, 'name' => 'Test']);
         $this->assertSame(99, $model->getKey());
@@ -45,38 +50,47 @@ class ModelTest extends \Tests\TestCase
         $this->assertNull($model->getKey());
     }
 
-    public function testOffsetExists(): void
+    // ─── ArrayAccess Interface ───────────────────────────────────────
+
+    public function testImplementsArrayAccessInterface(): void
+    {
+        $model = new TestModel();
+        $this->assertInstanceOf(\ArrayAccess::class, $model);
+    }
+
+    public function testOffsetExistsReturnsTrueForSetAttribute(): void
     {
         $model = new TestModel(['name' => 'John']);
         $this->assertTrue(isset($model['name']));
+    }
+
+    public function testOffsetExistsReturnsFalseForMissingAttribute(): void
+    {
+        $model = new TestModel(['name' => 'John']);
         $this->assertFalse(isset($model['missing']));
     }
 
-    public function testOffsetGet(): void
+    public function testOffsetGetReturnsAttributeValue(): void
     {
         $model = new TestModel(['name' => 'John']);
         $this->assertSame('John', $model['name']);
     }
 
-    public function testOffsetSet(): void
+    public function testOffsetSetAssignsAttributeValue(): void
     {
         $model = new TestModel();
         $model['name'] = 'Jane';
         $this->assertSame('Jane', $model['name']);
     }
 
-    public function testOffsetUnset(): void
+    public function testOffsetUnsetRemovesAttribute(): void
     {
         $model = new TestModel(['name' => 'John']);
         unset($model['name']);
         $this->assertFalse(isset($model['name']));
     }
 
-    public function testArrayAccessInterface(): void
-    {
-        $model = new TestModel();
-        $this->assertInstanceOf(\ArrayAccess::class, $model);
-    }
+    // ─── Constructor ─────────────────────────────────────────────────
 
     public function testConstructorFillsAttributes(): void
     {
@@ -86,7 +100,9 @@ class ModelTest extends \Tests\TestCase
         $this->assertSame('test@example.com', $model->email);
     }
 
-    public function testQueryReturnsQueryBuilder(): void
+    // ─── Query Builder ───────────────────────────────────────────────
+
+    public function testQueryReturnsQueryBuilderInstance(): void
     {
         $model = new TestModel();
         $ref = new \ReflectionProperty(Model::class, 'db');
@@ -97,7 +113,7 @@ class ModelTest extends \Tests\TestCase
         $this->assertInstanceOf(QueryBuilder::class, $qb);
     }
 
-    public function testQuerySetsModelClass(): void
+    public function testQuerySetsModelClassOnBuilder(): void
     {
         $model = new TestModel();
         $ref = new \ReflectionProperty(Model::class, 'db');
@@ -109,6 +125,14 @@ class ModelTest extends \Tests\TestCase
         $this->assertSame(TestModel::class, $refQb->getValue($qb));
     }
 
+    public function testStaticQueryReturnsQueryBuilder(): void
+    {
+        $qb = TestModel::query();
+        $this->assertInstanceOf(QueryBuilder::class, $qb);
+    }
+
+    // ─── Replicate ───────────────────────────────────────────────────
+
     public function testReplicateCreatesNewInstanceWithoutId(): void
     {
         $model = new TestModel(['id' => 1, 'name' => 'Original']);
@@ -118,18 +142,12 @@ class ModelTest extends \Tests\TestCase
         $this->assertSame('Original', $clone->name);
     }
 
-    public function testReplicateExcludesGivenKeys(): void
+    public function testReplicateExcludesSpecifiedKeys(): void
     {
         $model = new TestModel(['id' => 1, 'name' => 'Original', 'slug' => 'original']);
         $clone = $model->replicate(['slug']);
 
         $this->assertNull($clone->slug);
         $this->assertSame('Original', $clone->name);
-    }
-
-    public function testStaticQueryReturnsQueryBuilder(): void
-    {
-        $qb = TestModel::query();
-        $this->assertInstanceOf(QueryBuilder::class, $qb);
     }
 }

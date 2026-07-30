@@ -1,9 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\ORM;
 
 use App\Core\ORM\Concerns\HasAttributes;
 
+/**
+ * Legacy Model base class.
+ *
+ * @deprecated since 1.x — Use {@see \App\Core\Database\Model} instead.
+ *
+ * This class is retained for backward compatibility only. It uses a
+ * Persister/Builder/Hydrator pattern that has been superseded by the
+ * full-featured Database\Model which provides:
+ * - Direct PDO + QueryBuilder integration
+ * - Soft deletes, events, relationships, ArrayAccess
+ * - Mass-assignment protection (GuardsAttributes)
+ * - Timestamps
+ *
+ * All new models should extend \App\Core\Database\Model.
+ * This class will be removed in a future major version.
+ *
+ * @see \App\Core\Database\Model The replacement base model class.
+ */
 abstract class Model
 {
     use HasAttributes;
@@ -44,8 +64,16 @@ abstract class Model
 
     public function __construct(array $attributes = [])
     {
-        $this->fill($attributes);
+        trigger_error(
+            sprintf(
+                '%s extends deprecated %s. Migrate to \App\Core\Database\Model.',
+                static::class,
+                self::class
+            ),
+            E_USER_DEPRECATED
+        );
 
+        $this->fill($attributes);
         $this->syncOriginal();
     }
 
@@ -75,18 +103,12 @@ abstract class Model
         string $operator,
         mixed $value = null
     ): Builder {
-
-        return static::query()->where(
-            $column,
-            $operator,
-            $value
-        );
+        return static::query()->where($column, $operator, $value);
     }
 
     public static function create(array $attributes): static
     {
         $model = new static($attributes);
-
         $model->save();
 
         return $model;
@@ -100,8 +122,7 @@ abstract class Model
 
     public function save(): bool
     {
-        return (new Persister())
-            ->save($this);
+        return (new Persister())->save($this);
     }
 
     public function update(array $attributes): bool
@@ -113,8 +134,7 @@ abstract class Model
 
     public function delete(): bool
     {
-        return (new Persister())
-            ->delete($this);
+        return (new Persister())->delete($this);
     }
 
     /*

@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeJobCommand extends Generator
 {
+    protected string $signature = 'make:job';
+
     protected string $description = 'Create a new queue job class';
 
     public function handle(string $name): void

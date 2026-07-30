@@ -34,11 +34,14 @@ class InstallerSuccessRenderer
 
     private const APP_URL = 'http://127.0.0.1:1437';
 
-    private const NEXT_STEPS = [
+    private const NEXT_STEPS_WITH_COMPOSER = [
         'cd {project}',
         'composer install',
-        'php zero install',
-        'php zero migrate',
+        'php zero serve',
+    ];
+
+    private const NEXT_STEPS_WITHOUT_COMPOSER = [
+        'cd {project}',
         'php zero serve',
     ];
 
@@ -50,6 +53,7 @@ class InstallerSuccessRenderer
         private string $frameworkVersion,
         private string $phpVersion,
         private string $projectPath,
+        private bool $composerInstalled = true,
     ) {
         $this->ansi = $this->detectAnsi();
     }
@@ -140,10 +144,14 @@ class InstallerSuccessRenderer
 
     private function nextSteps(): array
     {
+        $steps = $this->composerInstalled
+            ? self::NEXT_STEPS_WITHOUT_COMPOSER
+            : self::NEXT_STEPS_WITH_COMPOSER;
+
         $dirName = $this->slugify($this->projectName);
         return array_map(
             fn (string $step) => str_replace('{project}', $dirName, $step),
-            self::NEXT_STEPS
+            $steps
         );
     }
 

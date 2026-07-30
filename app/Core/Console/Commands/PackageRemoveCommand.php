@@ -9,6 +9,8 @@ use App\Core\Packages\PackageConfig;
 
 class PackageRemoveCommand extends Command
 {
+    protected string $signature = 'package:remove';
+
     protected string $description = 'Remove a ZeroPing package';
 
     public function handle(string $name): void

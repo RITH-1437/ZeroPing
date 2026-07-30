@@ -4,9 +4,23 @@ declare(strict_types=1);
 
 namespace App\Core\Application;
 
+use App\Core\Config\Config;
+use App\Core\Config\ConfigRepository;
+use App\Core\Config\Env;
 use App\Core\Container\Container;
+use App\Core\Events\EventDispatcher;
+use App\Core\Packages\ProviderRepository;
 use App\Core\Routing\Router;
+use App\Core\Scheduling\ScheduleManager;
+use App\Core\View\View;
 
+/**
+ * Application bootstrap.
+ *
+ * Responsible for booting the framework: loading configuration, registering
+ * service providers (eager and deferred), discovering packages, and wiring
+ * event/schedule hooks declared by providers.
+ */
 class App
 {
     /**
@@ -14,8 +28,10 @@ class App
      */
     public const VERSION = '2.0.1';
 
+    /** @var string Absolute path to the project root. */
     protected string $basePath;
 
+    /** @var Container|null The global service container instance. */
     protected static ?Container $container = null;
 
     public function __construct(string $basePath)
@@ -25,27 +41,46 @@ class App
         $this->bootstrap();
     }
 
+    /**
+     * Create and boot a new application instance.
+     *
+     * @param string|null $basePath Project root; defaults to three levels above this file.
+     */
     public static function boot(?string $basePath = null): static
     {
         return new static($basePath ?? dirname(__DIR__, 3));
     }
 
+    /**
+     * Replace the global container (useful for testing).
+     */
     public static function setContainer(Container $container): void
     {
         static::$container = $container;
     }
 
+    /**
+     * Retrieve the global container, creating one if none exists.
+     */
     public static function container(): Container
     {
-        return self::$container ??= new Container();
+        return static::$container ??= new Container();
     }
 
+    /**
+     * Get the application base path.
+     */
     public function basePath(): string
     {
         return $this->basePath;
     }
 
-    public function handle($request): void
+    /**
+     * Dispatch the incoming HTTP request through the kernel.
+     *
+     * @param mixed $request Reserved for future request-object support.
+     */
+    public function handle(mixed $request = null): void
     {
         $kernelClass = class_exists('App\\Http\\Kernel')
             ? 'App\\Http\\Kernel'
@@ -54,107 +89,177 @@ class App
         (new $kernelClass($this))->handle();
     }
 
+    /**
+     * Run the full application bootstrap sequence.
+     */
     protected function bootstrap(): void
     {
         require_once dirname(__DIR__, 2) . '/Helpers/helpers.php';
 
-        \App\Core\View\View::setBasePath($this->basePath);
+        View::setBasePath($this->basePath);
 
         if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
 
-        // Load .env if not already loaded
         if (empty($_ENV['APP_NAME'])) {
-            \App\Core\Config\Env::load($this->basePath . '/.env');
+            Env::load($this->basePath . '/.env');
         }
 
-        // Define DB/app constants â€” config/constants.php handles runtime checks
-
-        // Load config files into repository
         $this->loadConfig();
-
         $this->registerProviders();
     }
 
+    /**
+     * Load configuration files into the global Config repository.
+     *
+     * Uses a compiled cache file when available and fresh; otherwise reads
+     * individual PHP files from the config directory.
+     *
+     * Optimization: When the cache file exists, we only stat the cache file
+     * first. The expensive configDirMtime() (which globs and stats every
+     * config file) is only called if the cache file actually exists and we
+     * need to validate freshness.
+     */
     protected function loadConfig(): void
     {
-        $repository = new \App\Core\Config\ConfigRepository();
-        $configDir = $this->basePath . '/config';
-        $cacheFile = $this->basePath . '/bootstrap/cache/config.php';
+        $repository = new ConfigRepository();
+        $configDir  = $this->basePath . '/config';
+        $cacheFile  = $this->basePath . '/bootstrap/cache/config.php';
 
-        // When a compiled config cache exists and is at least as fresh as the
-        // config directory, load it in a single require instead of globbing
-        // and requiring every config file on each boot.
-        if (
-            is_dir($configDir) && file_exists($cacheFile)
-            && filemtime($cacheFile) >= $this->configDirMtime($configDir)
-        ) {
-            $items = require $cacheFile;
-            if (is_array($items)) {
-                $repository->set($items);
-                \App\Core\Config\Config::setRepository($repository);
-                return;
+        // Fast path: try loading from cache first.
+        // Only proceed if the config directory exists (common case).
+        if (is_file($cacheFile)) {
+            // In production, APP_ENV=production skips mtime validation entirely.
+            $skipMtimeCheck = (($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?: '') === 'production');
+
+            if ($skipMtimeCheck || !is_dir($configDir) || filemtime($cacheFile) >= $this->configDirMtime($configDir)) {
+                $items = require $cacheFile;
+
+                if (is_array($items)) {
+                    $repository->set($items);
+                    Config::setRepository($repository);
+                    return;
+                }
             }
         }
 
         if (!is_dir($configDir)) {
-            \App\Core\Config\Config::setRepository($repository);
+            Config::setRepository($repository);
             return;
         }
 
         $skipFiles = ['routes.php'];
-        $items = [];
-        foreach (glob($configDir . '/*.php') as $file) {
-            $key = pathinfo($file, PATHINFO_FILENAME);
-            if (in_array($key . '.php', $skipFiles, true)) {
+        $items     = [];
+
+        $files = glob($configDir . '/*.php');
+        if ($files === false) {
+            $files = [];
+        }
+
+        foreach ($files as $file) {
+            $basename = basename($file);
+
+            if ($basename === 'routes.php') {
                 continue;
             }
+
+            $key = substr($basename, 0, -4); // Strip .php faster than pathinfo()
+
             $value = require $file;
+
             if (is_array($value)) {
                 $items[$key] = $value;
             }
         }
 
         $repository->set($items);
-        \App\Core\Config\Config::setRepository($repository);
+        Config::setRepository($repository);
     }
 
     /**
-     * Highest mtime of the config directory's PHP files.
+     * Return the most recent modification time among config PHP files.
+     *
+     * Optimized: uses a single loop with direct filemtime calls,
+     * avoiding intermediate array operations.
      */
     private function configDirMtime(string $configDir): int
     {
-        $files = glob($configDir . '/*.php') ?: [];
+        $files = glob($configDir . '/*.php');
+        if (!$files) {
+            return 0;
+        }
+
         $mtime = 0;
         foreach ($files as $file) {
-            $mtime = max($mtime, filemtime($file));
+            $t = filemtime($file);
+            if ($t > $mtime) {
+                $mtime = $t;
+            }
         }
+
         return $mtime;
     }
 
+    // -------------------------------------------------------------------------
+    // Service Provider Registration
+    // -------------------------------------------------------------------------
+
+    /**
+     * Collect, register, and boot all service providers (app + packages).
+     */
     protected function registerProviders(): void
     {
-        $providers = \App\Core\Config\Config::get('app.providers', []);
+        $providers = $this->collectProviderClasses();
 
-        $manifest = $this->loadPackageManifest();
+        [$eager, $deferred] = $this->instantiateProviders($providers);
+
+        $this->bootEagerProviders($eager);
+        $this->registerPackageHooks($eager, $deferred);
+    }
+
+    /**
+     * Merge application providers with auto-discovered package providers.
+     *
+     * @return list<class-string>
+     */
+    private function collectProviderClasses(): array
+    {
+        $providers = Config::get('app.providers', []);
+        $manifest  = $this->loadPackageManifest();
 
         if ($manifest !== null) {
             foreach ($manifest as $pkg) {
                 if (!($pkg['enabled'] ?? true)) {
                     continue;
                 }
-                foreach (($pkg['providers'] ?? []) as $provider) {
-                    $providers[] = $provider;
+                if (isset($pkg['providers'])) {
+                    foreach ($pkg['providers'] as $provider) {
+                        $providers[] = $provider;
+                    }
                 }
             }
         }
 
+        return $providers;
+    }
+
+    /**
+     * Register all providers, separating eager from deferred.
+     *
+     * Deferred providers have their boot() called lazily via container
+     * resolving callbacks on the services they declare.
+     *
+     * @param list<class-string> $providerClasses
+     * @return array{0: list<object>, 1: list<object>}
+     */
+    private function instantiateProviders(array $providerClasses): array
+    {
         $eager    = [];
         $deferred = [];
-        $booted  = [];
+        $booted   = [];
 
-        foreach ($providers as $providerClass) {
+        foreach ($providerClasses as $providerClass) {
             if (!class_exists($providerClass)) {
                 continue;
             }
@@ -181,55 +286,83 @@ class App
             }
         }
 
-        foreach ($eager as $provider) {
+        return [$eager, $deferred];
+    }
+
+    /**
+     * Boot all eager (non-deferred) providers.
+     *
+     * @param list<object> $providers
+     */
+    private function bootEagerProviders(array $providers): void
+    {
+        foreach ($providers as $provider) {
             if (method_exists($provider, 'boot')) {
                 $provider->boot();
             }
         }
-
-        $this->registerPackageHooks(array_merge($eager, $deferred));
     }
 
     /**
-     * Let booted providers plug into the Event Bus and Scheduler using the
-     * same declarative style as the framework's own providers.
+     * Wire provider-declared event listeners and scheduled tasks.
      *
-     * @param array<int, object> $instances
+     * Providers may implement `listens()` to return an event-to-listener map,
+     * and `schedules(Schedule)` to register recurring tasks.
+     *
+     * @param list<object> $eager    Eager provider instances.
+     * @param list<object> $deferred Deferred provider instances.
      */
-    protected function registerPackageHooks(array $instances): void
+    protected function registerPackageHooks(array $eager, array $deferred): void
     {
-        if (App::container()->bound(\App\Core\Events\EventDispatcher::class)) {
-            $dispatcher = App::container()->make(\App\Core\Events\EventDispatcher::class);
+        $hasEventDispatcher = static::$container->bound(EventDispatcher::class);
+        $hasScheduleManager = static::$container->bound(ScheduleManager::class);
 
-            foreach ($instances as $provider) {
-                if (!method_exists($provider, 'listens')) {
-                    continue;
-                }
+        // Early return if neither hook system is available.
+        if (!$hasEventDispatcher && !$hasScheduleManager) {
+            return;
+        }
 
+        $dispatcher = $hasEventDispatcher ? static::$container->make(EventDispatcher::class) : null;
+        $schedule = $hasScheduleManager ? static::$container->make(ScheduleManager::class)->schedule() : null;
+
+        // Process all provider instances (eager + deferred).
+        foreach ($eager as $provider) {
+            if ($dispatcher !== null && method_exists($provider, 'listens')) {
                 foreach ($provider->listens() as $event => $listeners) {
                     foreach ((array) $listeners as $listener) {
                         $dispatcher->listen($event, $listener);
                     }
                 }
             }
+
+            if ($schedule !== null && method_exists($provider, 'schedules')) {
+                $provider->schedules($schedule);
+            }
         }
 
-        if (App::container()->bound(\App\Core\Scheduling\ScheduleManager::class)) {
-            $schedule = App::container()->make(\App\Core\Scheduling\ScheduleManager::class)->schedule();
-
-            foreach ($instances as $provider) {
-                if (method_exists($provider, 'schedules')) {
-                    $provider->schedules($schedule);
+        foreach ($deferred as $provider) {
+            if ($dispatcher !== null && method_exists($provider, 'listens')) {
+                foreach ($provider->listens() as $event => $listeners) {
+                    foreach ((array) $listeners as $listener) {
+                        $dispatcher->listen($event, $listener);
+                    }
                 }
+            }
+
+            if ($schedule !== null && method_exists($provider, 'schedules')) {
+                $provider->schedules($schedule);
             }
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Package Auto-Discovery
+    // -------------------------------------------------------------------------
+
     /**
-     * Load the discovered package manifest (from cache when fresh, else
-     * rebuild it). Returns null when auto-discovery is disabled.
+     * Load the discovered package manifest (from cache when fresh, else rebuild).
      *
-     * @return array<string, array>|null
+     * @return array<string, array{enabled?: bool, providers?: list<class-string>}>|null
      */
     private function loadPackageManifest(): ?array
     {
@@ -237,22 +370,25 @@ class App
             return null;
         }
 
-        $repo = new \App\Core\Packages\ProviderRepository(
+        $repo = new ProviderRepository(
             $this->basePath,
             $this->basePath . '/bootstrap/cache/packages.php'
         );
 
-        $enabled = \App\Core\Config\Config::has('packages')
-            ? \App\Core\Config\Config::get('packages', [])
+        $enabled = Config::has('packages')
+            ? Config::get('packages', [])
             : [];
 
         return $repo->getCached()
             ?? $repo->buildManifest($enabled, $this->packageAutoDiscoverEnabled());
     }
 
+    /**
+     * Check whether package auto-discovery is enabled via environment.
+     */
     private function packageAutoDiscoverEnabled(): bool
     {
-        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?? 'true';
+        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?: 'true';
 
         return $flag !== 'false' && $flag !== '0';
     }

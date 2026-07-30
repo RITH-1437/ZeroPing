@@ -6,17 +6,59 @@ namespace App\Core\Filesystem\Drivers;
 
 use App\Core\Filesystem\Exceptions\FilesystemException;
 use App\Core\Support\Log;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 
+/**
+ * Local filesystem driver.
+ *
+ * Stores files on the local disk beneath a configured root directory.
+ * All path operations are sandboxed to prevent directory traversal attacks.
+ * Uses {@see SplFileInfo} for reliable file metadata retrieval.
+ */
 class LocalDriver implements FilesystemDriver
 {
+    /** @var string The absolute root path for this disk. */
     protected string $root;
 
+    /** @var int Directory permission mode for new directories. */
+    protected int $directoryPermission;
+
+    /** @var int File permission for 'public' visibility. */
+    protected int $publicPermission;
+
+    /** @var int File permission for 'private' visibility. */
+    protected int $privatePermission;
+
+    /**
+     * Create a new local filesystem driver instance.
+     *
+     * @param array{root: string, permissions?: array{dir?: int, public?: int, private?: int}} $config
+     *
+     * @throws FilesystemException If the root directory configuration is missing.
+     */
     public function __construct(array $config)
     {
-        $this->root = rtrim(str_replace('/', DIRECTORY_SEPARATOR, $config['root']), DIRECTORY_SEPARATOR);
+        if (empty($config['root'])) {
+            throw new FilesystemException('LocalDriver requires a "root" configuration value.');
+        }
+
+        $this->root = rtrim(
+            str_replace('/', DIRECTORY_SEPARATOR, $config['root']),
+            DIRECTORY_SEPARATOR
+        );
+
+        $permissions = $config['permissions'] ?? [];
+        $this->directoryPermission = $permissions['dir'] ?? 0755;
+        $this->publicPermission = $permissions['public'] ?? 0644;
+        $this->privatePermission = $permissions['private'] ?? 0600;
     }
 
-    public function put(string $path, $contents): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function put(string $path, string $contents): bool
     {
         $location = $this->applyPathPrefix($path);
         $this->ensureDirectoryExists(dirname($location));
@@ -24,83 +66,192 @@ class LocalDriver implements FilesystemDriver
         return file_put_contents($location, $contents) !== false;
     }
 
-    public function get(string $path)
+    /**
+     * {@inheritDoc}
+     */
+    public function get(string $path): string
     {
         $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
 
-        if (!$this->exists($path)) {
-            throw new FilesystemException("File not found at path: {$path}");
+        if (!$file->isFile() || !$file->isReadable()) {
+            throw new FilesystemException("File not found or not readable at path: {$path}");
         }
 
-        return file_get_contents($location);
+        $contents = file_get_contents($location);
+
+        if ($contents === false) {
+            throw new FilesystemException("Failed to read file at path: {$path}");
+        }
+
+        return $contents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function exists(string $path): bool
     {
         return file_exists($this->applyPathPrefix($path));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(string $path): bool
     {
         $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
 
-        if (file_exists($location)) {
-            Log::info("File deleted: {$path}");
-            return unlink($location);
+        if (!$file->isFile()) {
+            return false;
         }
 
-        return false;
+        $result = unlink($location);
+
+        if ($result) {
+            Log::info("File deleted: {$path}");
+        }
+
+        return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function copy(string $from, string $to): bool
     {
         $fromLocation = $this->applyPathPrefix($from);
         $toLocation = $this->applyPathPrefix($to);
+
+        $sourceFile = new SplFileInfo($fromLocation);
+
+        if (!$sourceFile->isFile()) {
+            throw new FilesystemException("Source file does not exist: {$from}");
+        }
 
         $this->ensureDirectoryExists(dirname($toLocation));
 
         return copy($fromLocation, $toLocation);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function move(string $from, string $to): bool
     {
-        return $this->copy($from, $to) && $this->delete($from);
+        $fromLocation = $this->applyPathPrefix($from);
+        $toLocation = $this->applyPathPrefix($to);
+
+        $sourceFile = new SplFileInfo($fromLocation);
+
+        if (!$sourceFile->isFile()) {
+            throw new FilesystemException("Source file does not exist: {$from}");
+        }
+
+        $this->ensureDirectoryExists(dirname($toLocation));
+
+        $result = rename($fromLocation, $toLocation);
+
+        if ($result) {
+            Log::info("File moved: {$from} -> {$to}");
+        }
+
+        return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function size(string $path): int
     {
-        return filesize($this->applyPathPrefix($path));
+        $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
+
+        if (!$file->isFile()) {
+            throw new FilesystemException("File not found at path: {$path}");
+        }
+
+        $size = $file->getSize();
+
+        if ($size === false) {
+            throw new FilesystemException("Unable to determine file size: {$path}");
+        }
+
+        return $size;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function lastModified(string $path): int
     {
-        return filemtime($this->applyPathPrefix($path));
+        $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
+
+        if (!$file->isFile()) {
+            throw new FilesystemException("File not found at path: {$path}");
+        }
+
+        $mtime = $file->getMTime();
+
+        if ($mtime === false) {
+            throw new FilesystemException("Unable to determine last modified time: {$path}");
+        }
+
+        return $mtime;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function mimeType(string $path): string
     {
-        return mime_content_type($this->applyPathPrefix($path));
+        $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
+
+        if (!$file->isFile()) {
+            throw new FilesystemException("File not found at path: {$path}");
+        }
+
+        $mime = mime_content_type($location);
+
+        if ($mime === false) {
+            throw new FilesystemException("Unable to determine MIME type: {$path}");
+        }
+
+        return $mime;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function url(string $path): string
     {
-        // This is a simplified implementation. A real implementation would
-        // need to be aware of the public path and the base URL.
-        return '/storage/' . $path;
+        return '/storage/' . ltrim(str_replace('\\', '/', $path), '/');
     }
 
-    public function download(string $path, ?string $name = null, array $headers = [])
+    /**
+     * {@inheritDoc}
+     */
+    public function download(string $path, ?string $name = null, array $headers = []): void
     {
         $location = $this->applyPathPrefix($path);
-        $name = $name ?: basename($location);
+        $file = new SplFileInfo($location);
+
+        if (!$file->isFile()) {
+            throw new FilesystemException("File not found for download: {$path}");
+        }
+
+        $downloadName = $name ?? $file->getBasename();
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . $name . '"');
+        header('Content-Disposition: attachment; filename="' . addslashes($downloadName) . '"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
-        header('Content-Length: ' . filesize($location));
+        header('Content-Length: ' . $file->getSize());
 
         foreach ($headers as $key => $value) {
             header("{$key}: {$value}");
@@ -109,6 +260,9 @@ class LocalDriver implements FilesystemDriver
         readfile($location);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function files(string $directory = '', bool $recursive = false): array
     {
         $path = $this->applyPathPrefix($directory);
@@ -117,22 +271,16 @@ class LocalDriver implements FilesystemDriver
             return [];
         }
 
-        $files = [];
-        $items = new \FilesystemIterator($path);
-
-        foreach ($items as $item) {
-            if ($item->isFile()) {
-                $files[] = $item->getFilename();
-            } elseif ($recursive && $item->isDir()) {
-                foreach ($this->files($item->getFilename(), true) as $sub) {
-                    $files[] = $item->getFilename() . '/' . $sub;
-                }
-            }
+        if ($recursive) {
+            return $this->listFilesRecursively($path, $directory);
         }
 
-        return $files;
+        return $this->listFilesInDirectory($path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function directories(string $directory = '', bool $recursive = false): array
     {
         $path = $this->applyPathPrefix($directory);
@@ -141,35 +289,36 @@ class LocalDriver implements FilesystemDriver
             return [];
         }
 
-        $directories = [];
-        $items = new \FilesystemIterator($path);
-
-        foreach ($items as $item) {
-            if ($item->isDir()) {
-                $directories[] = $item->getFilename();
-                if ($recursive) {
-                    foreach ($this->directories($item->getFilename(), true) as $sub) {
-                        $directories[] = $item->getFilename() . '/' . $sub;
-                    }
-                }
-            }
+        if ($recursive) {
+            return $this->listDirectoriesRecursively($path, $directory);
         }
 
-        return $directories;
+        return $this->listDirectoriesInDirectory($path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function makeDirectory(string $path): bool
     {
         $location = $this->applyPathPrefix($path);
 
-        if (!is_dir($location)) {
-            Log::info("Directory created: {$path}");
-            return mkdir($location, 0755, true);
+        if (is_dir($location)) {
+            return false;
         }
 
-        return false;
+        $result = mkdir($location, $this->directoryPermission, true);
+
+        if ($result) {
+            Log::info("Directory created: {$path}");
+        }
+
+        return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteDirectory(string $path): bool
     {
         $location = $this->applyPathPrefix($path);
@@ -178,24 +327,102 @@ class LocalDriver implements FilesystemDriver
             return false;
         }
 
-        foreach (array_diff(scandir($location), ['.', '..']) as $item) {
-            $itemPath = $location . '/' . $item;
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($location, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
 
-            is_dir($itemPath)
-                ? $this->deleteDirectory($path . '/' . $item)
-                : unlink($itemPath);
+        /** @var SplFileInfo $item */
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                rmdir($item->getRealPath());
+            } else {
+                unlink($item->getRealPath());
+            }
         }
 
-        Log::info("Directory deleted: {$path}");
+        $result = rmdir($location);
 
-        return rmdir($location);
+        if ($result) {
+            Log::info("Directory deleted: {$path}");
+        }
+
+        return $result;
     }
 
     /**
-     * Resolve a relative path beneath the configured root. Paths are rejected
-     * rather than rewritten when they contain traversal or absolute segments.
-     * Resolving the nearest existing ancestor also blocks symlinks that point
-     * outside the disk root.
+     * {@inheritDoc}
+     */
+    public function append(string $path, string $contents): bool
+    {
+        $location = $this->applyPathPrefix($path);
+        $this->ensureDirectoryExists(dirname($location));
+
+        return file_put_contents($location, $contents, FILE_APPEND) !== false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function prepend(string $path, string $contents): bool
+    {
+        if ($this->exists($path)) {
+            $existing = $this->get($path);
+            return $this->put($path, $contents . $existing);
+        }
+
+        return $this->put($path, $contents);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getVisibility(string $path): string
+    {
+        $location = $this->applyPathPrefix($path);
+        $file = new SplFileInfo($location);
+
+        if (!$file->isFile() && !$file->isDir()) {
+            throw new FilesystemException("Path not found: {$path}");
+        }
+
+        $perms = $file->getPerms() & 0777;
+
+        return ($perms & 0044) ? 'public' : 'private';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setVisibility(string $path, string $visibility): bool
+    {
+        $location = $this->applyPathPrefix($path);
+
+        if (!file_exists($location)) {
+            throw new FilesystemException("Path not found: {$path}");
+        }
+
+        $permission = match ($visibility) {
+            'public' => $this->publicPermission,
+            'private' => $this->privatePermission,
+            default => throw new FilesystemException("Invalid visibility: {$visibility}. Must be 'public' or 'private'."),
+        };
+
+        return chmod($location, $permission);
+    }
+
+    /**
+     * Resolve a relative path beneath the configured root.
+     *
+     * Paths are rejected (not rewritten) when they contain traversal or absolute
+     * segments. Resolving the nearest existing ancestor also blocks symlinks that
+     * point outside the disk root.
+     *
+     * @param string $path The relative path to resolve.
+     *
+     * @return string The absolute filesystem path.
+     *
+     * @throws FilesystemException If the path is invalid or escapes the root.
      */
     protected function applyPathPrefix(string $path): string
     {
@@ -225,6 +452,8 @@ class LocalDriver implements FilesystemDriver
         }
 
         $candidate = $root . ($segments === [] ? '' : DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments));
+
+        // Validate that the resolved path stays within root
         $probe = $candidate;
         while (!file_exists($probe) && !is_link($probe)) {
             $parent = dirname($probe);
@@ -242,6 +471,14 @@ class LocalDriver implements FilesystemDriver
         return $candidate;
     }
 
+    /**
+     * Determine if a resolved path is within the root directory.
+     *
+     * @param string $path The resolved path to check.
+     * @param string $root The resolved root path.
+     *
+     * @return bool True if the path is within root.
+     */
     private function isWithinRoot(string $path, string $root): bool
     {
         if (DIRECTORY_SEPARATOR === '\\') {
@@ -252,10 +489,137 @@ class LocalDriver implements FilesystemDriver
         return $path === $root || str_starts_with($path, $root . DIRECTORY_SEPARATOR);
     }
 
+    /**
+     * Ensure a directory exists, creating it recursively if needed.
+     *
+     * @param string $path Absolute directory path.
+     *
+     * @return void
+     */
     protected function ensureDirectoryExists(string $path): void
     {
         if (!is_dir($path)) {
-            mkdir($path, 0755, true);
+            mkdir($path, $this->directoryPermission, true);
         }
+    }
+
+    /**
+     * List files in a single directory (non-recursive).
+     *
+     * @param string $path Absolute directory path.
+     *
+     * @return array<int, string> File names relative to the directory.
+     */
+    private function listFilesInDirectory(string $path): array
+    {
+        $files = [];
+        $iterator = new \FilesystemIterator($path, \FilesystemIterator::SKIP_DOTS);
+
+        /** @var SplFileInfo $item */
+        foreach ($iterator as $item) {
+            if ($item->isFile()) {
+                $files[] = $item->getFilename();
+            }
+        }
+
+        sort($files);
+
+        return $files;
+    }
+
+    /**
+     * List files recursively within a directory.
+     *
+     * @param string $absolutePath Absolute directory path.
+     * @param string $relativePath Relative prefix for results.
+     *
+     * @return array<int, string> File paths relative to the disk root.
+     */
+    private function listFilesRecursively(string $absolutePath, string $relativePath): array
+    {
+        $files = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($absolutePath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        /** @var SplFileInfo $item */
+        foreach ($iterator as $item) {
+            if ($item->isFile()) {
+                $filePath = str_replace(
+                    [$absolutePath . DIRECTORY_SEPARATOR, '\\'],
+                    ['', '/'],
+                    $item->getPathname()
+                );
+
+                $files[] = $relativePath !== ''
+                    ? rtrim($relativePath, '/') . '/' . $filePath
+                    : $filePath;
+            }
+        }
+
+        sort($files);
+
+        return $files;
+    }
+
+    /**
+     * List directories in a single directory (non-recursive).
+     *
+     * @param string $path Absolute directory path.
+     *
+     * @return array<int, string> Directory names.
+     */
+    private function listDirectoriesInDirectory(string $path): array
+    {
+        $directories = [];
+        $iterator = new \FilesystemIterator($path, \FilesystemIterator::SKIP_DOTS);
+
+        /** @var SplFileInfo $item */
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                $directories[] = $item->getFilename();
+            }
+        }
+
+        sort($directories);
+
+        return $directories;
+    }
+
+    /**
+     * List directories recursively.
+     *
+     * @param string $absolutePath Absolute directory path.
+     * @param string $relativePath Relative prefix for results.
+     *
+     * @return array<int, string> Directory paths relative to the disk root.
+     */
+    private function listDirectoriesRecursively(string $absolutePath, string $relativePath): array
+    {
+        $directories = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($absolutePath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        /** @var SplFileInfo $item */
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                $dirPath = str_replace(
+                    [$absolutePath . DIRECTORY_SEPARATOR, '\\'],
+                    ['', '/'],
+                    $item->getPathname()
+                );
+
+                $directories[] = $relativePath !== ''
+                    ? rtrim($relativePath, '/') . '/' . $dirPath
+                    : $dirPath;
+            }
+        }
+
+        sort($directories);
+
+        return $directories;
     }
 }

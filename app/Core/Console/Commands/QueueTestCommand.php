@@ -4,7 +4,8 @@ namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
 use App\Core\Queue\Dispatcher;
-use App\Jobs\TestJob;
+use App\Core\Queue\Job;
+use App\Core\Support\Log;
 
 class QueueTestCommand extends Command
 {
@@ -31,7 +32,12 @@ class QueueTestCommand extends Command
     {
         $this->info('Testing queue system...');
 
-        Dispatcher::dispatch(new TestJob());
+        Dispatcher::dispatch(new class extends Job {
+            public function handle(): void
+            {
+                Log::info('Test job handled successfully!');
+            }
+        });
 
         $this->info('Queue test completed successfully!');
     }

@@ -4,151 +4,192 @@ declare(strict_types=1);
 
 namespace App\Core\Cache\Drivers;
 
-use App\Core\Support\Log;
-
+/**
+ * File-based cache driver.
+ *
+ * Stores each cache entry as a JSON file on disk. File writes are performed
+ * atomically (write to a temp file, then rename) to prevent corruption from
+ * concurrent processes or crashes mid-write.
+ */
 class FileCacheDriver implements CacheDriver
 {
+    /**
+     * The directory path where cache files are stored.
+     */
     protected string $path;
 
     /**
      * Create a new file cache driver instance.
      *
-     * @param array $config
+     * @param array{path: string} $config Driver configuration containing the storage path.
      */
     public function __construct(array $config)
     {
-        $this->path = $config['path'];
+        $this->path = rtrim($config['path'], '/\\');
     }
 
     /**
      * Ensure the cache directory exists, creating it recursively if needed.
+     *
+     * @return void
      */
     protected function ensureDirectory(): void
     {
         if (!is_dir($this->path)) {
-            @mkdir($this->path, 0777, true);
+            @mkdir($this->path, 0755, true);
         }
+    }
+
+    /**
+     * Get the full file path for a given cache key.
+     *
+     * @param string $key The cache key.
+     *
+     * @return string The absolute path to the cache file.
+     */
+    protected function filePath(string $key): string
+    {
+        return $this->path . DIRECTORY_SEPARATOR . sha1($key);
     }
 
     /**
      * Retrieve an item from the cache.
      *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * @param string $key     The cache key to look up.
+     * @param mixed  $default The value to return if the key does not exist or is expired.
+     *
+     * @return mixed The cached value or the default.
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
-        $file = $this->path . '/' . sha1($key);
+        $file = $this->filePath($key);
 
         if (!file_exists($file)) {
-            Log::info("Cache miss for key: {$key}");
             return $default;
         }
 
         $content = file_get_contents($file);
+
+        if ($content === false) {
+            return $default;
+        }
+
         $data = json_decode($content, true);
 
-        if (!$data || !isset($data['expire'])) {
+        if (!is_array($data) || !isset($data['expire'], $data['value'])) {
             return $default;
         }
 
         if (time() >= $data['expire']) {
             $this->forget($key);
-            Log::info("Cache expired for key: {$key}");
             return $default;
         }
 
-        Log::info("Cache hit for key: {$key}");
         return $data['value'];
     }
 
     /**
-     * Store an item in the cache.
+     * Store an item in the cache using an atomic write.
      *
-     * @param string $key
-     * @param mixed $value
-     * @param int $seconds
-     * @return bool
+     * The value is first written to a temporary file, then renamed to its
+     * final location. This prevents readers from seeing partially-written data.
+     *
+     * @param string $key     The cache key.
+     * @param mixed  $value   The value to store (must be JSON-serializable).
+     * @param int    $seconds Time-to-live in seconds.
+     *
+     * @return bool True on success, false on failure.
      */
-    public function put(string $key, $value, int $seconds): bool
+    public function put(string $key, mixed $value, int $seconds): bool
     {
         $this->ensureDirectory();
 
-        $file = $this->path . '/' . sha1($key);
+        $file = $this->filePath($key);
 
-        $data = [
-            'value' => $value,
+        $data = json_encode([
+            'value'  => $value,
             'expire' => time() + $seconds,
-        ];
+        ]);
 
-        return file_put_contents($file, json_encode($data)) !== false;
+        if ($data === false) {
+            return false;
+        }
+
+        return $this->atomicWrite($file, $data);
     }
 
     /**
-     * Determine if an item exists in the cache.
+     * Determine if an item exists and has not expired in the cache.
      *
-     * @param string $key
-     * @return bool
+     * @param string $key The cache key.
+     *
+     * @return bool True if the key exists and is valid.
      */
     public function has(string $key): bool
     {
-        $file = $this->path . '/' . sha1($key);
-
-        return file_exists($file);
+        return $this->get($key, $this) !== $this;
     }
 
     /**
      * Remove an item from the cache.
      *
-     * @param string $key
-     * @return bool
+     * @param string $key The cache key to remove.
+     *
+     * @return bool True on success, false if the file did not exist.
      */
     public function forget(string $key): bool
     {
-        $file = $this->path . '/' . sha1($key);
+        $file = $this->filePath($key);
 
         if (file_exists($file)) {
-            return unlink($file);
+            return @unlink($file);
         }
 
         return false;
     }
 
     /**
-     * Remove all items from the cache.
+     * Remove all items from the cache directory.
      *
-     * @return bool
+     * @return bool True on success.
      */
     public function flush(): bool
     {
-        $files = glob($this->path . '/*');
+        $files = glob($this->path . DIRECTORY_SEPARATOR . '*');
+
+        if ($files === false) {
+            return true;
+        }
 
         foreach ($files as $file) {
             if (is_file($file)) {
-                unlink($file);
+                @unlink($file);
             }
         }
 
-        Log::info('Cache cleared.');
         return true;
     }
 
     /**
-     * Get an item or store the result of a callback.
+     * Get an item from the cache, or execute the callback and store the result.
      *
-     * @param string $key
-     * @param int $seconds
-     * @param callable $callback
-     * @return mixed
+     * @param string   $key      The cache key.
+     * @param int      $seconds  Time-to-live in seconds.
+     * @param callable $callback The callback to execute if the key is not found.
+     *
+     * @return mixed The cached or freshly computed value.
      */
-    public function remember(string $key, int $seconds, callable $callback)
+    public function remember(string $key, int $seconds, callable $callback): mixed
     {
-        if (!is_null($value = $this->get($key))) {
+        $value = $this->get($key);
+
+        if ($value !== null) {
             return $value;
         }
 
-        $this->put($key, $value = $callback(), $seconds);
+        $value = $callback();
+
+        $this->put($key, $value, $seconds);
 
         return $value;
     }
@@ -156,56 +197,99 @@ class FileCacheDriver implements CacheDriver
     /**
      * Increment the value of a cache item.
      *
-     * @param string $key
-     * @param int $value
-     * @return int|bool
+     * @param string $key   The cache key.
+     * @param int    $value The amount to increment by.
+     *
+     * @return int|false The new value on success, or false if the key does not exist.
      */
-    public function increment(string $key, int $value = 1): int|bool
+    public function increment(string $key, int $value = 1): int|false
     {
-        if (!$this->has($key)) {
+        $file = $this->filePath($key);
+
+        if (!file_exists($file)) {
             return false;
         }
 
-        $current = $this->get($key);
-        $new = $current + $value;
+        $content = file_get_contents($file);
 
-        // Preserve the item's remaining TTL rather than expiring it.
-        $file   = $this->path . '/' . sha1($key);
-        $expire = 999999999;
-
-        if (file_exists($file)) {
-            $data = json_decode(file_get_contents($file), true);
-            if (isset($data['expire'])) {
-                $expire = $data['expire'];
-            }
+        if ($content === false) {
+            return false;
         }
 
-        $this->put($key, $new, max(0, $expire - time()));
+        $data = json_decode($content, true);
 
-        return $new;
+        if (!is_array($data) || !isset($data['expire'], $data['value'])) {
+            return false;
+        }
+
+        if (time() >= $data['expire']) {
+            $this->forget($key);
+            return false;
+        }
+
+        $newValue = (int) $data['value'] + $value;
+        $remainingTtl = max(0, $data['expire'] - time());
+
+        $this->put($key, $newValue, $remainingTtl);
+
+        return $newValue;
     }
 
     /**
      * Decrement the value of a cache item.
      *
-     * @param string $key
-     * @param int $value
-     * @return int|bool
+     * @param string $key   The cache key.
+     * @param int    $value The amount to decrement by.
+     *
+     * @return int|false The new value on success, or false if the key does not exist.
      */
-    public function decrement(string $key, int $value = 1): int|bool
+    public function decrement(string $key, int $value = 1): int|false
     {
         return $this->increment($key, $value * -1);
     }
 
     /**
-     * Store an item in the cache indefinitely.
+     * Store an item in the cache indefinitely (10-year TTL).
      *
-     * @param string $key
-     * @param mixed $value
-     * @return bool
+     * @param string $key   The cache key.
+     * @param mixed  $value The value to store.
+     *
+     * @return bool True on success, false on failure.
      */
-    public function forever(string $key, $value): bool
+    public function forever(string $key, mixed $value): bool
     {
-        return $this->put($key, $value, 999999999);
+        return $this->put($key, $value, 315_360_000);
+    }
+
+    /**
+     * Write content to a file atomically using a temporary file and rename.
+     *
+     * On systems where rename() is atomic (most POSIX systems and NTFS),
+     * this guarantees that concurrent readers will never see a partial file.
+     *
+     * @param string $file    The destination file path.
+     * @param string $content The content to write.
+     *
+     * @return bool True on success, false on failure.
+     */
+    protected function atomicWrite(string $file, string $content): bool
+    {
+        $tempFile = $file . '.' . uniqid('', true) . '.tmp';
+
+        if (file_put_contents($tempFile, $content) === false) {
+            return false;
+        }
+
+        // On Windows, rename fails if the target exists; remove it first.
+        if (DIRECTORY_SEPARATOR === '\\' && file_exists($file)) {
+            @unlink($file);
+        }
+
+        if (!@rename($tempFile, $file)) {
+            @unlink($tempFile);
+            return false;
+        }
+
+        return true;
     }
 }

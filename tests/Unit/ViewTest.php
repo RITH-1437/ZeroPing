@@ -6,6 +6,9 @@ namespace Tests\Unit;
 
 use App\Core\View\View;
 
+/**
+ * @covers \App\Core\View\View
+ */
 class ViewTest extends \Tests\TestCase
 {
     protected string $basePath;
@@ -41,6 +44,8 @@ class ViewTest extends \Tests\TestCase
         rmdir($dir);
     }
 
+    // ─── Configuration ───────────────────────────────────────────────
+
     public function testSetBasePathAndEnableCache(): void
     {
         View::setBasePath('/tmp/foo');
@@ -51,6 +56,8 @@ class ViewTest extends \Tests\TestCase
         View::enableCache(false);
         $this->assertFalse(View::cacheEnabled());
     }
+
+    // ─── View Resolution ─────────────────────────────────────────────
 
     public function testFindViewReturnsPathWhenFileExists(): void
     {
@@ -78,6 +85,8 @@ class ViewTest extends \Tests\TestCase
         $this->assertStringEndsWith('pages/home.php', $path);
     }
 
+    // ─── Layout Resolution ───────────────────────────────────────────
+
     public function testFindLayoutReturnsPathWhenFileExists(): void
     {
         file_put_contents($this->basePath . '/views/layouts/guest.php', '<?php echo "{{ slot }}"; ?>');
@@ -93,12 +102,43 @@ class ViewTest extends \Tests\TestCase
         $this->assertNull(View::findLayout('nonexistent'));
     }
 
+    // ─── exists() ────────────────────────────────────────────────────
+
+    public function testExistsReturnsTrueForExistingView(): void
+    {
+        file_put_contents($this->basePath . '/views/about.php', '<?php echo "about"; ?>');
+
+        $this->assertTrue(View::exists('about'));
+    }
+
+    public function testExistsReturnsFalseForMissingView(): void
+    {
+        $this->assertFalse(View::exists('nonexistent'));
+    }
+
+    public function testExistsReturnsTrueForDotNotationView(): void
+    {
+        mkdir($this->basePath . '/views/admin', 0777, true);
+        file_put_contents($this->basePath . '/views/admin/dashboard.php', '<?php echo "dash"; ?>');
+
+        $this->assertTrue(View::exists('admin.dashboard'));
+    }
+
+    public function testExistsReturnsFalseForTraversalAttempt(): void
+    {
+        $this->assertFalse(View::exists('../outside'));
+    }
+
+    // ─── Cache Path ──────────────────────────────────────────────────
+
     public function testCachePathReturnsCorrectPath(): void
     {
         $path = View::cachePath();
 
         $this->assertStringContainsString('storage/cache/views', $path);
     }
+
+    // ─── Rendering ───────────────────────────────────────────────────
 
     public function testRenderThrowsWhenViewNotFound(): void
     {
@@ -118,30 +158,45 @@ class ViewTest extends \Tests\TestCase
         View::render('welcome', [], 'nonexistent');
     }
 
-    public function testRenderReturnsOutputWithData(): void
+    public function testRenderReturnsContentWithoutLayout(): void
     {
-        file_put_contents($this->basePath . '/views/greeting.php', '<?php echo "Hello " . $name; ?>');
-        file_put_contents($this->basePath . '/views/layouts/app.php', '<?php echo "{{ slot }}"; ?>');
+        file_put_contents($this->basePath . '/views/simple.php', '<?php echo "Hello World"; ?>');
 
-        ob_start();
-        $output = View::render('greeting', ['name' => 'World'], 'app');
-        ob_end_clean();
+        $output = View::render('simple');
 
-        $this->assertStringContainsString('Hello World', $output);
-        $this->assertStringContainsString('Hello World', $output);
+        $this->assertSame('Hello World', $output);
     }
 
     public function testRenderInjectsDataIntoView(): void
     {
+        file_put_contents($this->basePath . '/views/greeting.php', '<?php echo "Hello " . $name; ?>');
+
+        $output = View::render('greeting', ['name' => 'World']);
+
+        $this->assertStringContainsString('Hello World', $output);
+    }
+
+    public function testRenderWrapsContentInLayout(): void
+    {
+        file_put_contents($this->basePath . '/views/content.php', '<?php echo "inner"; ?>');
+        file_put_contents($this->basePath . '/views/layouts/app.php', '<div><?php echo "{{ slot }}"; ?></div>');
+
+        $output = View::render('content', [], 'app');
+
+        $this->assertStringContainsString('<div>inner</div>', $output);
+    }
+
+    public function testRenderInjectsDataIntoViewWithLayout(): void
+    {
         file_put_contents($this->basePath . '/views/profile.php', '<?php echo $user["name"]; ?>');
         file_put_contents($this->basePath . '/views/layouts/minimal.php', '<?php echo "{{ slot }}"; ?>');
 
-        ob_start();
         $output = View::render('profile', ['user' => ['name' => 'John']], 'minimal');
-        ob_end_clean();
 
         $this->assertStringContainsString('John', $output);
     }
+
+    // ─── Caching ─────────────────────────────────────────────────────
 
     public function testRenderWithCacheEnabledStoresAndReusesCache(): void
     {
@@ -150,19 +205,43 @@ class ViewTest extends \Tests\TestCase
 
         View::enableCache(true);
 
-        ob_start();
         $output1 = View::render('cached', [], 'plain');
-        ob_end_clean();
         $this->assertStringContainsString('cached-content', $output1);
 
         $cacheFiles = glob(View::cachePath() . '/*.php');
         $this->assertNotEmpty($cacheFiles);
 
-        ob_start();
         $output2 = View::render('cached', [], 'plain');
-        ob_end_clean();
         $this->assertSame($output1, $output2);
     }
+
+    // ─── clearCache() ────────────────────────────────────────────────
+
+    public function testClearCacheRemovesCachedViewFiles(): void
+    {
+        file_put_contents($this->basePath . '/views/temp.php', '<?php echo "temp"; ?>');
+        file_put_contents($this->basePath . '/views/layouts/plain.php', '<?php echo "{{ slot }}"; ?>');
+
+        View::enableCache(true);
+        View::render('temp', [], 'plain');
+
+        $cacheFiles = glob(View::cachePath() . '/*.php');
+        $this->assertNotEmpty($cacheFiles);
+
+        View::clearCache();
+
+        $cacheFilesAfter = glob(View::cachePath() . '/*.php');
+        $this->assertEmpty($cacheFilesAfter);
+    }
+
+    public function testClearCacheDoesNotThrowWhenCacheDirectoryEmpty(): void
+    {
+        // Should not throw even when nothing is cached
+        View::clearCache();
+        $this->assertTrue(true);
+    }
+
+    // ─── Security ────────────────────────────────────────────────────
 
     public function testTraversalStyleViewAndLayoutNamesAreRejected(): void
     {

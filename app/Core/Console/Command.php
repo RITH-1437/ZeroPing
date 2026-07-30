@@ -1,24 +1,81 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console;
 
+/**
+ * Base class for all ZeroPing console commands.
+ *
+ * Provides output helpers (info, error, warn, success), interactive prompts
+ * (ask, confirm, choice, secret), file generation utilities (stub, replace,
+ * writeGenerated), and option parsing from $_SERVER['argv'].
+ *
+ * Subclasses MUST define:
+ *   - `protected string $signature` — the command name (e.g. "make:model")
+ *   - `public function handle(...): void` — the command logic
+ *
+ * Subclasses SHOULD define:
+ *   - `protected string $description` — one-line help text
+ *
+ * @package App\Core\Console
+ */
 abstract class Command
 {
-    protected array $options = [];
+    /**
+     * The command signature used for dispatch (e.g. "make:model", "cache:clear").
+     *
+     * Commands without a signature will not be auto-discovered by the registry.
+     */
+    protected string $signature = '';
 
+    /**
+     * One-line description shown in the help listing.
+     */
     protected string $description = '';
 
+    /**
+     * Parsed CLI options (flags and key=value pairs).
+     *
+     * @var array<string, string|bool>
+     */
+    protected array $options = [];
+
+    /**
+     * Console output helper.
+     */
     protected ConsoleStyle $output;
 
     public function __construct()
     {
         $this->output = new ConsoleStyle();
-
         $this->parseOptions();
     }
 
+    // ── Metadata ─────────────────────────────────────────────────────────────
+
+    /**
+     * Get the command signature.
+     */
+    public function getSignature(): string
+    {
+        return $this->signature;
+    }
+
+    /**
+     * Get the command description.
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    // ── Stub / file generation ───────────────────────────────────────────────
+
     /**
      * Render a stub template from the Stubs directory.
+     *
+     * @throws \RuntimeException If the stub file does not exist.
      */
     protected function stub(string $name): string
     {
@@ -28,23 +85,18 @@ abstract class Command
             throw new \RuntimeException("Stub {$name} not found.");
         }
 
-        return file_get_contents($path);
+        return (string) file_get_contents($path);
     }
 
     /**
      * Replace {{ key }} placeholders in a stub.
+     *
+     * @param array<string, string> $replace Map of placeholder => value.
      */
-    protected function replace(
-        string $stub,
-        array $replace
-    ): string {
-
+    protected function replace(string $stub, array $replace): string
+    {
         foreach ($replace as $search => $value) {
-            $stub = str_replace(
-                '{{ ' . $search . ' }}',
-                $value,
-                $stub
-            );
+            $stub = str_replace('{{ ' . $search . ' }}', $value, $stub);
         }
 
         return $stub;
@@ -53,50 +105,99 @@ abstract class Command
     /**
      * Write content to a file, creating directories as needed.
      */
-    protected function write(
-        string $file,
-        string $content
-    ): void {
-
+    protected function write(string $file, string $content): void
+    {
         $directory = dirname($file);
 
         if (!is_dir($directory)) {
             mkdir($directory, 0777, true);
         }
 
-        file_put_contents(
-            $file,
-            $content
-        );
+        file_put_contents($file, $content);
+    }
+
+    /**
+     * Write a generated file, guarding against accidental overwrites.
+     * Honors the --force flag and prompts for confirmation otherwise.
+     */
+    protected function writeGenerated(string $file, string $content, string $label): bool
+    {
+        $relative = $this->relativePath($file);
+
+        if (file_exists($file)) {
+            if ($this->option('force')) {
+                $this->warn("Overwriting existing {$label}: {$relative}");
+            } elseif (!$this->confirm("{$label} {$relative} already exists. Overwrite?")) {
+                $this->warn("Cancelled. {$label} was not overwritten.");
+                return false;
+            }
+        }
+
+        $this->write($file, $content);
+        $this->success("{$label} created: {$relative}");
+
+        return true;
+    }
+
+    /**
+     * Convert an absolute path to a project-relative path.
+     */
+    protected function relativePath(string $file): string
+    {
+        $base = rtrim(BASE_PATH, '/') . '/';
+
+        if (str_starts_with($file, $base)) {
+            return substr($file, strlen($base));
+        }
+
+        return $file;
     }
 
     // ── Output helpers ───────────────────────────────────────────────────────
 
+    /**
+     * Write a line to stdout.
+     */
     protected function line(string $message = ''): void
     {
         $this->output->writeln($message);
     }
 
+    /**
+     * Write an info (green) message.
+     */
     protected function info(string $message): void
     {
         $this->output->writeln("<fg=green>{$message}</>");
     }
 
+    /**
+     * Write a success message with a checkmark.
+     */
     protected function success(string $message): void
     {
         $this->output->writeln("<fg=green>✅ {$message}</>");
     }
 
+    /**
+     * Write an error message with an X mark.
+     */
     protected function error(string $message): void
     {
         $this->output->writeln("<fg=red>❌ {$message}</>");
     }
 
+    /**
+     * Write a warning message.
+     */
     protected function warn(string $message): void
     {
         $this->output->writeln("<fg=yellow>⚠️  {$message}</>");
     }
 
+    /**
+     * Write a comment (cyan) message.
+     */
     protected function comment(string $message): void
     {
         $this->output->writeln("<fg=cyan>{$message}</>");
@@ -125,7 +226,7 @@ abstract class Command
      * Render an aligned, colorized table.
      *
      * @param string[] $headers
-     * @param array<int,string[]> $rows
+     * @param array<int, string[]> $rows
      */
     protected function table(array $headers, array $rows): void
     {
@@ -161,7 +262,7 @@ abstract class Command
                 $raw = (string) $cell;
                 $visible = preg_replace('/<[^>]+>/', '', $raw);
                 $target = ($widths[$i] ?? 0) + 1;
-                $padding = $target - mb_strlen($visible);
+                $padding = $target - mb_strlen((string) $visible);
                 if ($padding > 0) {
                     $raw .= str_repeat(' ', $padding);
                 }
@@ -184,7 +285,6 @@ abstract class Command
     /**
      * Display an animated progress bar while $step is executed for each item.
      *
-     * @param int $total
      * @param callable(int $index, int $total): void $step
      */
     protected function progress(int $total, callable $step, string $label = 'Processing'): void
@@ -198,10 +298,10 @@ abstract class Command
         for ($i = 0; $i < $total; $i++) {
             $step($i, $total);
 
-            $done   = $i + 1;
+            $done    = $i + 1;
             $percent = (int) round($done / $total * 100);
-            $filled = (int) round($done / $total * $width);
-            $bar    = str_repeat('█', $filled) . str_repeat('░', $width - $filled);
+            $filled  = (int) round($done / $total * $width);
+            $bar     = str_repeat('█', $filled) . str_repeat('░', $width - $filled);
 
             $this->output->write(
                 "\r  <fg=green>[{$bar}]</> <fg=yellow>{$percent}%</> <fg=gray>{$label} ({$done}/{$total})</>"
@@ -217,14 +317,15 @@ abstract class Command
     protected function task(string $title, callable $work): void
     {
         $this->output->write("  <fg=cyan>⟳</> <fg=white>{$title}</> ...");
-
         $work();
-
         $this->output->writeln("\r  <fg=green>✔</> <fg=white>{$title}</>");
     }
 
     // ── Interactive helpers ──────────────────────────────────────────────────
 
+    /**
+     * Ask the user a question.
+     */
     protected function ask(string $question, ?string $default = null): string
     {
         $prompt = $default !== null
@@ -239,12 +340,15 @@ abstract class Command
             return $default ?? '';
         }
 
-        $answer = trim(fgets($handle) ?: '');
+        $answer = trim((string) fgets($handle));
         fclose($handle);
 
         return $answer === '' && $default !== null ? $default : $answer;
     }
 
+    /**
+     * Ask the user for a secret (hidden input).
+     */
     protected function secret(string $question): string
     {
         $this->output->writeln("<fg=cyan>?</> <fg=white>{$question} <fg=gray>(hidden)</></>");
@@ -255,12 +359,15 @@ abstract class Command
             return '';
         }
 
-        $answer = trim(fgets($handle) ?: '');
+        $answer = trim((string) fgets($handle));
         fclose($handle);
 
         return $answer;
     }
 
+    /**
+     * Ask a yes/no confirmation question.
+     */
     protected function confirm(string $question, bool $default = false): bool
     {
         $hint = $default ? '<fg=gray>[Y/n]</>' : '<fg=gray>[y/N]</>';
@@ -273,7 +380,7 @@ abstract class Command
             return $default;
         }
 
-        $answer = strtolower(trim(fgets($handle) ?: ''));
+        $answer = strtolower(trim((string) fgets($handle)));
         fclose($handle);
 
         if ($answer === '') {
@@ -284,6 +391,8 @@ abstract class Command
     }
 
     /**
+     * Present a list of choices and return the selected value.
+     *
      * @param string[] $choices
      */
     protected function choice(string $question, array $choices, ?int $default = null): string
@@ -295,7 +404,7 @@ abstract class Command
         }
 
         $fallback = $default !== null ? (string) ($default + 1) : '';
-        $answer   = $this->ask('Select', $fallback);
+        $answer = $this->ask('Select', $fallback);
 
         if (is_numeric($answer)) {
             $index = (int) $answer - 1;
@@ -307,73 +416,30 @@ abstract class Command
         return $answer;
     }
 
-    // ── File generation helper ───────────────────────────────────────────────
-
-    /**
-     * Write a generated file, guarding against accidental overwrites.
-     * Honors the --force flag and prompts for confirmation otherwise.
-     */
-    protected function writeGenerated(string $file, string $content, string $label): bool
-    {
-        $relative = $this->relativePath($file);
-
-        if (file_exists($file)) {
-            if ($this->option('force')) {
-                $this->warn("Overwriting existing {$label}: {$relative}");
-            } elseif (!$this->confirm("{$label} {$relative} already exists. Overwrite?")) {
-                $this->warn("Cancelled. {$label} was not overwritten.");
-                return false;
-            }
-        }
-
-        $this->write($file, $content);
-        $this->success("{$label} created: {$relative}");
-
-        return true;
-    }
-
-    protected function relativePath(string $file): string
-    {
-        $base = rtrim(BASE_PATH, '/') . '/';
-
-        if (str_starts_with($file, $base)) {
-            return substr($file, strlen($base));
-        }
-
-        return $file;
-    }
-
-    protected function autoDiscoverEnabled(): bool
-    {
-        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?? 'true';
-
-        return $flag !== 'false' && $flag !== '0';
-    }
-
-    // ── Metadata ─────────────────────────────────────────────────────────────
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
     // ── Option parsing ───────────────────────────────────────────────────────
 
-    protected function option(string $key)
+    /**
+     * Get a parsed option value by key.
+     *
+     * @return string|bool|null
+     */
+    protected function option(string $key): string|bool|null
     {
         return $this->options[$key] ?? null;
     }
 
+    /**
+     * Parse --key=value and --flag style options from $_SERVER['argv'].
+     */
     protected function parseOptions(): void
     {
         $argv = isset($_SERVER['argv']) ? array_slice($_SERVER['argv'], 2) : [];
-
         $count = count($argv);
 
         for ($i = 0; $i < $count; $i++) {
             $arg = $argv[$i];
 
-            if (strpos($arg, '--') !== 0) {
+            if (!str_starts_with($arg, '--')) {
                 continue;
             }
 
@@ -382,7 +448,7 @@ abstract class Command
             if (str_contains($body, '=')) {
                 [$key, $value] = explode('=', $body, 2);
                 $this->options[$key] = $value;
-            } elseif ($i + 1 < $count && strpos($argv[$i + 1], '--') !== 0) {
+            } elseif ($i + 1 < $count && !str_starts_with($argv[$i + 1], '--')) {
                 $this->options[$body] = $argv[$i + 1];
                 $i++;
             } else {
@@ -391,8 +457,22 @@ abstract class Command
         }
     }
 
+    // ── Utility ──────────────────────────────────────────────────────────────
+
     /**
-     * Call another console command.
+     * Check if package auto-discovery is enabled.
+     */
+    protected function autoDiscoverEnabled(): bool
+    {
+        $flag = $_ENV['PACKAGE_AUTO_DISCOVER'] ?? getenv('PACKAGE_AUTO_DISCOVER') ?: 'true';
+
+        return $flag !== 'false' && $flag !== '0';
+    }
+
+    /**
+     * Call another console command programmatically.
+     *
+     * @param array<int, string> $arguments Additional arguments to pass.
      */
     protected function call(string $command, array $arguments = []): void
     {

@@ -8,6 +8,8 @@ use App\Core\Console\Command;
 
 class PackageUpdateCommand extends Command
 {
+    protected string $signature = 'package:update';
+
     protected string $description = 'Update a ZeroPing package';
 
     public function handle(string $name): void

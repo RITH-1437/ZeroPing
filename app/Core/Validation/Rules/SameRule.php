@@ -4,31 +4,39 @@ declare(strict_types=1);
 
 namespace App\Core\Validation\Rules;
 
+/**
+ * Validates that a field value matches another field's value.
+ *
+ * The other field name is passed as the first parameter (e.g., "same:password").
+ * Uses strict equality comparison.
+ */
 class SameRule extends AbstractRule
 {
+    /**
+     * {@inheritDoc}
+     */
     public function validate(
         string $field,
         mixed $value,
         array $data = [],
         array $parameters = []
     ): bool {
+        $otherField = $this->parameter($parameters, 0);
 
-        $other = $this->parameter($parameters, 0);
-
-        if ($other === null) {
+        if ($otherField === null) {
             return false;
         }
 
-        return ($data[$other] ?? null) === $value;
+        return ($data[$otherField] ?? null) === $value;
     }
 
-    public function message(
-        string $field,
-        array $parameters = []
-    ): string {
+    /**
+     * {@inheritDoc}
+     */
+    public function message(string $field, array $parameters = []): string
+    {
+        $otherField = $this->parameter($parameters, 0, 'unknown');
 
-        $other = $this->parameter($parameters, 0);
-
-        return "{$field} must match {$other}.";
+        return "The {$this->formatFieldName($field)} field must match {$this->formatFieldName((string) $otherField)}.";
     }
 }

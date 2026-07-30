@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeEnumCommand extends Generator
 {
+    protected string $signature = 'make:enum';
+
     protected string $description = 'Create a new backed enum';
 
     public function handle(string $name): void

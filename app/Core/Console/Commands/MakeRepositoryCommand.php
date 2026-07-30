@@ -6,6 +6,8 @@ use App\Core\Console\Command;
 
 class MakeRepositoryCommand extends Command
 {
+    protected string $signature = 'make:repository';
+
     /**
      * The console command description.
      *

@@ -6,6 +6,8 @@ use App\Core\Console\Command;
 
 class MakeServiceCommand extends Command
 {
+    protected string $signature = 'make:service';
+
     /**
      * The console command description.
      *

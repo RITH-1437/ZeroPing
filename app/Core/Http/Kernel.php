@@ -5,56 +5,66 @@ declare(strict_types=1);
 namespace App\Core\Http;
 
 use App\Core\Application\App;
+use App\Core\Container\Container;
+use App\Core\Http\ErrorRenderer;
 use App\Core\Routing\Router;
 use Throwable;
 
 /**
- * HTTP kernel â€” the heart of the request lifecycle.
+ * HTTP Kernel — the heart of the request lifecycle.
  *
- * Runs global middleware (priority ordered) and then dispatches through
- * the router, which applies per-route middleware and middleware groups.
+ * Runs global middleware (priority-ordered) then dispatches through the
+ * router, which applies per-route middleware and middleware groups.
  * Exceptions bubble to a single renderer so error pages stay consistent.
  *
- * Apps extend App\Http\Kernel to declare their global middleware,
- * middleware groups (e.g. "web", "api") and priority.
+ * Applications extend {@see \App\Http\Kernel} to declare their global
+ * middleware, middleware groups (e.g. "web", "api"), and priority ordering.
  */
 class Kernel
 {
     /**
      * Global middleware (short names or FQCNs) run on every request.
      *
-     * @var array<int, class-string|string>
+     * @var list<class-string|string>
      */
     protected array $middleware = [];
 
     /**
-     * Named middleware groups (e.g. "web" => [...]). Routes may
-     * reference a group name in their middleware list.
+     * Named middleware groups (e.g. "web" => [...]).
+     * Routes may reference a group name in their middleware list.
      *
-     * @var array<string, array<int, class-string|string>>
+     * @var array<string, list<class-string|string>>
      */
     protected array $middlewareGroups = [];
 
     /**
-     * Middleware priority â€” listed names run first. Unlisted middleware
-     * run afterwards in their registration order.
+     * Middleware priority — listed names run first.
+     * Unlisted middleware run afterwards in their registration order.
      *
-     * @var array<int, class-string|string>
+     * @var list<class-string|string>
      */
     protected array $middlewarePriority = [];
 
+    /** @var App The application instance. */
     protected App $app;
 
     /**
-     * @param App $app
+     * HTTP status codes considered valid error codes for the error renderer.
+     *
+     * @var list<int>
      */
+    protected array $knownErrorCodes = [400, 401, 403, 404, 405, 419, 422, 429, 500, 502, 503];
+
     public function __construct(App $app)
     {
         $this->app = $app;
     }
 
     /**
-     * Handle an incoming request.
+     * Handle the incoming HTTP request.
+     *
+     * Runs global middleware in priority order, then delegates to the
+     * router for route matching and dispatch.
      */
     public function handle(): void
     {
@@ -72,8 +82,11 @@ class Kernel
     }
 
     /**
-     * Hook for app bootstrap. The app is already booted by the
-     * front controller (bootstrap/app.php) before handle() runs.
+     * Bootstrap hook — called at the start of handle().
+     *
+     * Override in subclasses to run additional setup before middleware.
+     * The application is already booted by the front controller before
+     * handle() is invoked.
      */
     protected function bootstrap(): void
     {
@@ -81,30 +94,37 @@ class Kernel
     }
 
     /**
-     * Global middleware, merging any the app registers elsewhere.
+     * Return the global middleware list.
      *
-     * @return array<int, class-string|string>
+     * @return list<class-string|string>
      */
     protected function globalMiddleware(): array
     {
         return $this->middleware;
     }
 
+    /**
+     * Instantiate and execute a single middleware.
+     *
+     * Uses the service container for resolution, enabling constructor
+     * injection in middleware classes.
+     */
     protected function callMiddleware(string $name): void
     {
-        $class = $this->resolveMiddlewareClass($name);
+        $class      = $this->resolveMiddlewareClass($name);
+        $container  = App::container();
+        $middleware = $container->make($class);
 
-        (new $class())->handle();
+        $middleware->handle();
     }
 
     /**
-     * Resolve a middleware name to a class.
+     * Resolve a middleware name to its fully-qualified class name.
      *
-     * Accepts a FQCN directly, or a short name under
-     * App\Http\Middleware\{Name}Middleware.
+     * Accepts a FQCN directly, or a short name which is expanded to
+     * {@code App\Http\Middleware\{Name}Middleware}.
      *
-     * @param string $name
-     * @return string
+     * @throws \RuntimeException When the middleware class cannot be found.
      */
     public function resolveMiddlewareClass(string $name): string
     {
@@ -124,19 +144,22 @@ class Kernel
     }
 
     /**
-     * Sort middleware by priority (lower runs first; unlisted keep order).
+     * Sort middleware by declared priority (lower index runs first).
      *
-     * @param array<int, class-string|string> $names
-     * @return array<int, class-string|string>
+     * Middleware not listed in the priority array retain their original order
+     * and run after all prioritized middleware.
+     *
+     * @param list<class-string|string> $names
+     * @return list<class-string|string>
      */
     protected function sortMiddleware(array $names): array
     {
         $priority = array_flip($this->middlewarePriority);
-        $sorted  = $names;
+        $sorted   = $names;
 
         usort(
             $sorted,
-            static function ($a, $b) use ($priority): int {
+            static function (string $a, string $b) use ($priority): int {
                 $pa = $priority[$a] ?? PHP_INT_MAX;
                 $pb = $priority[$b] ?? PHP_INT_MAX;
 
@@ -147,12 +170,20 @@ class Kernel
         return $sorted;
     }
 
+    /**
+     * Render an exception as an HTTP error response.
+     *
+     * Maps the exception code to an HTTP status when it matches a known
+     * error code; otherwise defaults to 500 Internal Server Error.
+     */
     protected function handleException(Throwable $e): void
     {
-        $code = in_array($e->getCode(), [403, 404, 419], true) ? $e->getCode() : 500;
+        $code = in_array((int) $e->getCode(), $this->knownErrorCodes, true)
+            ? (int) $e->getCode()
+            : 500;
 
         $frameworkPath = dirname(__DIR__, 3);
 
-        Router::renderError($frameworkPath, $code, $e);
+        ErrorRenderer::render($frameworkPath, $code, $e);
     }
 }

@@ -34,6 +34,11 @@ class DatabaseManager
         $this->factory->registerDriver($name, $driverClass);
     }
 
+    /**
+     * Get the list of available (registered) driver names.
+     *
+     * @return list<string>
+     */
     public function availableDrivers(): array
     {
         return $this->factory->availableDrivers();

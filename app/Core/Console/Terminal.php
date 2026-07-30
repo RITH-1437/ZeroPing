@@ -1,29 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console;
 
 /**
- * Terminal helpers shared by every CLI command: terminal-width detection and a
- * single-line centering routine. Centralizing this guarantees the ASCII banner,
- * version line, taglines and links all share one horizontal center and look
- * polished on Windows Terminal, PowerShell, CMD, Linux and macOS.
+ * Terminal helpers shared by every CLI command.
+ *
+ * Provides terminal-width detection and a single-line centering routine.
+ * Centralizing this guarantees the ASCII banner, version line, taglines and
+ * links all share one horizontal center and look polished on Windows Terminal,
+ * PowerShell, CMD, Linux and macOS.
+ *
+ * @package App\Core\Console
  */
 class Terminal
 {
     /**
+     * Cached terminal width to avoid repeated system calls.
+     */
+    private static ?int $cachedWidth = null;
+
+    /**
      * Detect the current terminal width.
      *
-     * Uses the most reliable per-platform signal (the visible console window width
-     * on Windows, `tput cols` on POSIX, or the COLUMNS env var), then clamps
-     * the result to a sane band so output is never over-indented, shifted
-     * off-screen, or wrapped on terminals of at least 80 columns.
+     * Uses the most reliable per-platform signal (the visible console window
+     * width on Windows, `tput cols` on POSIX, or the COLUMNS env var), then
+     * clamps the result to a sane band so output is never over-indented,
+     * shifted off-screen, or wrapped on terminals of at least 80 columns.
      */
     public static function width(int $default = 80): int
     {
-        static $width = null;
-
-        if ($width !== null) {
-            return $width;
+        if (self::$cachedWidth !== null) {
+            return self::$cachedWidth;
         }
 
         $width = $default;
@@ -40,10 +49,6 @@ class Terminal
                     ? (int) trim((string) $out[0])
                     : 0;
 
-                // If the real window width is unavailable we keep the 80-column
-                // default rather than trusting `mode con` (which reports the
-                // screen buffer, often 120+, and would over-indent / wrap
-                // the banner on an 80-column terminal).
                 if ($win >= 80 && $win <= 400) {
                     $width = $win;
                 }
@@ -62,6 +67,8 @@ class Terminal
         } elseif ($width > 200) {
             $width = 200;
         }
+
+        self::$cachedWidth = $width;
 
         return $width;
     }
@@ -92,5 +99,13 @@ class Terminal
         $pad = (int) floor(($width - $len) / 2);
 
         return str_repeat(' ', $pad) . $line;
+    }
+
+    /**
+     * Reset the cached width (useful for testing).
+     */
+    public static function resetCache(): void
+    {
+        self::$cachedWidth = null;
     }
 }

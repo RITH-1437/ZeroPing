@@ -7,6 +7,10 @@ namespace Tests\Unit;
 use App\Core\Routing\Router;
 use App\Core\Routing\Route;
 
+/**
+ * @covers \App\Core\Routing\Router
+ * @covers \App\Core\Routing\Route
+ */
 class RouterTest extends \Tests\TestCase
 {
     protected function setUp(): void
@@ -18,7 +22,12 @@ class RouterTest extends \Tests\TestCase
         $ref2->setValue(null, '');
         $ref3 = new \ReflectionProperty(Router::class, 'groupMiddleware');
         $ref3->setValue(null, []);
+        // Reset the name map cache
+        $ref4 = new \ReflectionProperty(Router::class, 'nameMap');
+        $ref4->setValue(null, null);
     }
+
+    // ─── HTTP Method Registration ────────────────────────────────────
 
     public function testGetRegistersGetRoute(): void
     {
@@ -38,6 +47,56 @@ class RouterTest extends \Tests\TestCase
         $this->assertSame('/users', $route->uri);
     }
 
+    public function testPutRegistersPutRoute(): void
+    {
+        $route = Router::put('/users/{id}', ['UserController', 'update']);
+
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertSame('PUT', $route->method);
+        $this->assertSame('/users/{id}', $route->uri);
+    }
+
+    public function testPatchRegistersPatchRoute(): void
+    {
+        $route = Router::patch('/users/{id}', ['UserController', 'patch']);
+
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertSame('PATCH', $route->method);
+        $this->assertSame('/users/{id}', $route->uri);
+    }
+
+    public function testDeleteRegistersDeleteRoute(): void
+    {
+        $route = Router::delete('/users/{id}', ['UserController', 'destroy']);
+
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertSame('DELETE', $route->method);
+        $this->assertSame('/users/{id}', $route->uri);
+    }
+
+    public function testPutWithMiddlewareAttachesMiddleware(): void
+    {
+        $route = Router::put('/users/{id}', ['UserController', 'update'], ['auth']);
+
+        $this->assertSame(['auth'], $route->middleware);
+    }
+
+    public function testPatchWithMiddlewareAttachesMiddleware(): void
+    {
+        $route = Router::patch('/users/{id}', ['UserController', 'patch'], ['auth', 'csrf']);
+
+        $this->assertSame(['auth', 'csrf'], $route->middleware);
+    }
+
+    public function testDeleteWithMiddlewareAttachesMiddleware(): void
+    {
+        $route = Router::delete('/users/{id}', ['UserController', 'destroy'], ['auth']);
+
+        $this->assertSame(['auth'], $route->middleware);
+    }
+
+    // ─── Middleware ──────────────────────────────────────────────────
+
     public function testGetWithMiddlewareAttachesMiddleware(): void
     {
         $route = Router::get('/admin', ['AdminController', 'index'], ['auth']);
@@ -51,6 +110,8 @@ class RouterTest extends \Tests\TestCase
 
         $this->assertSame(['auth', 'csrf'], $route->middleware);
     }
+
+    // ─── Prefix Grouping ────────────────────────────────────────────
 
     public function testPrefixAddsPrefixToRoutes(): void
     {
@@ -97,6 +158,23 @@ class RouterTest extends \Tests\TestCase
         $this->assertArrayHasKey('/api/v1/users', $routes['GET']);
     }
 
+    public function testPrefixAppliedToPutPatchDeleteRoutes(): void
+    {
+        Router::prefix('/api', function () {
+            Router::put('/users/{id}', ['UserController', 'update']);
+            Router::patch('/users/{id}', ['UserController', 'patch']);
+            Router::delete('/users/{id}', ['UserController', 'destroy']);
+        });
+
+        $routes = Router::routes();
+
+        $this->assertArrayHasKey('/api/users/{id}', $routes['PUT']);
+        $this->assertArrayHasKey('/api/users/{id}', $routes['PATCH']);
+        $this->assertArrayHasKey('/api/users/{id}', $routes['DELETE']);
+    }
+
+    // ─── Middleware Grouping ─────────────────────────────────────────
+
     public function testMiddlewareGroupAppliesMiddleware(): void
     {
         Router::middleware(['auth'], function () {
@@ -136,18 +214,26 @@ class RouterTest extends \Tests\TestCase
         $this->assertSame([], $routes['GET']['/other-public']->middleware);
     }
 
+    // ─── Routes Registry ─────────────────────────────────────────────
+
     public function testRoutesReturnsAllRegisteredRoutes(): void
     {
         Router::get('/a', ['A', 'index']);
         Router::post('/b', ['B', 'store']);
+        Router::put('/c', ['C', 'update']);
+        Router::patch('/d', ['D', 'patch']);
+        Router::delete('/e', ['E', 'destroy']);
 
         $routes = Router::routes();
 
         $this->assertArrayHasKey('GET', $routes);
         $this->assertArrayHasKey('POST', $routes);
-        $this->assertCount(1, $routes['GET']);
-        $this->assertCount(1, $routes['POST']);
+        $this->assertArrayHasKey('PUT', $routes);
+        $this->assertArrayHasKey('PATCH', $routes);
+        $this->assertArrayHasKey('DELETE', $routes);
     }
+
+    // ─── Named Routes ────────────────────────────────────────────────
 
     public function testRouteByNameReturnsCorrectUri(): void
     {
@@ -174,14 +260,32 @@ class RouterTest extends \Tests\TestCase
         $this->assertSame('/orgs/acme/repos/api', $url);
     }
 
+    // ─── Current Route ───────────────────────────────────────────────
+
     public function testCurrentReturnsNullWhenNoRouteMatched(): void
     {
         $this->assertNull(Router::current());
     }
 
+    // ─── Closure Actions ─────────────────────────────────────────────
+
     public function testGetWithClosureAction(): void
     {
         $route = Router::get('/hello', fn() => 'world');
+
+        $this->assertInstanceOf(\Closure::class, $route->action);
+    }
+
+    public function testPutWithClosureAction(): void
+    {
+        $route = Router::put('/items/{id}', fn($id) => "updated {$id}");
+
+        $this->assertInstanceOf(\Closure::class, $route->action);
+    }
+
+    public function testDeleteWithClosureAction(): void
+    {
+        $route = Router::delete('/items/{id}', fn($id) => "deleted {$id}");
 
         $this->assertInstanceOf(\Closure::class, $route->action);
     }

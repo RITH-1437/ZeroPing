@@ -14,15 +14,68 @@ use App\Core\ORM\Concerns\HasTimestamps;
 use App\Core\ORM\Concerns\SoftDeletes;
 use PDO;
 
+/**
+ * Base model class for the ZeroPing ORM.
+ *
+ * Provides ActiveRecord-style persistence, query building, soft deletes,
+ * timestamps, events, relationships, mass-assignment protection and
+ * array-access to attributes.
+ *
+ * Concrete models should extend this class and set at minimum the `$table`
+ * property and `$fillable` array.
+ *
+ * @example
+ *   // Define a model:
+ *   class Post extends Model {
+ *       protected string $table = 'posts';
+ *       protected array $fillable = ['title', 'body'];
+ *   }
+ *
+ *   // Usage:
+ *   $post = Post::create(['title' => 'Hello', 'body' => '...']);
+ *   $all  = Post::where('published', true)->latest()->get();
+ *
+ * @since 1.0.0
+ * @author Rin Nairith
+ * @link https://zero-ping.duckdns.org/docs/database
+ *
+ * @method static QueryBuilder where(string $column, mixed $value, ?string $operator = null)
+ * @method static QueryBuilder orWhere(string $column, mixed $value, ?string $operator = null)
+ * @method static QueryBuilder whereIn(string $column, array $values)
+ * @method static QueryBuilder whereNull(string $column)
+ * @method static QueryBuilder whereNotNull(string $column)
+ * @method static QueryBuilder orderBy(string $column, string $direction = 'ASC')
+ * @method static QueryBuilder latest(string $column = 'created_at')
+ * @method static QueryBuilder oldest(string $column = 'created_at')
+ * @method static QueryBuilder limit(int $limit)
+ * @method static QueryBuilder offset(int $offset)
+ * @method static QueryBuilder select(string|array $columns = ['*'])
+ * @method static QueryBuilder join(string $table, string $first, string $operator, string $second, string $type = 'INNER')
+ * @method static QueryBuilder leftJoin(string $table, string $first, string $operator, string $second)
+ * @method static QueryBuilder groupBy(string|array $columns)
+ * @method static QueryBuilder having(string $column, string $operator, mixed $value)
+ * @method static \App\Core\ORM\Pagination\Paginator paginate(int $perPage = 15, int $currentPage = 1)
+ */
 abstract class Model implements \ArrayAccess
 {
-    use GuardsAttributes, HasTimestamps, HasAttributes, HasRelationships, SoftDeletes, HasEvents {
+    use GuardsAttributes;
+    use HasTimestamps;
+    use HasAttributes;
+    use HasRelationships;
+    use SoftDeletes;
+    use HasEvents {
         HasRelationships::__get insteadof HasAttributes;
         HasAttributes::__get as getAttributeMagic;
     }
 
+    /**
+     * The PDO connection instance.
+     */
     protected PDO $db;
 
+    /**
+     * The table associated with the model.
+     */
     protected string $table;
 
     /**
@@ -30,9 +83,23 @@ abstract class Model implements \ArrayAccess
      */
     protected string $primaryKey = 'id';
 
-    /** Set to false on models whose tables have no deleted_at column */
+    /**
+     * Set to false on models whose tables have no deleted_at column.
+     */
     protected bool $hasSoftDeletes = true;
 
+    /**
+     * The registered model scopes.
+     *
+     * @var array<string, \Closure>
+     */
+    protected static array $scopes = [];
+
+    /**
+     * Create a new model instance.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
     public function __construct(array $attributes = [])
     {
         $this->db = Database::connect();
@@ -48,46 +115,11 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
-     * Create a new query builder instance.
-     */
-    public static function query(): QueryBuilder
-    {
-        $instance = new static();
-        $qb = new QueryBuilder($instance->db, $instance->table);
-
-        if ($instance->hasSoftDeletes) {
-            $qb->softDeletes();
-        } else {
-            $qb->withTrashed();
-        }
-
-        return $qb->setModelClass(static::class);
-    }
-
-    /**
-     * Get all records.
-     */
-    public static function all(): Collection
-    {
-        return (new static())->query()->get();
-    }
-
-    /**
-     * Find a record by primary key.
-     */
-    public static function find(int|string $id): ?static
-    {
-        return (new static())->query()
-            ->where('id', (int) $id)
-            ->first();
-    }
-
-    /**
      * Get the primary key value for this model instance.
      */
     public function getKey(): mixed
     {
-        return $this->attributes['id'] ?? null;
+        return $this->attributes[$this->primaryKey] ?? null;
     }
 
     /**
@@ -98,28 +130,132 @@ abstract class Model implements \ArrayAccess
         return $this->table;
     }
 
+    // -------------------------------------------------------------------------
+    // Query Building
+    // -------------------------------------------------------------------------
+
     /**
-     * Find first record by column.
+     * Create a new query builder instance for this model (static context).
+     */
+    public static function query(): QueryBuilder
+    {
+        $instance = new static();
+
+        return $instance->newQuery();
+    }
+
+    /**
+     * Create a new query builder instance (instance context).
+     *
+     * Use this when you already have a model instance and want to avoid
+     * creating another one just to get a builder.
+     */
+    public function newQuery(): QueryBuilder
+    {
+        $qb = new QueryBuilder($this->db, $this->table);
+
+        if ($this->hasSoftDeletes) {
+            $qb->softDeletes();
+        } else {
+            $qb->withTrashed();
+        }
+
+        $qb->setModelClass(static::class);
+
+        // Apply global scopes
+        foreach (static::$scopes as $scope) {
+            $scope($qb);
+        }
+
+        return $qb;
+    }
+
+    // -------------------------------------------------------------------------
+    // Scopes
+    // -------------------------------------------------------------------------
+
+    /**
+     * Register a global scope on the model.
+     *
+     * Global scopes are applied to every query for this model class.
+     *
+     * @param  string    $name    Unique identifier for this scope.
+     * @param  \Closure  $scope   Receives QueryBuilder, returns void.
+     */
+    public static function addGlobalScope(string $name, \Closure $scope): void
+    {
+        static::$scopes[$name] = $scope;
+    }
+
+    /**
+     * Remove a registered global scope.
+     */
+    public static function removeGlobalScope(string $name): void
+    {
+        unset(static::$scopes[$name]);
+    }
+
+    /**
+     * Clear all registered global scopes.
+     */
+    public static function clearGlobalScopes(): void
+    {
+        static::$scopes = [];
+    }
+
+    // -------------------------------------------------------------------------
+    // CRUD Convenience Methods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Get all records.
+     */
+    public static function all(): Collection
+    {
+        return static::query()->get();
+    }
+
+    /**
+     * Find a record by primary key.
+     */
+    public static function find(int|string $id): ?static
+    {
+        $instance = new static();
+
+        return $instance->newQuery()
+            ->where($instance->primaryKey, $id)
+            ->first();
+    }
+
+    /**
+     * Find first record by column value.
      */
     public static function findBy(string $column, mixed $value): ?static
     {
-        return (new static())->query()
+        return static::query()
             ->where($column, $value)
             ->first();
     }
 
     /**
-     * Insert a new record.
+     * Insert a new record and return the model.
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public static function create(array $attributes = []): static
     {
         $model = new static($attributes);
         $model->save();
+
         return $model;
     }
 
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
     /**
-     * Save the model to the database.
+     * Save the model to the database (insert or update).
      */
     public function save(): bool
     {
@@ -131,11 +267,9 @@ abstract class Model implements \ArrayAccess
             $this->updateTimestamps();
         }
 
-        if (isset($this->attributes['id'])) {
-            $result = $this->performUpdate();
-        } else {
-            $result = $this->insert();
-        }
+        $result = isset($this->attributes[$this->primaryKey])
+            ? $this->performUpdate()
+            : $this->performInsert();
 
         if ($result) {
             $this->fireModelEvent('saved', false);
@@ -146,10 +280,13 @@ abstract class Model implements \ArrayAccess
 
     /**
      * Update the model with the given attributes and save.
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public function update(array $attributes = []): bool
     {
         $this->fill($attributes);
+
         return $this->save();
     }
 
@@ -164,9 +301,10 @@ abstract class Model implements \ArrayAccess
 
         $fields = [];
         $values = [];
+        $pk = $this->primaryKey;
 
         foreach ($this->attributes as $column => $value) {
-            if ($column !== 'id') {
+            if ($column !== $pk) {
                 $fields[] = Identifier::column((string) $column) . ' = ?';
                 $values[] = $value;
             }
@@ -176,11 +314,11 @@ abstract class Model implements \ArrayAccess
             return true;
         }
 
-        $values[] = $this->attributes['id'];
+        $values[] = $this->attributes[$pk];
         $stmt = $this->db->prepare(
             'UPDATE ' . Identifier::table($this->table)
             . ' SET ' . implode(', ', $fields)
-            . ' WHERE id = ?'
+            . ' WHERE ' . Identifier::column($pk) . ' = ?'
         );
 
         $result = $stmt->execute($values);
@@ -193,9 +331,9 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
-     * Insert a new record.
+     * Perform the actual INSERT query.
      */
-    protected function insert(): bool
+    protected function performInsert(): bool
     {
         if ($this->fireModelEvent('creating') === false) {
             return false;
@@ -205,21 +343,22 @@ abstract class Model implements \ArrayAccess
             throw new \InvalidArgumentException('Cannot insert an empty model.');
         }
 
-        $columns = array_map(
-            static fn (mixed $column): string => Identifier::column((string) $column),
-            array_keys($this->attributes)
+        $columns = array_keys($this->attributes);
+        $quotedColumns = array_map(
+            static fn(string $col): string => Identifier::column($col),
+            $columns
         );
-        $placeholders = implode(',', array_fill(0, count($columns), '?'));
+        $placeholders = implode(', ', array_fill(0, count($columns), '?'));
 
-        $stmt = $this->db->prepare(
-            'INSERT INTO ' . Identifier::table($this->table)
-            . ' (' . implode(',', $columns) . ') VALUES (' . $placeholders . ')'
-        );
+        $sql = 'INSERT INTO ' . Identifier::table($this->table)
+            . ' (' . implode(', ', $quotedColumns) . ')'
+            . ' VALUES (' . $placeholders . ')';
 
+        $stmt = $this->db->prepare($sql);
         $result = $stmt->execute(array_values($this->attributes));
 
         if ($result) {
-            $this->attributes['id'] = (int) $this->db->lastInsertId();
+            $this->attributes[$this->primaryKey] = (int) $this->db->lastInsertId();
             $this->fireModelEvent('created', false);
         }
 
@@ -227,7 +366,7 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
-     * Delete a record.
+     * Delete a record (soft-delete aware).
      */
     public function delete(): bool
     {
@@ -235,30 +374,34 @@ abstract class Model implements \ArrayAccess
             return false;
         }
 
-        if (isset($this->attributes['id'])) {
+        if (isset($this->attributes[$this->primaryKey])) {
             $result = $this->performDeleteOnModel();
             if ($result) {
                 $this->fireModelEvent('deleted', false);
             }
+
             return $result;
         }
 
         return false;
     }
 
+    // -------------------------------------------------------------------------
+    // Model Utilities
+    // -------------------------------------------------------------------------
+
     /**
      * Reload a fresh model instance from the database.
      *
-     * @param  array|string  $with
-     * @return static|null
+     * @param  array|string  $with  Reserved for eager-loading (future).
      */
-    public function fresh($with = []): ?static
+    public function fresh(array|string $with = []): ?static
     {
-        if (! isset($this->attributes['id'])) {
+        if (!isset($this->attributes[$this->primaryKey])) {
             return null;
         }
 
-        return static::find($this->attributes['id']);
+        return static::find($this->attributes[$this->primaryKey]);
     }
 
     /**
@@ -268,11 +411,15 @@ abstract class Model implements \ArrayAccess
      */
     public function refresh(): static
     {
-        if (! isset($this->attributes['id'])) {
+        if (!isset($this->attributes[$this->primaryKey])) {
             return $this;
         }
 
-        $this->fill(static::find($this->attributes['id'])->attributes);
+        $fresh = static::find($this->attributes[$this->primaryKey]);
+
+        if ($fresh !== null) {
+            $this->forceFill($fresh->getAttributes());
+        }
 
         return $this;
     }
@@ -280,16 +427,14 @@ abstract class Model implements \ArrayAccess
     /**
      * Clone the model into a new, non-existing instance.
      *
-     * @param  array|null  $except
-     * @return static
+     * @param  array<string>|null  $except  Attributes to exclude from the clone.
      */
     public function replicate(?array $except = null): static
     {
         $attributes = $this->attributes;
+        unset($attributes[$this->primaryKey]);
 
-        unset($attributes['id']);
-
-        if (! is_null($except)) {
+        if ($except !== null) {
             foreach ($except as $key) {
                 unset($attributes[$key]);
             }
@@ -299,13 +444,11 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
-     * Update the model's update timestamp.
-     *
-     * @return bool
+     * Update the model's update timestamp without changing other attributes.
      */
     public function touch(): bool
     {
-        if (! $this->timestamps) {
+        if (!$this->timestamps) {
             return false;
         }
 
@@ -316,10 +459,6 @@ abstract class Model implements \ArrayAccess
 
     /**
      * Increment a column's value by a given amount.
-     *
-     * @param  string  $column
-     * @param  int  $amount
-     * @return int
      */
     public function increment(string $column, int $amount = 1): int
     {
@@ -328,10 +467,6 @@ abstract class Model implements \ArrayAccess
 
     /**
      * Decrement a column's value by a given amount.
-     *
-     * @param  string  $column
-     * @param  int  $amount
-     * @return int
      */
     public function decrement(string $column, int $amount = 1): int
     {
@@ -340,20 +475,20 @@ abstract class Model implements \ArrayAccess
 
     /**
      * Run an increment or decrement statement on the model.
-     *
-     * @param  string  $column
-     * @param  int  $amount
-     * @param  string  $method
-     * @return int
      */
     protected function incrementOrDecrement(string $column, int $amount, string $method): int
     {
-        $this->{$column} = $this->{$column} + ($method === 'increment' ? $amount : -$amount);
+        $current = (int) ($this->attributes[$column] ?? 0);
+        $this->attributes[$column] = $current + ($method === 'increment' ? $amount : -$amount);
 
         $this->save();
 
-        return $this->{$column};
+        return $this->attributes[$column];
     }
+
+    // -------------------------------------------------------------------------
+    // ArrayAccess Implementation
+    // -------------------------------------------------------------------------
 
     public function offsetExists(mixed $offset): bool
     {
@@ -375,20 +510,57 @@ abstract class Model implements \ArrayAccess
         unset($this->attributes[$offset]);
     }
 
+    // -------------------------------------------------------------------------
+    // Magic Method Forwarding
+    // -------------------------------------------------------------------------
+
     /**
      * Handle dynamic method calls into the model.
      *
+     * Forwards unresolved instance method calls to a fresh QueryBuilder,
+     * enabling `$model->where(...)` style chaining.
+     *
      * @param  string  $method
-     * @param  array  $parameters
+     * @param  array<mixed>  $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
-        return static::query()->$method(...$parameters);
+        // Check for local scope methods (scope{Name})
+        $scopeMethod = 'scope' . ucfirst($method);
+        if (method_exists($this, $scopeMethod)) {
+            $query = $this->newQuery();
+            $this->{$scopeMethod}($query, ...$parameters);
+
+            return $query;
+        }
+
+        return $this->newQuery()->{$method}(...$parameters);
     }
 
-    public static function __callStatic($method, $parameters)
+    /**
+     * Handle dynamic static method calls.
+     *
+     * Forwards to the query builder via a fresh model instance. Uses
+     * newQuery() directly to avoid infinite recursion through __call.
+     *
+     * @param  string  $method
+     * @param  array<mixed>  $parameters
+     * @return mixed
+     */
+    public static function __callStatic(string $method, array $parameters): mixed
     {
-        return (new static())->$method(...$parameters);
+        $instance = new static();
+
+        // Check for local scope methods (scope{Name})
+        $scopeMethod = 'scope' . ucfirst($method);
+        if (method_exists($instance, $scopeMethod)) {
+            $query = $instance->newQuery();
+            $instance->{$scopeMethod}($query, ...$parameters);
+
+            return $query;
+        }
+
+        return $instance->newQuery()->{$method}(...$parameters);
     }
 }

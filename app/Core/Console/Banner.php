@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console;
 
 /**
@@ -18,6 +20,8 @@ namespace App\Core\Console;
  * version, taglines and links all share one horizontal center. Reused by
  * `php zero`, `php zero about`, `php zero doctor`, `php zero new` and the
  * install wizard so the framework presents one consistent identity.
+ *
+ * @package App\Core\Console
  */
 class Banner
 {
@@ -137,16 +141,9 @@ class Banner
     }
 
     /**
-     * Return the full branded header block:
+     * Return the full branded header block.
      *
-     *   <logo>
-     *
-     *   ZeroPing Framework vX.Y.Z
-     *
-     *   Lightweight PHP Framework
-     *   Fast • Elegant • Extensible
-     *
-     *   https://github.com/RITH-1437/ZeroPing
+     * Contains: logo, version, taglines, and repository URL — all centered.
      */
     public static function header(string $version, string $url = self::REPO_URL): string
     {

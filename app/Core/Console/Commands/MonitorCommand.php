@@ -14,6 +14,8 @@ use App\Core\Console\Command;
  */
 class MonitorCommand extends Command
 {
+    protected string $signature = 'monitor';
+
     protected string $description = 'Show application health and service status';
 
     public function handle(): void

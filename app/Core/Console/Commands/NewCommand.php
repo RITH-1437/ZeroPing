@@ -317,7 +317,9 @@ class NewCommand
      */
     private function scaffold(array $a): void
     {
-        $frameworkDir = getcwd();
+        // Always use BASE_PATH as the framework source, not getcwd(), so the
+        // command works correctly regardless of where the user runs it from.
+        $frameworkDir = (defined('BASE_PATH') ? BASE_PATH : getcwd());
         $targetDir = $this->resolveTarget((string) $a['location']);
 
         $this->createdItems = [];
@@ -409,6 +411,7 @@ class NewCommand
             frameworkVersion: \App\Core\Application\App::VERSION,
             phpVersion: PHP_VERSION,
             projectPath: $targetDir,
+            composerInstalled: $this->composerAvailable && $this->internetOk,
         );
 
         echo "\n" . $renderer->render() . "\n";
@@ -449,11 +452,17 @@ class NewCommand
         $sourceDir = BASE_PATH . '/templates/' . $a['type'];
 
         if (!is_dir($sourceDir)) {
-            throw new \RuntimeException("Unknown template '{$a['type']}'.");
+            throw new \RuntimeException(
+                "Template '{$a['type']}' not found at: {$sourceDir}\n" .
+                "Available templates: starter, empty, mvc, blog, api"
+            );
         }
 
         if (is_dir($target)) {
-            throw new \RuntimeException("Target directory already exists: {$target}");
+            throw new \RuntimeException(
+                "Target directory already exists: {$target}\n" .
+                "Remove it first, or choose a different project name."
+            );
         }
 
         $this->copyFramework($source, $target);
@@ -567,23 +576,13 @@ class NewCommand
     private function isExcludedAppFile(string $relative): bool
     {
         $excluded = [
-            'app/Controllers/CoffeeController.php',
             'app/Controllers/HomeController.php',
-            'app/Controllers/TestController.php',
             'app/Controllers/UserController.php',
-            'app/Models/Coffee.php',
-            'app/Models/Test.php',
             'app/Models/User.php',
             'app/Services/AuthenticationService.php',
-            'app/Services/CoffeeService.php',
-            'app/Services/TestService.php',
-            'app/Repositories/CoffeeRepository.php',
-            'app/Repositories/TestRepository.php',
             'app/Repositories/UserRepository.php',
             'app/Events/UserRegistered.php',
             'app/Listeners/LogUserRegistered.php',
-            'app/Jobs/TestJob.php',
-            'app/Mail/TestMail.php',
             'views/site',
             'views/home',
             'views/components',
@@ -877,15 +876,18 @@ class NewCommand
             $location = './my-app';
         }
 
-        if (str_starts_with($location, './') || str_starts_with($location, '../')) {
-            return getcwd() . '/' . ltrim($location, './');
+        // Absolute path — return as-is.
+        if (str_starts_with($location, '/') || preg_match('/^[A-Za-z]:[\\\\\/]/', $location)) {
+            return rtrim(str_replace('\\', '/', $location), '/');
         }
 
-        if (str_starts_with($location, '/') || preg_match('/^[A-Za-z]:\\\\/', $location)) {
-            return $location;
+        // Relative path: strip leading ./ but preserve ../ components correctly.
+        if (str_starts_with($location, './')) {
+            $location = substr($location, 2);
         }
 
-        return getcwd() . '/' . $location;
+        $base = rtrim(str_replace('\\', '/', (string) getcwd()), '/');
+        return $base . '/' . $location;
     }
 
     // ── Option parsing ──────────────────────────────────────────────────

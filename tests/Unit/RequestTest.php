@@ -6,8 +6,13 @@ namespace Tests\Unit;
 
 use App\Core\Http\Request;
 
+/**
+ * @covers \App\Core\Http\Request
+ */
 class RequestTest extends \Tests\TestCase
 {
+    // ─── Static: method() ────────────────────────────────────────────
+
     public function testMethodReturnsRequestMethod(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -22,7 +27,7 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('GET', Request::method());
     }
 
-    public function testMethodRespectsMethodOverride(): void
+    public function testMethodRespectsHiddenMethodOverride(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_POST['_method'] = 'DELETE';
@@ -30,7 +35,9 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('DELETE', Request::method());
     }
 
-    public function testUrlConstructsFullUrl(): void
+    // ─── Static: url() ───────────────────────────────────────────────
+
+    public function testUrlConstructsFullHttpUrl(): void
     {
         $_SERVER['HTTP_HOST'] = 'example.com';
         $_SERVER['REQUEST_URI'] = '/users?page=1';
@@ -48,7 +55,9 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('https://example.com/secure', Request::url());
     }
 
-    public function testPathReturnsUriPath(): void
+    // ─── Static: path() ──────────────────────────────────────────────
+
+    public function testPathReturnsUriWithoutQueryString(): void
     {
         $_SERVER['REQUEST_URI'] = '/users/42?tab=settings';
 
@@ -61,6 +70,8 @@ class RequestTest extends \Tests\TestCase
 
         $this->assertSame('/', Request::path());
     }
+
+    // ─── Static: ip() ────────────────────────────────────────────────
 
     public function testIpIgnoresForwardedHeadersFromUntrustedSources(): void
     {
@@ -97,6 +108,8 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('127.0.0.1', Request::ip());
     }
 
+    // ─── Static: is() ────────────────────────────────────────────────
+
     public function testIsMatchesExactPath(): void
     {
         $_SERVER['REQUEST_URI'] = '/users';
@@ -117,6 +130,8 @@ class RequestTest extends \Tests\TestCase
 
         $this->assertFalse(Request::is('users/*'));
     }
+
+    // ─── Static: input() ─────────────────────────────────────────────
 
     public function testInputReturnsPostValue(): void
     {
@@ -143,6 +158,8 @@ class RequestTest extends \Tests\TestCase
         $this->assertNull(Request::input('missing'));
     }
 
+    // ─── Static: all() ───────────────────────────────────────────────
+
     public function testAllMergesGetAndPost(): void
     {
         $_GET = ['page' => '1'];
@@ -153,6 +170,8 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('1', $all['page']);
         $this->assertSame('Test', $all['name']);
     }
+
+    // ─── Static: has() ───────────────────────────────────────────────
 
     public function testHasReturnsTrueForPostKey(): void
     {
@@ -173,6 +192,8 @@ class RequestTest extends \Tests\TestCase
         $this->assertFalse(Request::has('nonexistent'));
     }
 
+    // ─── Static: only() / except() ──────────────────────────────────
+
     public function testOnlyReturnsSelectedKeys(): void
     {
         $_GET = ['page' => '1'];
@@ -187,7 +208,7 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('1', $result['page']);
     }
 
-    public function testExceptExcludesKeys(): void
+    public function testExceptExcludesSpecifiedKeys(): void
     {
         $_GET = ['page' => '1'];
         $_POST = ['name' => 'John', 'email' => 'j@test.com'];
@@ -198,6 +219,8 @@ class RequestTest extends \Tests\TestCase
         $this->assertArrayHasKey('page', $result);
         $this->assertArrayNotHasKey('email', $result);
     }
+
+    // ─── Static: isJson() ────────────────────────────────────────────
 
     public function testIsJsonReturnsTrueForJsonContentType(): void
     {
@@ -212,6 +235,8 @@ class RequestTest extends \Tests\TestCase
 
         $this->assertFalse(Request::isJson());
     }
+
+    // ─── Static: header() ────────────────────────────────────────────
 
     public function testHeaderReturnsServerValue(): void
     {
@@ -230,7 +255,9 @@ class RequestTest extends \Tests\TestCase
         $this->assertNull(Request::header('Missing'));
     }
 
-    public function testCaptureCreatesRequestFromGlobals(): void
+    // ─── Static: capture() ───────────────────────────────────────────
+
+    public function testCaptureCreatesRequestInstanceFromGlobals(): void
     {
         $_GET = ['a' => 1];
         $_POST = ['b' => 2];
@@ -240,6 +267,8 @@ class RequestTest extends \Tests\TestCase
 
         $this->assertInstanceOf(Request::class, $request);
     }
+
+    // ─── Instance Methods ────────────────────────────────────────────
 
     public function testInstanceGetReturnsPostValue(): void
     {
@@ -255,7 +284,7 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('2', $request->get('page'));
     }
 
-    public function testInstanceGetReturnsDefault(): void
+    public function testInstanceGetReturnsDefaultWhenMissing(): void
     {
         $request = new Request([], [], ['REQUEST_METHOD' => 'GET']);
 
@@ -279,7 +308,7 @@ class RequestTest extends \Tests\TestCase
         $this->assertSame('Bearer token123', $request->getHeader('authorization'));
     }
 
-    public function testInstanceGetHeaderReturnsDefault(): void
+    public function testInstanceGetHeaderReturnsDefaultWhenMissing(): void
     {
         $request = new Request([], [], ['REQUEST_METHOD' => 'GET']);
 

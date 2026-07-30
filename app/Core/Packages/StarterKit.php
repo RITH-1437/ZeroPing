@@ -10,11 +10,22 @@ namespace App\Core\Packages;
  * A starter kit is a named bundle of ZeroPing packages that gets
  * enabled together, so users install a complete stack in one command
  * instead of adding packages one by one.
+ *
+ * Kits are statically defined but can be extended or overridden
+ * by providing a custom kits configuration in the future.
  */
-class StarterKit
+final class StarterKit
 {
     /**
-     * @return array<string, array{label:string, packages:string[], notes:string[]}>
+     * Get all available starter kit definitions.
+     *
+     * Each kit contains:
+     * - `label`: Human-readable description shown in CLI/UI.
+     * - `packages`: List of package names to enable.
+     * - `notes`: Summary of features included.
+     *
+     * @return array<string, array{label: string, packages: string[], notes: string[]}>
+     *    Kits keyed by their slug identifier.
      */
     public static function kits(): array
     {
@@ -66,16 +77,52 @@ class StarterKit
         ];
     }
 
+    /**
+     * Determine if a starter kit exists by name.
+     *
+     * @param string $name The kit slug to check.
+     *
+     * @return bool True if the kit is defined.
+     */
     public static function exists(string $name): bool
     {
         return isset(self::kits()[$name]);
     }
 
     /**
-     * @return string[]
+     * Get all available kit slug names.
+     *
+     * @return array<int, string> List of kit identifiers.
      */
     public static function names(): array
     {
         return array_keys(self::kits());
+    }
+
+    /**
+     * Get a specific starter kit definition.
+     *
+     * @param string $name The kit slug.
+     *
+     * @return array{label: string, packages: string[], notes: string[]}|null
+     *    The kit definition, or null if not found.
+     */
+    public static function get(string $name): ?array
+    {
+        return self::kits()[$name] ?? null;
+    }
+
+    /**
+     * Get the package list for a specific starter kit.
+     *
+     * @param string $name The kit slug.
+     *
+     * @return array<int, string> The list of package names, or empty array if kit not found.
+     */
+    public static function packages(string $name): array
+    {
+        $kit = self::get($name);
+
+        return $kit['packages'] ?? [];
     }
 }

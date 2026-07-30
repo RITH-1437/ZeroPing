@@ -7,25 +7,25 @@ namespace App\Http;
 use App\Core\Http\Kernel as BaseKernel;
 
 /**
- * Application HTTP kernel.
+ * Application HTTP Kernel.
  *
- * Declares the global middleware, middleware groups and priority
- * used by every request. Route-level middleware is declared on
- * the individual routes in config/routes.php.
+ * Declares the global middleware stack, named middleware groups, and
+ * execution priority for every incoming request. Route-level middleware
+ * is declared directly on routes in {@code config/routes.php}.
  */
 class Kernel extends BaseKernel
 {
     /**
-     * Global middleware run before the router on every request.
+     * Global middleware executed before routing on every request.
      *
-     * @var array<int, class-string|string>
+     * @var list<class-string|string>
      */
     protected array $middleware = [];
 
     /**
-     * Middleware groups referenced by name from routes.
+     * Named middleware groups referenced from route definitions.
      *
-     * @var array<string, array<int, class-string|string>>
+     * @var array<string, list<class-string|string>>
      */
     protected array $middlewareGroups = [
         'web' => [
@@ -35,9 +35,9 @@ class Kernel extends BaseKernel
     ];
 
     /**
-     * Middleware priority (lower runs first).
+     * Middleware execution priority (lower index runs first).
      *
-     * @var array<int, class-string|string>
+     * @var list<class-string|string>
      */
     protected array $middlewarePriority = [
         \App\Http\Middleware\GuestMiddleware::class,

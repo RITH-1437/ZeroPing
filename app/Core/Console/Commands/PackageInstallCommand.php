@@ -10,6 +10,8 @@ use App\Core\Packages\ProviderRepository;
 
 class PackageInstallCommand extends Command
 {
+    protected string $signature = 'package:install';
+
     protected string $description = 'Install and enable a ZeroPing package';
 
     public function handle(string $name): void

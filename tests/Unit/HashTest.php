@@ -8,12 +8,14 @@ use App\Core\Security\Hash;
 
 class HashTest extends \Tests\TestCase
 {
-    public function testMakeReturnsBcryptHash(): void
+    public function testMakeReturnsValidHash(): void
     {
         $hash = Hash::make('password123');
 
         $this->assertIsString($hash);
-        $this->assertStringStartsWith('$2y$', $hash);
+        // Accepts either argon2id (preferred) or bcrypt as valid hash prefix
+        $validPrefix = str_starts_with($hash, '$argon2id$') || str_starts_with($hash, '$2y$');
+        $this->assertTrue($validPrefix, "Hash should start with \$argon2id\$ or \$2y\$, got: {$hash}");
     }
 
     public function testMakeReturnsDifferentHashesForSameInput(): void

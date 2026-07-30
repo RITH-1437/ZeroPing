@@ -10,6 +10,8 @@ use App\Core\Packages\ProviderRepository;
 
 class PackageDisableCommand extends Command
 {
+    protected string $signature = 'package:disable';
+
     protected string $description = 'Disable a ZeroPing package';
 
     public function handle(string $name): void

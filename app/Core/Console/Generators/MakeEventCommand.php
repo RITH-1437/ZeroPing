@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeEventCommand extends Generator
 {
+    protected string $signature = 'make:event';
+
     protected string $description = 'Create a new event class';
 
     public function handle(string $name): void

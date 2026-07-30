@@ -16,8 +16,8 @@ class EnvTest extends \Tests\TestCase
 
     public function testLoadThrowsWhenFileMissing(): void
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('.env file not found.');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('.env file not found:');
 
         Env::load('/nonexistent/path/.env');
     }

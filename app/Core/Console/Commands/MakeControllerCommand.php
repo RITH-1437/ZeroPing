@@ -6,6 +6,8 @@ use App\Core\Console\Command;
 
 class MakeControllerCommand extends Command
 {
+    protected string $signature = 'make:controller';
+
     /**
      * The console command description.
      *

@@ -12,6 +12,8 @@ use App\Core\Routing\Router;
  */
 class RouteListCommand extends Command
 {
+    protected string $signature = 'route:list';
+
     /**
      * The console command description.
      *

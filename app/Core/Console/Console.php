@@ -1,93 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console;
 
-use App\Core\Console\Commands\AboutCommand;
-use App\Core\Console\Commands\CacheClearCommand;
-use App\Core\Console\Commands\CacheTestCommand;
-use App\Core\Console\Commands\ConfigCacheCommand;
-use App\Core\Console\Commands\ConfigClearCommand;
-use App\Core\Console\Commands\ConfigTestCommand;
-use App\Core\Console\Commands\DbSeedCommand;
-use App\Core\Console\Commands\DoctorCommand;
-use App\Core\Console\Commands\InstallCommand;
-use App\Core\Console\Commands\KeyGenerateCommand;
-use App\Core\Console\Commands\LogTestCommand;
-use App\Core\Console\Commands\MailTestCommand;
-use App\Core\Console\Commands\MakeCommandCommand;
-use App\Core\Console\Commands\MakeControllerCommand;
-use App\Core\Console\Commands\MakeMailCommand;
-use App\Core\Console\Commands\MakeMiddlewareCommand;
-use App\Core\Console\Commands\MakeMigrationCommand;
-use App\Core\Console\Commands\MakeModelCommand;
-use App\Core\Console\Commands\MakePolicyCommand;
-use App\Core\Console\Commands\MakeProviderCommand;
-use App\Core\Console\Commands\MakeRepositoryCommand;
-use App\Core\Console\Commands\MakeRequestCommand;
-use App\Core\Console\Commands\MakeSeederCommand;
-use App\Core\Console\Commands\PackageListCommand;
-use App\Core\Console\Commands\PackageEnableCommand;
-use App\Core\Console\Commands\PackageDisableCommand;
-use App\Core\Console\Commands\PackageInstallCommand;
-use App\Core\Console\Commands\PackageRemoveCommand;
-use App\Core\Console\Commands\PackageUpdateCommand;
-use App\Core\Console\Commands\PackageCreateCommand;
-use App\Core\Console\Commands\StarterInstallCommand;
-use App\Core\Console\Commands\VendorPublishCommand;
-use App\Core\Console\Generators\MakeJobCommand;
-use App\Core\Console\Generators\MakeEventCommand;
-use App\Core\Console\Generators\MakeListenerCommand;
-use App\Core\Console\Generators\MakeNotificationCommand;
-use App\Core\Console\Generators\MakeFactoryCommand;
-use App\Core\Console\Generators\MakeAuthCommand;
-use App\Core\Console\Generators\MakeEnumCommand;
-use App\Core\Console\Commands\MakeServiceCommand;
-use App\Core\Console\Commands\MakeTestCommand;
-use App\Core\Console\Commands\MigrateCommand;
-use App\Core\Console\Commands\MigrateFreshCommand;
-use App\Core\Console\Commands\MigrateRefreshCommand;
-use App\Core\Console\Commands\MigrateResetCommand;
-use App\Core\Console\Commands\MigrateRollbackCommand;
-use App\Core\Console\Commands\MigrateStatusCommand;
-use App\Core\Console\Commands\MonitorCommand;
-use App\Core\Console\Commands\OptimizeClearCommand;
-use App\Core\Console\Commands\OptimizeCommand;
-use App\Core\Console\Commands\OrmTestCommand;
-use App\Core\Console\Commands\PublishCommand;
-use App\Core\Console\Commands\QueueClearCommand;
-use App\Core\Console\Commands\QueueFailedCommand;
-use App\Core\Console\Commands\QueueListenCommand;
-use App\Core\Console\Commands\QueueRestartCommand;
-use App\Core\Console\Commands\QueueRetryCommand;
-use App\Core\Console\Commands\QueueTestCommand;
-use App\Core\Console\Commands\QueueWorkCommand;
-use App\Core\Console\Commands\RouteCacheCommand;
-use App\Core\Console\Commands\RouteClearCommand;
-use App\Core\Console\Commands\RouteListCommand;
-use App\Core\Console\Commands\ScheduleClearCommand;
-use App\Core\Console\Commands\ScheduleListCommand;
-use App\Core\Console\Commands\ScheduleRunCommand;
-use App\Core\Console\Commands\ScheduleTestCommand;
-use App\Core\Console\Commands\SearchIndexCommand;
-use App\Core\Console\Commands\SecurityTestCommand;
-use App\Core\Console\Commands\ServeCommand;
-use App\Core\Console\Commands\StorageClearCommand;
-use App\Core\Console\Commands\StorageTestCommand;
-use App\Core\Console\Commands\TestCommand;
-use App\Core\Console\Commands\ValidateTestCommand;
-use App\Core\Console\Commands\ViewCacheCommand;
-use App\Core\Console\Commands\ViewClearCommand;
-use App\Core\Console\Commands\MakeResourceCommand;
-use App\Core\Console\Commands\MakeRuleCommand;
-use App\Core\Console\Commands\MakeScopeCommand;
-use App\Core\Console\Commands\MakeExceptionCommand;
-
+/**
+ * The main console application kernel.
+ *
+ * Parses CLI arguments and dispatches commands via the {@see CommandRegistry}.
+ * This replaces the previous monolithic switch statement with a registry-based
+ * dispatch mechanism while maintaining full backward compatibility.
+ *
+ * @package App\Core\Console
+ */
 class Console
 {
     /**
+     * The command registry instance.
+     */
+    private CommandRegistry $registry;
+
+    /**
+     * Create a new Console instance.
+     */
+    public function __construct(?CommandRegistry $registry = null)
+    {
+        $this->registry = $registry ?? new CommandRegistry();
+
+        // Register commands that don't extend Command (special cases)
+        $this->registry->register('new', Commands\NewCommand::class);
+    }
+
+    /**
      * Parse CLI arguments and dispatch the appropriate command handler.
      *
-     * @param array $argv The CLI argument vector ($_SERVER['argv']).
+     * @param array<int, string> $argv The CLI argument vector ($_SERVER['argv']).
      */
     public function run(array $argv): void
     {
@@ -110,14 +57,11 @@ class Console
             }
         }
 
+        // Handle built-in meta commands
         switch ($command) {
             case 'version':
                 echo "ZeroPing Framework v" . \App\Core\Application\App::VERSION . "\n";
-                break;
-
-            case 'about':
-                (new AboutCommand())->handle();
-                break;
+                return;
 
             case 'help':
                 $target = $argv[2] ?? null;
@@ -126,383 +70,160 @@ class Console
                 } else {
                     $this->showHelp();
                 }
-                break;
+                return;
 
             case 'list':
                 $this->showHelp();
-                break;
-
-            // ── Project ───────────────────────────────────────────────────
-            case 'serve':
-                (new ServeCommand())->handle(array_slice($argv, 2));
-                break;
-
-            case 'install':
-                (new InstallCommand())->handle();
-                break;
-
-            // ── Migrations ───────────────────────────────────────────────
-            case 'migrate':
-                (new MigrateCommand())->handle();
-                break;
-
-            case 'migrate:refresh':
-                (new MigrateRefreshCommand())->handle();
-                break;
-
-            case 'migrate:fresh':
-                (new MigrateFreshCommand())->handle();
-                break;
-
-            case 'migrate:rollback':
-                (new MigrateRollbackCommand())->handle();
-                break;
-
-            case 'migrate:reset':
-                (new MigrateResetCommand())->handle();
-                break;
-
-            case 'migrate:status':
-                (new MigrateStatusCommand())->handle();
-                break;
-
-            // ── Make ────────────────────────────────────────────────────
-            case 'make:model':
-                (new MakeModelCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:controller':
-                (new MakeControllerCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:service':
-                (new MakeServiceCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:repository':
-                (new MakeRepositoryCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:migration':
-                (new MakeMigrationCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:mail':
-                (new MakeMailCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:seeder':
-                (new MakeSeederCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:middleware':
-                (new MakeMiddlewareCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:request':
-                (new MakeRequestCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:policy':
-                (new MakePolicyCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:provider':
-                (new MakeProviderCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:command':
-                (new MakeCommandCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:test':
-                (new MakeTestCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:job':
-                (new MakeJobCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:event':
-                (new MakeEventCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:listener':
-                (new MakeListenerCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:notification':
-                (new MakeNotificationCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:factory':
-                (new MakeFactoryCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:auth':
-                (new MakeAuthCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:enum':
-                (new MakeEnumCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:resource':
-                (new MakeResourceCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:rule':
-                (new MakeRuleCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:scope':
-                (new MakeScopeCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'make:exception':
-                (new MakeExceptionCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:list':
-                (new PackageListCommand())->handle();
-                break;
-
-            case 'package:enable':
-                (new PackageEnableCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:disable':
-                (new PackageDisableCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:install':
-                (new PackageInstallCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:remove':
-                (new PackageRemoveCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:update':
-                (new PackageUpdateCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'package:create':
-                (new PackageCreateCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'starter:install':
-                (new StarterInstallCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'vendor:publish':
-                (new VendorPublishCommand())->handle();
-                break;
-
-            // ── Database / Seeds ──────────────────────────────────────
-            case 'db:seed':
-                (new DbSeedCommand())->handle();
-                break;
-
-            // ── Routes ─────────────────────────────────────────────────
-            case 'route:list':
-                (new RouteListCommand())->handle();
-                break;
-
-            case 'route:cache':
-                (new RouteCacheCommand())->handle();
-                break;
-
-            case 'route:clear':
-                (new RouteClearCommand())->handle();
-                break;
-
-            // ── Config ───────────────────────────────────────────────
-            case 'config:test':
-                (new ConfigTestCommand())->handle();
-                break;
-
-            case 'config:cache':
-                (new ConfigCacheCommand())->handle();
-                break;
-
-            case 'config:clear':
-                (new ConfigClearCommand())->handle();
-                break;
-
-            // ── Cache ───────────────────────────────────────────────
-            case 'cache:test':
-                (new CacheTestCommand())->handle();
-                break;
-
-            case 'cache:clear':
-                (new CacheClearCommand())->handle();
-                break;
-
-            // ── Queue ───────────────────────────────────────────────
-            case 'queue:test':
-                (new QueueTestCommand())->handle();
-                break;
-
-            case 'queue:work':
-                (new QueueWorkCommand())->handle();
-                break;
-
-            case 'queue:listen':
-                (new QueueListenCommand())->handle();
-                break;
-
-            case 'queue:failed':
-                (new QueueFailedCommand())->handle();
-                break;
-
-            case 'queue:retry':
-                (new QueueRetryCommand())->handle($argv[2] ?? '');
-                break;
-
-            case 'queue:clear':
-                (new QueueClearCommand())->handle();
-                break;
-
-            case 'queue:restart':
-                (new QueueRestartCommand())->handle();
-                break;
-
-            // ── Schedule ────────────────────────────────────────────
-            case 'schedule:run':
-                (new ScheduleRunCommand())->handle();
-                break;
-
-            case 'schedule:list':
-                (new ScheduleListCommand())->handle();
-                break;
-
-            case 'schedule:test':
-                (new ScheduleTestCommand())->handle();
-                break;
-
-            case 'schedule:clear':
-                (new ScheduleClearCommand())->handle();
-                break;
-
-            // ── Storage ─────────────────────────────────────────────
-            case 'storage:test':
-                (new StorageTestCommand())->handle();
-                break;
-
-            case 'storage:clear':
-                (new StorageClearCommand())->handle();
-                break;
-
-            // ── Views ───────────────────────────────────────────────
-            case 'view:cache':
-                (new ViewCacheCommand())->handle();
-                break;
-
-            case 'view:clear':
-                (new ViewClearCommand())->handle();
-                break;
-
-            // ── Optimize ────────────────────────────────────────────
-            case 'optimize':
-                (new OptimizeCommand())->handle();
-                break;
-
-            case 'optimize:clear':
-                (new OptimizeClearCommand())->handle();
-                break;
-
-            // ── Keys / Security ─────────────────────────────────────
-            case 'key:generate':
-                (new KeyGenerateCommand())->handle();
-                break;
-
-            case 'doctor':
-                (new DoctorCommand())->handle();
-                break;
-
-            case 'monitor':
-                (new MonitorCommand())->handle();
-                break;
-
-            case 'security:test':
-                (new SecurityTestCommand())->handle();
-                break;
-
-            // ── Search ─────────────────────────────────────────────
-            case 'search:index':
-                (new SearchIndexCommand())->handle();
-                break;
-
-            // ── Publishing ────────────────────────────────────────
-            case 'publish':
-                (new PublishCommand())->handle();
-                break;
-
-            // ── Starter Templates ─────────────────────────────────
-            case 'new':
-                $command = new \App\Core\Console\Commands\NewCommand();
-                $command->handle($argv[2] ?? '', array_slice($argv, 3));
-                break;
-
-            // ── Tests / Misc ─────────────────────────────────────
-            case 'orm:test':
-                (new OrmTestCommand())->handle();
-                break;
-
-            case 'mail:test':
-                (new MailTestCommand())->handle();
-                break;
-
-            case 'log:test':
-                (new LogTestCommand())->handle();
-                break;
-
-            case 'validate:test':
-                (new ValidateTestCommand())->handle();
-                break;
-
-            case 'test':
-                (new TestCommand())->handle();
-                break;
-
-            default:
-                $this->runPackageCommand($command, $argv);
-                break;
+                return;
         }
+
+        // Dispatch via registry
+        $this->dispatch($command, $argv);
     }
 
     /**
-     * Dispatch a command registered by an installed package, falling back to the
-     * help screen when the command is unknown.
+     * Dispatch a command by signature, resolving it from the registry.
+     *
+     * @param string $command The command signature (e.g. "make:model").
+     * @param array<int, string> $argv The full argument vector.
      */
-    private function runPackageCommand(string $name, array $argv): void
+    private function dispatch(string $command, array $argv): void
     {
-        if (!class_exists(\Zeroping\Support\Console\CommandRegistry::class)) {
-            $this->showHelp();
-            return;
-        }
-
-        $class = \Zeroping\Support\Console\CommandRegistry::find($name);
+        $class = $this->registry->resolve($command);
 
         if ($class === null) {
-            $this->showHelp();
+            // Try package-level registry
+            $class = $this->registry->resolveFromPackages($command);
+        }
+
+        if ($class === null) {
+            $style = new ConsoleStyle();
+            $style->writeln("<fg=red>Command '{$command}' not found. Run <fg=white>php zero help</> for a list.</>");
             return;
         }
 
-        (new $class())->handle();
+        $instance = new $class();
+        $args = array_slice($argv, 2);
+
+        // Handle instances that extend Command
+        if ($instance instanceof Command) {
+            $this->invokeCommand($instance, $args);
+            return;
+        }
+
+        // Handle standalone command classes (e.g. NewCommand) via reflection
+        $this->invokeStandaloneCommand($instance, $args);
     }
+
+    /**
+     * Invoke a standalone command object (not extending Command base class).
+     *
+     * @param object $instance The command instance.
+     * @param array<int, string> $args The remaining CLI arguments.
+     */
+    private function invokeStandaloneCommand(object $instance, array $args): void
+    {
+        if (!method_exists($instance, 'handle')) {
+            return;
+        }
+
+        $reflection = new \ReflectionMethod($instance, 'handle');
+        $params = $reflection->getParameters();
+
+        if (count($params) === 0) {
+            $instance->handle();
+            return;
+        }
+
+        $firstParam = $params[0];
+        $type = $firstParam->getType();
+
+        if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
+            $instance->handle($args);
+            return;
+        }
+
+        if ($type instanceof \ReflectionNamedType && $type->getName() === 'string') {
+            $firstArg = $args[0] ?? '';
+
+            if (count($params) >= 2) {
+                $secondParam = $params[1];
+                $secondType = $secondParam->getType();
+                if ($secondType instanceof \ReflectionNamedType && $secondType->getName() === 'array') {
+                    $instance->handle($firstArg, array_slice($args, 1));
+                    return;
+                }
+            }
+
+            $instance->handle($firstArg);
+            return;
+        }
+
+        $instance->handle();
+    }
+
+    /**
+     * Invoke a command's handle() method with the appropriate arguments.
+     *
+     * Inspects the handle() signature to determine what arguments to pass,
+     * maintaining backward compatibility with existing command classes that
+     * expect different parameter shapes.
+     *
+     * @param Command $instance The command instance to invoke.
+     * @param array<int, string> $args The remaining CLI arguments (after the command name).
+     */
+    private function invokeCommand(Command $instance, array $args): void
+    {
+        $reflection = new \ReflectionMethod($instance, 'handle');
+        $params = $reflection->getParameters();
+
+        if (count($params) === 0) {
+            $instance->handle();
+            return;
+        }
+
+        $firstParam = $params[0];
+        $type = $firstParam->getType();
+
+        // handle(array $args) — pass the full args array
+        if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
+            $instance->handle($args);
+            return;
+        }
+
+        // handle(string $name) — pass first argument
+        if ($type instanceof \ReflectionNamedType && $type->getName() === 'string') {
+            $firstArg = $args[0] ?? '';
+
+            // Check if there are two params: handle(string $name, array $rest)
+            if (count($params) >= 2) {
+                $secondParam = $params[1];
+                $secondType = $secondParam->getType();
+                if ($secondType instanceof \ReflectionNamedType && $secondType->getName() === 'array') {
+                    $instance->handle($firstArg, array_slice($args, 1));
+                    return;
+                }
+            }
+
+            $instance->handle($firstArg);
+            return;
+        }
+
+        // Fallback: call with no args
+        $instance->handle();
+    }
+
+    /**
+     * Get the command registry instance.
+     */
+    public function getRegistry(): CommandRegistry
+    {
+        return $this->registry;
+    }
+
 
     /**
      * Single source of truth for the command listing and per-command help.
-     *
-     * group => command => [
-     *   'description' => string,
-     *   'options'     => [flag => description],
-     *   'arguments'   => [['name' =>, 'description' =>]],
-     *   'examples'    => [string],
-     *   'notes'       => string,
-     * ]
      *
      * @return array<string, array<string, array{description: string, options: array<string,string>, arguments: array<int,array{name:string,description:string}>, examples: string[], notes: string}>>
      */
@@ -585,6 +306,7 @@ class Console
                     'notes' => '',
                 ],
             ],
+
             'Generators' => [
                 'make:model' => [
                     'description' => 'Create an Eloquent-style model',
@@ -762,6 +484,7 @@ class Console
                     'notes' => 'Generates a custom exception in app/Exceptions.',
                 ],
             ],
+
             'Packages' => [
                 'package:list' => [
                     'description' => 'List installed ZeroPing packages and their state',
@@ -827,6 +550,7 @@ class Console
                     'notes' => 'Copies package files into the host app when missing.',
                 ],
             ],
+
             'Routes' => [
                 'route:list' => [
                     'description' => 'Display all registered routes',
@@ -915,6 +639,7 @@ class Console
                     'notes' => '',
                 ],
             ],
+
             'Queue & Schedule' => [
                 'queue:work' => [
                     'description' => 'Process jobs from the queue',
@@ -1128,7 +853,10 @@ class Console
         ];
     }
 
+
     /**
+     * Find command metadata by name from the commandInfo registry.
+     *
      * @return array{description: string, options: array<string,string>, arguments: array<int,array{name:string,description:string}>, examples: string[], notes: string}|null
      */
     private function findCommand(string $name): ?array
@@ -1139,22 +867,21 @@ class Console
             }
         }
 
-        if (class_exists(\Zeroping\Support\Console\CommandRegistry::class)) {
-            $class = \Zeroping\Support\Console\CommandRegistry::find($name);
+        // Check package-level registry for help metadata
+        $class = $this->registry->resolveFromPackages($name);
 
-            if ($class !== null) {
-                $instance = new $class();
+        if ($class !== null) {
+            $instance = new $class();
 
-                return [
-                    'description' => method_exists($instance, 'getDescription')
-                        ? $instance->getDescription()
-                        : '',
-                    'options'     => [],
-                    'arguments'   => [],
-                    'examples'    => [],
-                    'notes'       => 'Provided by an installed package.',
-                ];
-            }
+            return [
+                'description' => method_exists($instance, 'getDescription')
+                    ? $instance->getDescription()
+                    : '',
+                'options'     => [],
+                'arguments'   => [],
+                'examples'    => [],
+                'notes'       => 'Provided by an installed package.',
+            ];
         }
 
         return null;
@@ -1260,21 +987,19 @@ class Console
             }
         }
 
-        if (class_exists(\Zeroping\Support\Console\CommandRegistry::class)) {
-            $packageCommands = \Zeroping\Support\Console\CommandRegistry::all();
+        $packageCommands = $this->registry->allFromPackages();
 
-            if ($packageCommands !== []) {
-                $style->writeln('');
-                $style->writeln('  <options=bold;fg=yellow>Package Commands</>');
+        if ($packageCommands !== []) {
+            $style->writeln('');
+            $style->writeln('  <options=bold;fg=yellow>Package Commands</>');
 
-                foreach ($packageCommands as $name => $class) {
-                    $instance   = new $class();
-                    $description = method_exists($instance, 'getDescription')
-                        ? $instance->getDescription()
-                        : '';
-                    $padded = str_pad($name, 22);
-                    $style->writeln('    <fg=green>' . $padded . '</> <fg=gray>' . $description . '</>');
-                }
+            foreach ($packageCommands as $name => $class) {
+                $instance = new $class();
+                $description = method_exists($instance, 'getDescription')
+                    ? $instance->getDescription()
+                    : '';
+                $padded = str_pad($name, 22);
+                $style->writeln('    <fg=green>' . $padded . '</> <fg=gray>' . $description . '</>');
             }
         }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Testing;
 
-use App\Core\ORM\Model;
+use App\Core\Database\Model;
 use App\Core\Testing\Database\DatabaseAssertions;
 use App\Core\Testing\Exceptions\TestingException;
 

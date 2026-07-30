@@ -6,242 +6,203 @@ namespace Tests\Unit;
 
 use App\Core\Database\QueryBuilder;
 
+/**
+ * @covers \App\Core\Database\QueryBuilder
+ */
 class QueryBuilderTest extends \Tests\TestCase
 {
-    private function createStubPdo(): \PDO
+    private function createQueryBuilder(): QueryBuilder
     {
-        $stub = $this->createStub(\PDO::class);
-        return $stub;
+        return new QueryBuilder($this->createStub(\PDO::class), 'users');
     }
 
-    private function createQueryBuilderWithoutDb(): QueryBuilder
-    {
-        return new QueryBuilder($this->createStubPdo(), 'users');
-    }
+    // ─── SELECT ──────────────────────────────────────────────────────
 
-    public function testSelectGeneratesCorrectSql(): void
+    public function testSelectAllGeneratesCorrectSql(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->toSql();
+        $sql = $this->createQueryBuilder()->toSql();
 
         $this->assertStringContainsString('SELECT * FROM users', $sql);
         $this->assertStringNotContainsString('deleted_at IS NULL', $sql);
     }
 
-    public function testSelectSpecificColumns(): void
+    public function testSelectSpecificColumnsAsArguments(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->select('name', 'email')->toSql();
+        $sql = $this->createQueryBuilder()->select('name', 'email')->toSql();
 
         $this->assertStringContainsString('SELECT name, email FROM users', $sql);
     }
 
-    public function testSelectWithArray(): void
+    public function testSelectSpecificColumnsAsArray(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->select(['name', 'email'])->toSql();
+        $sql = $this->createQueryBuilder()->select(['name', 'email'])->toSql();
 
         $this->assertStringContainsString('SELECT name, email FROM users', $sql);
     }
+
+    // ─── WHERE ───────────────────────────────────────────────────────
 
     public function testWhereAddsCondition(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->where('name', 'John')->toSql();
+        $sql = $this->createQueryBuilder()->where('name', 'John')->toSql();
 
         $this->assertStringContainsString('WHERE name = ?', $sql);
     }
 
-    public function testWhereWithOperator(): void
+    public function testWhereWithCustomOperator(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->where('age', 18, '>=')->toSql();
+        $sql = $this->createQueryBuilder()->where('age', 18, '>=')->toSql();
 
         $this->assertStringContainsString('WHERE age >= ?', $sql);
     }
 
-    public function testMultipleWheres(): void
+    public function testMultipleWheresJoinedWithAnd(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->where('name', 'John')->where('age', 30)->toSql();
+        $sql = $this->createQueryBuilder()->where('name', 'John')->where('age', 30)->toSql();
 
         $this->assertStringContainsString('name = ?', $sql);
         $this->assertStringContainsString('AND age = ?', $sql);
     }
 
-    public function testOrWhere(): void
+    public function testOrWhereAddsOrCondition(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->where('name', 'John')->orWhere('name', 'Jane')->toSql();
+        $sql = $this->createQueryBuilder()->where('name', 'John')->orWhere('name', 'Jane')->toSql();
 
         $this->assertStringContainsString('OR name = ?', $sql);
     }
 
     public function testOrWhereOnEmptyWhereFallsBackToWhere(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->orWhere('name', 'Jane')->toSql();
+        $sql = $this->createQueryBuilder()->orWhere('name', 'Jane')->toSql();
 
         $this->assertStringContainsString('WHERE name = ?', $sql);
     }
 
-    public function testWhereIn(): void
+    public function testWhereInWithValues(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->whereIn('id', [1, 2, 3])->toSql();
+        $sql = $this->createQueryBuilder()->whereIn('id', [1, 2, 3])->toSql();
 
         $this->assertStringContainsString('id IN (?,?,?)', $sql);
     }
 
-    public function testWhereNull(): void
+    public function testWhereNullAddsIsNullCondition(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->whereNull('deleted_at')->toSql();
+        $sql = $this->createQueryBuilder()->whereNull('deleted_at')->toSql();
 
         $this->assertStringContainsString('deleted_at IS NULL', $sql);
     }
 
-    public function testWhereNotNull(): void
+    public function testWhereNotNullAddsIsNotNullCondition(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->whereNotNull('email')->toSql();
+        $sql = $this->createQueryBuilder()->whereNotNull('email')->toSql();
 
         $this->assertStringContainsString('email IS NOT NULL', $sql);
     }
 
-    public function testOrderBy(): void
-    {
-        $qb = $this->createQueryBuilderWithoutDb();
+    // ─── ORDER BY ────────────────────────────────────────────────────
 
-        $sql = $qb->orderBy('name', 'DESC')->toSql();
+    public function testOrderByDescending(): void
+    {
+        $sql = $this->createQueryBuilder()->orderBy('name', 'DESC')->toSql();
 
         $this->assertStringContainsString('ORDER BY name DESC', $sql);
     }
 
     public function testOrderByDefaultsToAsc(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->orderBy('name')->toSql();
+        $sql = $this->createQueryBuilder()->orderBy('name')->toSql();
 
         $this->assertStringContainsString('ORDER BY name ASC', $sql);
     }
 
     public function testOrderByInvalidDirectionDefaultsToAsc(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->orderBy('name', 'SIDEWAYS')->toSql();
+        $sql = $this->createQueryBuilder()->orderBy('name', 'SIDEWAYS')->toSql();
 
         $this->assertStringContainsString('ORDER BY name ASC', $sql);
     }
 
-    public function testMultipleOrderBy(): void
+    public function testMultipleOrderByClauses(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->orderBy('name', 'ASC')->orderBy('id', 'DESC')->toSql();
+        $sql = $this->createQueryBuilder()->orderBy('name', 'ASC')->orderBy('id', 'DESC')->toSql();
 
         $this->assertStringContainsString('ORDER BY name ASC, id DESC', $sql);
     }
 
-    public function testLatestAddsDescOrderBy(): void
+    public function testLatestOrdersByCreatedAtDesc(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->latest()->toSql();
+        $sql = $this->createQueryBuilder()->latest()->toSql();
 
         $this->assertStringContainsString('ORDER BY created_at DESC', $sql);
     }
 
-    public function testOldestAddsAscOrderBy(): void
+    public function testOldestOrdersByCreatedAtAsc(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->oldest()->toSql();
+        $sql = $this->createQueryBuilder()->oldest()->toSql();
 
         $this->assertStringContainsString('ORDER BY created_at ASC', $sql);
     }
 
-    public function testGroupBy(): void
-    {
-        $qb = $this->createQueryBuilderWithoutDb();
+    // ─── GROUP BY & HAVING ───────────────────────────────────────────
 
-        $sql = $qb->groupBy('age')->toSql();
+    public function testGroupByColumn(): void
+    {
+        $sql = $this->createQueryBuilder()->groupBy('age')->toSql();
 
         $this->assertStringContainsString('GROUP BY age', $sql);
     }
 
-    public function testGroupByArray(): void
+    public function testGroupByMultipleColumns(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->groupBy(['age', 'status'])->toSql();
+        $sql = $this->createQueryBuilder()->groupBy(['age', 'status'])->toSql();
 
         $this->assertStringContainsString('GROUP BY age, status', $sql);
     }
 
-    public function testHaving(): void
+    public function testHavingClause(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->groupBy('age')->having('age', '>', 18)->toSql();
+        $sql = $this->createQueryBuilder()->groupBy('age')->having('age', '>', 18)->toSql();
 
         $this->assertStringContainsString('HAVING age > ?', $sql);
     }
 
-    public function testLimit(): void
-    {
-        $qb = $this->createQueryBuilderWithoutDb();
+    // ─── LIMIT & OFFSET ─────────────────────────────────────────────
 
-        $sql = $qb->limit(10)->toSql();
+    public function testLimitClause(): void
+    {
+        $sql = $this->createQueryBuilder()->limit(10)->toSql();
 
         $this->assertStringContainsString('LIMIT 10', $sql);
     }
 
-    public function testOffset(): void
+    public function testOffsetClause(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->limit(10)->offset(20)->toSql();
+        $sql = $this->createQueryBuilder()->limit(10)->offset(20)->toSql();
 
         $this->assertStringContainsString('LIMIT 10', $sql);
         $this->assertStringContainsString('OFFSET 20', $sql);
     }
 
-    public function testTakeAliasesToLimit(): void
+    public function testTakeIsAliasForLimit(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->take(5)->toSql();
+        $sql = $this->createQueryBuilder()->take(5)->toSql();
 
         $this->assertStringContainsString('LIMIT 5', $sql);
     }
 
-    public function testSkipAliasesToOffset(): void
+    public function testSkipIsAliasForOffset(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->take(10)->skip(5)->toSql();
+        $sql = $this->createQueryBuilder()->take(10)->skip(5)->toSql();
 
         $this->assertStringContainsString('LIMIT 10', $sql);
         $this->assertStringContainsString('OFFSET 5', $sql);
     }
 
+    // ─── Reset ───────────────────────────────────────────────────────
+
     public function testResetClearsAllConstraints(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
+        $qb = $this->createQueryBuilder();
 
         $sql1 = $qb->where('name', 'John')->limit(5)->orderBy('id')->toSql();
 
@@ -255,9 +216,11 @@ class QueryBuilderTest extends \Tests\TestCase
         $this->assertStringNotContainsString('ORDER BY', $sql2);
     }
 
+    // ─── Soft Deletes ────────────────────────────────────────────────
+
     public function testSoftDeletesAreOptIn(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
+        $qb = $this->createQueryBuilder();
 
         $this->assertStringNotContainsString('deleted_at IS NULL', $qb->toSql());
 
@@ -273,18 +236,23 @@ class QueryBuilderTest extends \Tests\TestCase
 
     public function testOnlyTrashedFiltersDeletedRows(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
-        $sql = $qb->onlyTrashed()->toSql();
+        $sql = $this->createQueryBuilder()->onlyTrashed()->toSql();
 
         $this->assertStringContainsString('deleted_at IS NOT NULL', $sql);
     }
 
-    public function testComplexQuery(): void
+    public function testSoftDeleteSqlDoesNotAccumulateAcrossCompilation(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
+        $qb = $this->createQueryBuilder()->softDeletes();
 
-        $sql = $qb
+        $this->assertSame($qb->toSql(), $qb->toSql());
+    }
+
+    // ─── Complex Queries ─────────────────────────────────────────────
+
+    public function testComplexQueryWithMultipleClauses(): void
+    {
+        $sql = $this->createQueryBuilder()
             ->select('name', 'age')
             ->where('age', 18, '>=')
             ->where('name', '%John%', 'LIKE')
@@ -301,42 +269,37 @@ class QueryBuilderTest extends \Tests\TestCase
         $this->assertStringContainsString('OFFSET 5', $sql);
     }
 
-    public function testSelectWithModelClassSetsModelClass(): void
+    // ─── Model Class ─────────────────────────────────────────────────
+
+    public function testSetModelClassReturnsSelf(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
+        $qb = $this->createQueryBuilder();
 
         $result = $qb->setModelClass('App\\Models\\User');
 
         $this->assertSame($qb, $result);
     }
 
-    public function testRejectsUnsafeIdentifiersAndOperators(): void
-    {
-        $qb = $this->createQueryBuilderWithoutDb();
+    // ─── Input Validation ────────────────────────────────────────────
 
+    public function testRejectsUnsafeColumnIdentifier(): void
+    {
         $this->expectException(\InvalidArgumentException::class);
-        $qb->where('name; DROP TABLE users', 'John');
+
+        $this->createQueryBuilder()->where('name; DROP TABLE users', 'John');
     }
 
     public function testRejectsUnsafeOperator(): void
     {
-        $qb = $this->createQueryBuilderWithoutDb();
-
         $this->expectException(\InvalidArgumentException::class);
-        $qb->where('name', 'John', '= 1; DROP TABLE users');
+
+        $this->createQueryBuilder()->where('name', 'John', '= 1; DROP TABLE users');
     }
 
     public function testEmptyWhereInCompilesToNoResults(): void
     {
-        $sql = $this->createQueryBuilderWithoutDb()->whereIn('id', [])->toSql();
+        $sql = $this->createQueryBuilder()->whereIn('id', [])->toSql();
 
         $this->assertStringContainsString('WHERE 0 = 1', $sql);
-    }
-
-    public function testSoftDeleteSqlDoesNotAccumulateAcrossCompilation(): void
-    {
-        $qb = $this->createQueryBuilderWithoutDb()->softDeletes();
-
-        $this->assertSame($qb->toSql(), $qb->toSql());
     }
 }

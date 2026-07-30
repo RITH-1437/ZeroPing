@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeAuthCommand extends Generator
 {
+    protected string $signature = 'make:auth';
+
     protected string $description = 'Scaffold authentication (controller, views, routes)';
 
     public function handle(string $name = ''): void

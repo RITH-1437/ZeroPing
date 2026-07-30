@@ -5,6 +5,7 @@ namespace App\Core\Console;
 class ProjectMetadataGenerator
 {
     private const STARTER_LABELS = [
+        'starter'   => 'Starter App',
         'empty'     => 'Empty Starter',
         'mvc'       => 'MVC Starter',
         'blog'      => 'Blog Starter',
@@ -13,6 +14,7 @@ class ProjectMetadataGenerator
     ];
 
     private const STARTER_DESCRIPTIONS = [
+        'starter'   => 'A clean starter app with sample controller, model and routes.',
         'empty'     => 'A lightweight application with only the essentials.',
         'mvc'       => 'A complete MVC application with routing, migrations and authentication.',
         'blog'      => 'Everything required to build a blog.',

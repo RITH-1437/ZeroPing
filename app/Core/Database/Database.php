@@ -21,7 +21,7 @@ class Database
 {
     private static ?DatabaseManager $manager = null;
 
-    /** @var array<string, array{query:string, bindings:array, time:float}> */
+    /** @var list<array{query: string, bindings: array<mixed>, time: float}> */
     private static array $log = [];
 
     public static function manager(): DatabaseManager
@@ -96,6 +96,11 @@ class Database
         ];
     }
 
+    /**
+     * Get all logged queries.
+     *
+     * @return list<array{query: string, bindings: array<mixed>, time: float}>
+     */
     public static function getLog(): array
     {
         return self::$log;

@@ -10,6 +10,7 @@ use App\Core\Queue\Dispatcher;
 use App\Core\Queue\Job;
 use App\Core\Queue\QueueManager;
 use App\Core\Queue\Worker;
+use App\Core\Queue\WorkerOptions;
 use PHPUnit\Framework\TestCase;
 
 class QueueTest extends TestCase
@@ -68,7 +69,7 @@ class QueueTest extends TestCase
 
         $worker = new Worker($manager);
         $ref = new \ReflectionMethod($worker, 'process');
-        $ref->invoke($worker, $job, 1);
+        $ref->invoke($worker, 'array', $job, new WorkerOptions(maxTries: 1));
 
         $this->assertTrue($job::$ran);
     }

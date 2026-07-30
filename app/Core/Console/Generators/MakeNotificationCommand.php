@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeNotificationCommand extends Generator
 {
+    protected string $signature = 'make:notification';
+
     protected string $description = 'Create a new notification class';
 
     public function handle(string $name): void

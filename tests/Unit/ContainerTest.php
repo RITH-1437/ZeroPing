@@ -66,6 +66,10 @@ class Disc implements DiscInterface
 {
 }
 
+/**
+ * @covers \App\Core\Container\Container
+ * @covers \App\Core\Container\ContextualBindingBuilder
+ */
 class ContainerTest extends TestCase
 {
     private Container $container;
@@ -74,6 +78,8 @@ class ContainerTest extends TestCase
     {
         $this->container = new Container();
     }
+
+    // ─── Binding & Resolution ────────────────────────────────────────
 
     public function testBindAndResolveInterface(): void
     {
@@ -85,7 +91,7 @@ class ContainerTest extends TestCase
         $this->assertSame(1, $repo->id());
     }
 
-    public function testMakeAliasesResolve(): void
+    public function testMakeIsAnAliasForResolve(): void
     {
         $this->container->singleton(RepoInterface::class, Repo::class);
 
@@ -95,7 +101,7 @@ class ContainerTest extends TestCase
         );
     }
 
-    public function testSingletonReturnsSameInstance(): void
+    public function testSingletonReturnsSameInstanceOnSubsequentCalls(): void
     {
         $this->container->singleton(RepoInterface::class, Repo::class);
 
@@ -105,7 +111,7 @@ class ContainerTest extends TestCase
         );
     }
 
-    public function testInstanceReturnsGivenObject(): void
+    public function testInstanceReturnsExactObjectProvided(): void
     {
         $instance = new Repo();
         $this->container->instance(RepoInterface::class, $instance);
@@ -113,7 +119,7 @@ class ContainerTest extends TestCase
         $this->assertSame($instance, $this->container->resolve(RepoInterface::class));
     }
 
-    public function testAutoConstructorInjection(): void
+    public function testAutoWiresConstructorDependencies(): void
     {
         $b = $this->container->resolve(AutoB::class);
 
@@ -121,7 +127,9 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(AutoA::class, $b->a);
     }
 
-    public function testContextualBinding(): void
+    // ─── Contextual Bindings ─────────────────────────────────────────
+
+    public function testContextualBindingOverridesDefaultBinding(): void
     {
         $this->container->bind(LoggerInterface::class, FileLogger::class);
         $this->container->when(Handler::class)
@@ -133,7 +141,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(DbLogger::class, $handler->log);
     }
 
-    public function testContextualBindingWithClosure(): void
+    public function testContextualBindingAcceptsClosure(): void
     {
         $this->container->when(Handler::class)
             ->needs(LoggerInterface::class)
@@ -144,10 +152,100 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(DbLogger::class, $handler->log);
     }
 
-    public function testInterfaceAutoDiscovery(): void
+    // ─── Interface Auto-Discovery ────────────────────────────────────
+
+    public function testAutoDiscoversImplementationByRemovingInterfaceSuffix(): void
     {
         $disc = $this->container->resolve(DiscInterface::class);
 
         $this->assertInstanceOf(Disc::class, $disc);
+    }
+
+    // ─── Introspection: has() / bound() ──────────────────────────────
+
+    public function testHasReturnsFalseForUnregisteredAbstract(): void
+    {
+        $this->assertFalse($this->container->has('NonExistent'));
+    }
+
+    public function testHasReturnsTrueAfterBind(): void
+    {
+        $this->container->bind(RepoInterface::class, Repo::class);
+
+        $this->assertTrue($this->container->has(RepoInterface::class));
+    }
+
+    public function testHasReturnsTrueAfterInstance(): void
+    {
+        $this->container->instance(RepoInterface::class, new Repo());
+
+        $this->assertTrue($this->container->has(RepoInterface::class));
+    }
+
+    public function testBoundIsSynonymForHas(): void
+    {
+        $this->container->singleton(RepoInterface::class, Repo::class);
+
+        $this->assertSame(
+            $this->container->bound(RepoInterface::class),
+            $this->container->has(RepoInterface::class)
+        );
+    }
+
+    // ─── State Management: forgetInstance() ──────────────────────────
+
+    public function testForgetInstanceRemovesCachedSingleton(): void
+    {
+        $this->container->singleton(RepoInterface::class, Repo::class);
+
+        $first = $this->container->resolve(RepoInterface::class);
+        $this->container->forgetInstance(RepoInterface::class);
+        $second = $this->container->resolve(RepoInterface::class);
+
+        $this->assertNotSame($first, $second);
+    }
+
+    public function testForgetInstancePreservesBinding(): void
+    {
+        $this->container->singleton(RepoInterface::class, Repo::class);
+        $this->container->resolve(RepoInterface::class);
+
+        $this->container->forgetInstance(RepoInterface::class);
+
+        $this->assertTrue($this->container->has(RepoInterface::class));
+    }
+
+    public function testForgetInstanceDoesNothingForNonExistentAbstract(): void
+    {
+        // Should not throw
+        $this->container->forgetInstance('NonExistent');
+        $this->assertFalse($this->container->has('NonExistent'));
+    }
+
+    // ─── State Management: flush() ───────────────────────────────────
+
+    public function testFlushRemovesAllBindingsAndInstances(): void
+    {
+        $this->container->bind(RepoInterface::class, Repo::class);
+        $this->container->singleton(LoggerInterface::class, FileLogger::class);
+        $this->container->resolve(LoggerInterface::class);
+
+        $this->container->flush();
+
+        $this->assertFalse($this->container->has(RepoInterface::class));
+        $this->assertFalse($this->container->has(LoggerInterface::class));
+    }
+
+    public function testFlushClearsContextualBindings(): void
+    {
+        $this->container->when(Handler::class)
+            ->needs(LoggerInterface::class)
+            ->give(DbLogger::class);
+
+        $this->container->flush();
+
+        $this->assertNull(
+            $this->container->getContextualBinding(Handler::class, LoggerInterface::class)
+        );
     }
 }

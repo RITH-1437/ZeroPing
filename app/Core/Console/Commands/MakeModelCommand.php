@@ -6,6 +6,8 @@ use App\Core\Console\Command;
 
 class MakeModelCommand extends Command
 {
+    protected string $signature = 'make:model';
+
     /**
      * The console command description.
      *

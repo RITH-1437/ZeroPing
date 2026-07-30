@@ -10,6 +10,8 @@ use App\Core\Packages\StarterKit;
 
 class StarterInstallCommand extends Command
 {
+    protected string $signature = 'starter:install';
+
     protected string $description = 'Install a ZeroPing starter kit (bundle of packages)';
 
     public function handle(string $kit): void

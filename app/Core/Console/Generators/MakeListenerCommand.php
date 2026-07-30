@@ -6,6 +6,8 @@ namespace App\Core\Console\Generators;
 
 class MakeListenerCommand extends Generator
 {
+    protected string $signature = 'make:listener';
+
     protected string $description = 'Create a new event listener';
 
     public function handle(string $name): void
