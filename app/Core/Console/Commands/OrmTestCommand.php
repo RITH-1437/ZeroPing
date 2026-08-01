@@ -30,6 +30,11 @@ class OrmTestCommand extends Command
      */
     public function handle(): void
     {
+        $this->info('Running migrations...');
+
+        $runner = new \App\Core\Database\MigrationRunner();
+        $runner->run();
+
         $this->info('Testing ORM...');
 
         $this->testCreate();
