@@ -78,12 +78,12 @@ class Router
      */
     private static array $compiledPatterns = [];
 
-    /**
-     * Resolved middleware class names, cached per short name.
-     *
-     * @var array<string, class-string>
-     */
-    private static array $middlewareClasses = [];
+/**
+      * Resolved middleware class names, cached per short name.
+      *
+      * @var array<string, class-string>
+      */
+      private static array $middlewareClasses = [];
 
     /**
      * Lazy name => uri map for route().
@@ -498,8 +498,12 @@ class Router
             $method = $_SERVER['REQUEST_METHOD'];
             $uri    = self::resolveRequestUri();
 
-            $projectPath   = $basePath ?? getcwd();
-            $frameworkPath  = dirname(__DIR__, 3);
+            $projectPath = $basePath ?? getcwd();
+            if ($projectPath === false) {
+                return;
+            }
+
+            $frameworkPath = dirname(__DIR__, 3);
 
             self::loadRoutes($projectPath);
 
@@ -595,6 +599,10 @@ class Router
     private static function resolveRequestUri(): string
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        if (!is_string($uri)) {
+            $uri = '';
+        }
+
         $uri = rtrim($uri, '/');
 
         return $uri === '' ? '/' : $uri;
@@ -697,7 +705,10 @@ class Router
                 }
             }
 
-            (new self::$middlewareClasses[$middleware]())->handle();
+            $middlewareClass = self::$middlewareClasses[$middleware];
+            /** @var \App\Http\Middleware\Middleware $middlewareInstance */
+            $middlewareInstance = new $middlewareClass();
+            $middlewareInstance->handle();
         }
     }
 

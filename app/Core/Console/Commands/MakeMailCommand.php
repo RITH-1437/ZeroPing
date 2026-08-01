@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -40,7 +42,7 @@ class MakeMailCommand extends Command
 
     protected function createMailable(string $name): void
     {
-        $view = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $view = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? '');
 
         $content = $this->replace(
             $this->stub('mailable.stub'),
@@ -54,7 +56,7 @@ class MakeMailCommand extends Command
 
     protected function createView(string $name): void
     {
-        $view = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $view = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? '');
 
         $file = BASE_PATH . "/views/emails/{$view}.php";
 

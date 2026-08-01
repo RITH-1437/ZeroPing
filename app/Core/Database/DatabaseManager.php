@@ -34,14 +34,14 @@ class DatabaseManager
         $this->factory->registerDriver($name, $driverClass);
     }
 
-    /**
-     * Get the list of available (registered) driver names.
-     *
-     * @return list<string>
-     */
+/**
+      * Get the list of available (registered) driver names.
+      *
+      * @return list<string>
+      */
     public function availableDrivers(): array
     {
-        return $this->factory->availableDrivers();
+        return array_values($this->factory->availableDrivers());
     }
 
     public function getDefaultConnection(): string
@@ -50,7 +50,7 @@ class DatabaseManager
             $this->default = config('database.default', 'sqlite');
         }
 
-        return $this->default;
+        return $this->default ?? 'sqlite';
     }
 
     /**

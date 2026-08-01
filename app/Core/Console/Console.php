@@ -782,6 +782,13 @@ class Console
                     'examples' => ['php zero security:test'],
                     'notes' => '',
                 ],
+                'security:audit' => [
+                    'description' => 'Run a security audit of the application configuration',
+                    'options' => [],
+                    'arguments' => [],
+                    'examples' => ['php zero security:audit'],
+                    'notes' => 'Checks APP_KEY, debug mode, environment, session config, CORS, HSTS, file permissions, and .env exposure.',
+                ],
             ],
             'Testing & Diagnostics' => [
                 'test' => [

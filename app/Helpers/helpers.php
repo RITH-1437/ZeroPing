@@ -20,6 +20,7 @@
  * 10. Debugging & Profiling
  * 11. Logging
  * 12. String & Encoding Utilities
+ * 13. HTTP Client
  */
 
 use App\Core\Application\App;
@@ -179,8 +180,11 @@ if (!function_exists('env')) {
      */
     function env(string $key, mixed $default = null): mixed
     {
-        $value = $_ENV[$key] ?? getenv($key) ?: null;
-
+        $value = $_ENV[$key] ?? null;
+        if ($value === null) {
+            $env = getenv($key);
+            $value = $env !== false ? $env : null;
+        }
         if ($value === null) {
             $value = $_SERVER[$key] ?? null;
         }
@@ -377,14 +381,14 @@ if (!function_exists('cache')) {
         }
 
         if (is_string($arguments[0])) {
-            return $manager->get($arguments[0], $arguments[1] ?? null);
+            return $manager->get($arguments[0], isset($arguments[1]) ? $arguments[1] : null);
         }
 
         if (is_array($arguments[0])) {
             return $manager->put(
                 key($arguments[0]),
                 reset($arguments[0]),
-                $arguments[1] ?? null,
+                isset($arguments[1]) ? $arguments[1] : null,
             );
         }
 
@@ -496,7 +500,10 @@ if (!function_exists('ray')) {
      */
     function ray(mixed ...$args): void
     {
-        (new Dumper())->dump($args);
+        $dumper = new Dumper();
+        foreach ($args as $arg) {
+            $dumper->dump($arg);
+        }
     }
 }
 
@@ -561,5 +568,154 @@ if (!function_exists('e')) {
     function e(mixed $value): string
     {
         return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+}
+
+// ============================================================================
+// 13. HTTP Client
+// ============================================================================
+
+if (!function_exists('http_client')) {
+    /**
+     * Create a new HTTP client instance for making outgoing HTTP requests.
+     *
+     * @return \App\Core\Http\Client
+     */
+    function http_client(): \App\Core\Http\Client
+    {
+        return new \App\Core\Http\Client();
+    }
+}
+
+// ============================================================================
+// 13. Session, CSRF & Request Conveniences
+// ============================================================================
+
+if (!function_exists('session')) {
+    /**
+     * Get/set session values or return the Session object.
+     *
+     * - No args: returns the Session instance.
+     * - String key: returns the value stored under that key.
+     * - Array [$key => $value]: stores the value and returns void.
+     *
+     * @param  string|array<string,mixed>|null  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    function session(string|array|null $key = null, mixed $default = null): mixed
+    {
+        $session = app(\App\Core\Session\Session::class);
+
+        if ($key === null) {
+            return $session;
+        }
+
+        if (is_array($key)) {
+            $session->put(array_key_first($key), reset($key));
+            return null;
+        }
+
+        return $session->get($key, $default);
+    }
+}
+
+if (!function_exists('csrf_token')) {
+    /**
+     * Return the current CSRF token string.
+     *
+     * @return string
+     */
+    function csrf_token(): string
+    {
+        return \App\Core\Security\CSRFToken::get();
+    }
+}
+
+if (!function_exists('csrf_field')) {
+    /**
+     * Return an HTML hidden input field containing the CSRF token.
+     *
+     * @return string
+     */
+    function csrf_field(): string
+    {
+        return '<input type="hidden" name="_token" value="' . e(csrf_token()) . '">';
+    }
+}
+
+if (!function_exists('abort')) {
+    /**
+     * Throw an HTTP exception for the given status code.
+     *
+     * @param  int     $code     HTTP status code.
+     * @param  string  $message  Optional message; sensible default used when empty.
+     * @return never
+     */
+    function abort(int $code, string $message = ''): never
+    {
+        match ($code) {
+            404 => throw new \App\Core\ORM\Exceptions\ModelNotFoundException($message ?: 'Not Found'),
+            403 => throw new \App\Core\Exceptions\ConflictException($message ?: 'Forbidden'),
+            default => throw new \RuntimeException($message ?: 'HTTP Error ' . $code, $code),
+        };
+    }
+}
+
+if (!function_exists('now')) {
+    /**
+     * Get the current date/time as an immutable object, optionally in a given timezone.
+     *
+     * @param  string|\DateTimeZone|null  $tz
+     * @return \DateTimeImmutable
+     */
+    function now(string|\DateTimeZone|null $tz = null): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable('now', is_string($tz) ? new \DateTimeZone($tz) : $tz);
+    }
+}
+
+if (!function_exists('old')) {
+    /**
+     * Retrieve a value that was flashed to the session on the previous request.
+     *
+     * @param  string  $key
+     * @param  mixed   $default
+     * @return mixed
+     */
+    function old(string $key, mixed $default = null): mixed
+    {
+        try {
+            return app(\App\Core\Session\Session::class)->getFlash('_old_input.' . $key, $default);
+        } catch (\Throwable) {
+            return $default;
+        }
+    }
+}
+
+if (!function_exists('str_plural')) {
+    /**
+     * Naïve English pluralisation: appends 's' unless $count === 1.
+     *
+     * @param  string  $value
+     * @param  int     $count
+     * @return string
+     */
+    function str_plural(string $value, int $count = 2): string
+    {
+        return $count === 1 ? $value : $value . 's';
+    }
+}
+
+if (!function_exists('str_singular')) {
+    /**
+     * Naïve English singularisation: strips a trailing 's'.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    function str_singular(string $value): string
+    {
+        return rtrim($value, 's');
     }
 }

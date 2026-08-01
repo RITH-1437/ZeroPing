@@ -23,8 +23,8 @@ class PackageCreateCommand extends Command
             return;
         }
 
-        $studly = ucfirst(preg_replace('/[^A-Za-z0-9]/', '', $name));
-        $kebab = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $studly));
+        $studly = ucfirst(preg_replace('/[^A-Za-z0-9]/', '', (string) $name) ?? '');
+        $kebab = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $studly) ?? '');
 
         $vendor   = 'zeroping';
         $pkgName  = $vendor . '/' . $kebab;

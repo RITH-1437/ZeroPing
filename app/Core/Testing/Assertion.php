@@ -26,6 +26,7 @@ trait Assertion
         try {
             $closure();
         } catch (\Throwable $e) {
+            /** @var class-string $expectedException */
             $this->assertInstanceOf($expectedException, $e);
 
             return;

@@ -79,6 +79,7 @@ class Dispatcher
      */
     protected static function getManager(): QueueManager
     {
+        /** @var QueueManager */
         return App::container()->make(QueueManager::class);
     }
 }

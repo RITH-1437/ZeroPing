@@ -7,6 +7,7 @@ namespace App\Core\Cache;
 use App\Core\Cache\Drivers\ArrayCacheDriver;
 use App\Core\Cache\Drivers\FileCacheDriver;
 use App\Core\Cache\Drivers\NullCacheDriver;
+use App\Core\Cache\Drivers\RedisCacheDriver;
 use App\Core\Support\Config;
 use InvalidArgumentException;
 
@@ -125,6 +126,18 @@ class CacheManager
     protected function createNullDriver(array $config = []): CacheRepository
     {
         return new CacheRepository(new NullCacheDriver());
+    }
+
+    /**
+     * Create a Redis cache driver instance.
+     *
+     * @param array<string, mixed> $config The Redis driver configuration.
+     *
+     * @return CacheRepository
+     */
+    protected function createRedisDriver(array $config): CacheRepository
+    {
+        return new CacheRepository(new RedisCacheDriver($config));
     }
 
     /**

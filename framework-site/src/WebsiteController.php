@@ -159,6 +159,97 @@ class WebsiteController extends Controller
         ], 'site');
     }
 
+    public function showcase(): string
+    {
+        return $this->hub('showcase', 'Showcase', 'Built with ZeroPing.', 'Real applications, projects, and demos built by developers around the world using ZeroPing. From personal projects to production APIs — see what the community is building.', [
+            ['label' => 'Share your project', 'href' => 'https://github.com/RITH-1437/ZeroPing/discussions'],
+            ['label' => 'View community', 'href' => '/community'],
+        ], [
+            ['title' => 'Community projects', 'intro' => 'Submit your project to appear here. Open a GitHub Discussion tagged "showcase".', 'items' => [
+                ['title' => 'ZeroPing Framework Site', 'tag' => 'Official', 'description' => 'This very site — built on ZeroPing itself. Documentation, arena, package browser, and community pages all served by the framework.', 'href' => 'https://github.com/RITH-1437/ZeroPing', 'cta' => 'View source'],
+                ['title' => 'Submit your project', 'tag' => 'Open', 'description' => 'Share what you have built. Accepted projects will be listed here with a link to the source or live site.', 'href' => 'https://github.com/RITH-1437/ZeroPing/discussions', 'cta' => 'Submit now'],
+            ]],
+            ['title' => 'Templates you can deploy today', 'intro' => 'Five starter templates are ready to scaffold a new project in under three minutes.', 'items' => [
+                ['title' => 'MVC Starter', 'tag' => 'Template', 'description' => 'Full CRUD application with user management, views, migrations, and a working layout.', 'href' => '/docs/starter-templates', 'cta' => 'Use template'],
+                ['title' => 'REST API', 'tag' => 'Template', 'description' => 'JSON API project with authentication boilerplate, resource classes, and route grouping.', 'href' => '/docs/starter-templates', 'cta' => 'Use template'],
+                ['title' => 'Blog', 'tag' => 'Template', 'description' => 'Blog with posts, categories, pagination, and a clean public reading surface.', 'href' => '/docs/starter-templates', 'cta' => 'Use template'],
+            ]],
+        ]);
+    }
+
+    public function deploy(): string
+    {
+        return $this->hub('deploy', 'ZeroPing Deploy', 'One command. Live in seconds.', 'Deployment automation for ZeroPing applications is in active development. Deploy connects your repository to your servers, runs your migrations, and keeps your workers healthy automatically.', [
+            ['label' => 'Follow progress', 'href' => '/roadmap'],
+            ['label' => 'Read deployment docs', 'href' => '/docs/introduction'],
+        ], [
+            ['title' => 'Planned capabilities', 'intro' => 'The deployment surface is designed to feel as natural as the CLI.', 'items' => [
+                ['title' => 'Zero-downtime deploys', 'tag' => 'Planned', 'description' => 'Atomic release directories with symlink cutover — no dropped requests during deployment.'],
+                ['title' => 'Migration automation', 'tag' => 'Planned', 'description' => 'Migrations run as part of the deploy pipeline, with rollback on failure.'],
+                ['title' => 'Worker lifecycle', 'tag' => 'Planned', 'description' => 'Queue workers and schedulers restart gracefully after each deployment.'],
+                ['title' => 'Health checks', 'tag' => 'Planned', 'description' => 'Automated pre and post-deploy health checks via the `php zero doctor` surface.'],
+            ]],
+            ['title' => 'Deploy today with the CLI', 'intro' => 'While ZeroPing Deploy is in development, you can deploy reliably using existing tooling.', 'items' => [
+                ['title' => 'Production checklist', 'tag' => 'CLI', 'description' => 'Run this sequence on every deployment to ensure a consistent, optimized production state.', 'code' => "git pull origin main\ncomposer install --no-dev --optimize-autoloader\nphp zero migrate\nphp zero optimize\nphp zero doctor"],
+            ]],
+        ]);
+    }
+
+    public function studio(): string
+    {
+        return $this->hub('studio', 'ZeroPing Studio', 'Visual tools for ZeroPing applications.', 'Studio brings a visual admin layer to your ZeroPing app: browse models, monitor queues, inspect scheduled jobs, tail logs, and manage configuration — all from a browser-based interface.', [
+            ['label' => 'Follow progress', 'href' => '/roadmap'],
+            ['label' => 'Star on GitHub', 'href' => 'https://github.com/RITH-1437/ZeroPing'],
+        ], [
+            ['title' => 'Planned panels', 'intro' => 'Studio is a layered visual interface that maps directly to the framework internals.', 'items' => [
+                ['title' => 'Model browser', 'tag' => 'Planned', 'description' => 'Browse, filter, and inspect database records with full relationship expansion.'],
+                ['title' => 'Queue monitor', 'tag' => 'Planned', 'description' => 'Track pending, running, and failed jobs. Retry or discard from the UI.'],
+                ['title' => 'Schedule viewer', 'tag' => 'Planned', 'description' => 'See all registered scheduled events, their cron expressions, and last-run times.'],
+                ['title' => 'Log explorer', 'tag' => 'Planned', 'description' => 'Tail, search, and filter log channels without leaving the browser.'],
+            ]],
+            ['title' => 'Available today', 'intro' => 'The Debug Toolbar and CLI surface many of the same insights right now.', 'items' => [
+                ['title' => 'Debug Toolbar', 'tag' => 'Available', 'description' => 'Per-request SQL queries, memory usage, routing details, and performance timings in development.', 'href' => '/docs/introduction', 'cta' => 'Enable toolbar'],
+                ['title' => 'Monitor command', 'tag' => 'Available', 'description' => 'Real-time application health, service status, and queue depth from the terminal.', 'code' => 'php zero monitor'],
+            ]],
+        ]);
+    }
+
+    public function cloud(): string
+    {
+        return $this->hub('cloud', 'ZeroPing Cloud', 'Managed hosting for PHP applications.', 'ZeroPing Cloud will be managed hosting designed specifically for ZeroPing applications: automatic deployments from Git, isolated environments, global CDN, queue workers, and scheduler management — with no server knowledge required.', [
+            ['label' => 'Follow progress', 'href' => '/roadmap'],
+            ['label' => 'Join the community', 'href' => '/community'],
+        ], [
+            ['title' => 'What Cloud will offer', 'intro' => 'A deployment target built to match the framework\'s developer experience.', 'items' => [
+                ['title' => 'Git-based deployments', 'tag' => 'Planned', 'description' => 'Push to deploy. Every branch gets its own isolated preview environment automatically.'],
+                ['title' => 'Managed databases', 'tag' => 'Planned', 'description' => 'MySQL and PostgreSQL databases provisioned and backed up automatically.'],
+                ['title' => 'Queue workers & scheduler', 'tag' => 'Planned', 'description' => 'Long-running workers and cron tasks managed by the platform, not your ops team.'],
+                ['title' => 'Edge caching', 'tag' => 'Planned', 'description' => 'Static asset distribution and response caching at the edge for every deployment.'],
+            ]],
+            ['title' => 'In the meantime', 'intro' => 'ZeroPing runs cleanly on any PHP hosting environment.', 'items' => [
+                ['title' => 'Docker-ready', 'tag' => 'Available', 'description' => 'The repository ships a production-ready Dockerfile and Compose config for container deployments.', 'href' => '/docs/introduction', 'cta' => 'Read deployment guide'],
+            ]],
+        ]);
+    }
+
+    public function forge(): string
+    {
+        return $this->hub('forge', 'ZeroPing Forge', 'Server provisioning and site management.', 'Forge automates server setup for PHP applications: provision a new Ubuntu server, install PHP, MySQL, nginx, and Supervisor, then manage sites, SSL certificates, and deployments from a clean web interface.', [
+            ['label' => 'Follow progress', 'href' => '/roadmap'],
+            ['label' => 'Star on GitHub', 'href' => 'https://github.com/RITH-1437/ZeroPing'],
+        ], [
+            ['title' => 'Planned features', 'intro' => 'Forge targets developers who prefer self-managed servers with an automated setup layer.', 'items' => [
+                ['title' => 'One-click server provisioning', 'tag' => 'Planned', 'description' => 'Connect your cloud account and provision a fully configured PHP server in minutes.'],
+                ['title' => 'SSL & domain management', 'tag' => 'Planned', 'description' => 'Automated Let\'s Encrypt SSL certificates and DNS management.'],
+                ['title' => 'Site & process management', 'tag' => 'Planned', 'description' => 'Manage nginx sites, queue workers, and scheduler processes through a web UI.'],
+                ['title' => 'Deployment hooks', 'tag' => 'Planned', 'description' => 'Trigger deployments from GitHub webhooks, running migrations and cache rebuilds automatically.'],
+            ]],
+            ['title' => 'Start without Forge', 'intro' => 'Everything Forge will automate can be done manually with the CLI today.', 'items' => [
+                ['title' => 'Docker deployment', 'tag' => 'Available', 'description' => 'Production-ready Docker and Compose configuration are included in every ZeroPing project.', 'href' => '/docs/introduction', 'cta' => 'Docker guide'],
+            ]],
+        ]);
+    }
+
     /** @param array<int, array<string, mixed>> $actions @param array<int, array<string, mixed>> $sections */
     private function hub(string $active, string $eyebrow, string $headline, string $description, array $actions, array $sections): string
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -38,9 +40,9 @@ class OptimizeCommand extends Command
 
         $hasSpace = str_contains($composer, ' ');
         $cmd = ($hasSpace ? '"' . $composer . '"' : $composer) . ' dump-autoload -o 2>&1';
-        $output = shell_exec($cmd);
+        $output = shell_exec($cmd) ?: '';
 
-        if ($output !== null && trim($output) !== '') {
+        if (trim($output) !== '') {
             $this->line(trim($output));
         }
 

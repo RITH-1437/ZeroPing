@@ -115,7 +115,7 @@ class PasswordBroker
         $view = 'auth.emails.password';
 
         Mail::send($view, compact('token', 'user'), function (Message $message) use ($user): void {
-            $message->to($user->email)->subject('Password Reset');
+            $message->to($user->email ?? '')->subject('Password Reset');
         });
     }
 

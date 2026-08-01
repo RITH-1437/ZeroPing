@@ -54,7 +54,8 @@ use PDO;
  * @method static QueryBuilder leftJoin(string $table, string $first, string $operator, string $second)
  * @method static QueryBuilder groupBy(string|array<int, string> $columns)
  * @method static QueryBuilder having(string $column, string $operator, mixed $value)
- * @method static \App\Core\ORM\Pagination\Paginator paginate(int $perPage = 15, int $currentPage = 1)
+ * @method static QueryBuilder paginate(int $perPage = 15, int $currentPage = 1)
+ * @method static QueryBuilder with(string|array<int, string> $relations)
  *
  * @property mixed $id
  */
@@ -404,6 +405,25 @@ abstract class Model implements \ArrayAccess
         }
 
         return static::find($this->attributes[$this->primaryKey]);
+    }
+
+    /**
+     * Eager-load one or more relations on an already-retrieved model instance.
+     *
+     * This wraps the model in a single-item Collection, delegates to the
+     * QueryBuilder's eager-loading mechanism, and returns the model so that
+     * the loaded relations are available immediately.
+     *
+     * @param  string|list<string>  $relations  Relation name(s) to load.
+     * @return $this
+     */
+    public function load(string|array $relations): static
+    {
+        $collection = new Collection([$this]);
+        $qb         = $this->newQuery();
+        $qb->with($relations)->eagerLoadRelationsPublic($collection);
+
+        return $this;
     }
 
     /**

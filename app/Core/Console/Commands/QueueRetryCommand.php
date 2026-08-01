@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -43,6 +45,11 @@ class QueueRetryCommand extends Command
         }
 
         $payload = Job::fromPayload($job->payload);
+
+        if ($payload === null) {
+            $this->error('Failed job has an invalid payload.');
+            return;
+        }
 
         Dispatcher::dispatch($payload);
 

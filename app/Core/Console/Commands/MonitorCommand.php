@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Application\App;
@@ -53,7 +55,9 @@ class MonitorCommand extends Command
 
     private function dbDriver(): string
     {
-        return App::container()->make(\App\Core\Database\Database::class)->getDriverName();
+        $database = App::container()->make(\App\Core\Database\Database::class);
+
+        return $database->getDriverName();
     }
 
     private function errorCount(): int
@@ -66,7 +70,13 @@ class MonitorCommand extends Command
 
         $count = 0;
 
-        foreach (file($file) as $line) {
+        $lines = file($file);
+
+        if ($lines === false) {
+            return 0;
+        }
+
+        foreach ($lines as $line) {
             if (str_contains($line, 'ERROR')) {
                 $count++;
             }

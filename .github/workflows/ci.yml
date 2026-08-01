@@ -13,60 +13,44 @@ permissions:
 
 jobs:
   build:
-    name: Build & Verify Framework
+    name: Build & Verify (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    continue-on-error: false
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: zeroping
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
 
     steps:
-      # Checkout
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Create .env
+      - name: Create .env (SQLite)
         run: |
           cp .env.example .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_NAME=zeroping" >> .env
-          echo "DB_USER=root" >> .env
-          echo "DB_PASS=root" >> .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=:memory:" >> .env
 
-      # PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.5"
+          php-version: ${{ matrix.php }}
           coverage: none
-          extensions: pdo_mysql
+          extensions: pdo_sqlite, pdo_mysql
           tools: composer
 
-      # Composer Validation
       - name: Validate composer.json
         run: composer validate --strict
 
-      # Cache Dependencies
       - name: Cache Composer Dependencies
         uses: actions/cache@v4
         with:
           path: vendor
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          key: composer-${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.lock') }}
           restore-keys: |
-            composer-${{ runner.os }}-
+            composer-${{ runner.os }}-php${{ matrix.php }}-
 
-      # Install
       - name: Install Dependencies
         run: |
           composer install \
@@ -108,20 +92,202 @@ jobs:
           php zero security:test
 
       - name: Framework Test Suite
-        run: php zero test
+        run: php zero test --no-coverage
 
-      - name: PHP Code Sniffer (PSR-12)
-        run: vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1
+      - name: Build Summary
+        run: echo "ZeroPing Framework build completed successfully on PHP ${{ matrix.php }}."
+
+  mysql-build:
+    name: Build & Verify (PHP 8.5 + MySQL)
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    needs: [build]
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: zeroping
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create .env (MySQL)
+        run: |
+          cp .env.example .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=zeroping" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASS=root" >> .env
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+          extensions: pdo_mysql
+          tools: composer
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.5-mysql-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.5-mysql-
+
+      - name: Install Dependencies
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
+
+      - name: Verify Autoload
+        run: composer dump-autoload -o
+
+      - name: PHP Syntax Check
+        run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Framework Boot
+        run: php zero
+
+      - name: Framework Health
+        run: php zero doctor
+
+      - name: Run Migrations
+        run: php zero migrate
+
+      - name: Core Commands
+        run: |
+          php zero version
+          php zero about
+          php zero route:list
+          php zero config:test
+
+      - name: Generate APP_KEY
+        run: php zero key:generate
+
+      - name: Framework Components
+        run: |
+          php zero validate:test
+          php zero orm:test
+          php zero cache:test
+          php zero storage:test
+          php zero security:test
+
+      - name: Framework Test Suite
+        run: php zero test --no-coverage
+
+      - name: Build Summary
+        run: echo "ZeroPing Framework MySQL build completed successfully on PHP 8.5."
+
+  coverage:
+    name: Code Coverage (PHP 8.5)
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    needs: [build]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create .env (SQLite)
+        run: |
+          cp .env.example .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=:memory:" >> .env
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: xdebug
+          extensions: pdo_sqlite, pdo_mysql
+          tools: composer
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.5-coverage-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.5-coverage-
+
+      - name: Install Dependencies
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
+
+      - name: Run Tests with Coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 14
+
+  static-analysis:
+    name: Static Analysis (PHP 8.5)
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    needs: [build]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+          extensions: pdo_mysql, pdo_sqlite
+          tools: composer
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.5-sa-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.5-sa-
+
+      - name: Install Dependencies
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
 
       - name: PHPStan Static Analysis
         run: vendor/bin/phpstan analyse --memory-limit=512M
 
-      - name: Build Summary
-        run: echo "✅ ZeroPing Framework build completed successfully."
+      - name: PHP Code Sniffer (PSR-12)
+        run: vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1
 
   create-project:
-    name: Verify create-project installer
+    name: Verify create-project installer (PHP 8.5)
     runs-on: ubuntu-latest
+    continue-on-error: false
+    needs: [build]
 
     steps:
       - name: Checkout Repository
@@ -137,9 +303,9 @@ jobs:
       - name: Smoke-test fresh install
         run: |
           rm -rf /tmp/myapp
-          git clone --depth=1 https://github.com/RITH-1437/ZeroPing.git /tmp/myapp
+          cp -r . /tmp/myapp
           cd /tmp/myapp
-          composer install --no-interaction --no-dev
+          composer install --no-dev --no-interaction
           php zero doctor || true
 
       - name: Boot and smoke-test (port 1437)

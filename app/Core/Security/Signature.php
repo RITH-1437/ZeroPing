@@ -66,7 +66,11 @@ class Signature
         if (isset($parts['query'])) {
             parse_str($parts['query'], $query);
             if (isset($query[self::SIGNATURE_PARAM])) {
-                $signature = (string) $query[self::SIGNATURE_PARAM];
+                $sigValue = $query[self::SIGNATURE_PARAM];
+                if (!is_string($sigValue)) {
+                    return false;
+                }
+                $signature = $sigValue;
                 unset($query[self::SIGNATURE_PARAM]);
                 $parts['query'] = http_build_query($query);
             } else {

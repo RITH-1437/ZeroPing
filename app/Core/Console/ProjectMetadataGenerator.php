@@ -38,7 +38,7 @@ class ProjectMetadataGenerator
 
     public function slug(): string
     {
-        return strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $this->projectName), '-'));
+        return strtolower(trim((string) preg_replace('/[^a-zA-Z0-9]+/', '-', $this->projectName), '-'));
     }
 
     public function starterLabel(): string
@@ -325,7 +325,7 @@ SVG;
     private function setEnvVar(string $env, string $key, string $value): string
     {
         if (preg_match('/^' . $key . '=/m', $env)) {
-            return preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
+            return (string) preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
         }
         return $env . "\n{$key}={$value}";
     }

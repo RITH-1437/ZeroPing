@@ -13,6 +13,7 @@ use App\Core\Packages\ProviderRepository;
 use App\Core\Routing\Router;
 use App\Core\Scheduling\ScheduleManager;
 use App\Core\View\View;
+use App\Providers\ServiceProvider;
 
 /**
  * Application bootstrap.
@@ -149,8 +150,7 @@ class App
             return;
         }
 
-        $skipFiles = ['routes.php'];
-        $items     = [];
+        $items = [];
 
         $files = glob($configDir . '/*.php');
         if ($files === false) {
@@ -221,7 +221,7 @@ class App
     /**
      * Merge application providers with auto-discovered package providers.
      *
-     * @return list<class-string>
+     * @return list<class-string<ServiceProvider>>
      */
     private function collectProviderClasses(): array
     {
@@ -250,8 +250,8 @@ class App
      * Deferred providers have their boot() called lazily via container
      * resolving callbacks on the services they declare.
      *
-     * @param list<class-string> $providerClasses
-     * @return array{0: list<object>, 1: list<object>}
+     * @param list<class-string<ServiceProvider>> $providerClasses
+     * @return array{0: list<ServiceProvider>, 1: list<ServiceProvider>}
      */
     private function instantiateProviders(array $providerClasses): array
     {
@@ -271,7 +271,7 @@ class App
                 $deferred[] = $provider;
 
                 foreach ($provider->provides() as $service) {
-                    static::$container->resolving(
+                    static::container()->resolving(
                         $service,
                         function (object $object, Container $container) use ($provider, &$booted): void {
                             if (!in_array($provider, $booted, true)) {
@@ -292,7 +292,7 @@ class App
     /**
      * Boot all eager (non-deferred) providers.
      *
-     * @param list<object> $providers
+     * @param list<ServiceProvider> $providers
      */
     private function bootEagerProviders(array $providers): void
     {
@@ -309,21 +309,21 @@ class App
      * Providers may implement `listens()` to return an event-to-listener map,
      * and `schedules(Schedule)` to register recurring tasks.
      *
-     * @param list<object> $eager    Eager provider instances.
-     * @param list<object> $deferred Deferred provider instances.
+     * @param list<ServiceProvider> $eager    Eager provider instances.
+     * @param list<ServiceProvider> $deferred Deferred provider instances.
      */
     protected function registerPackageHooks(array $eager, array $deferred): void
     {
-        $hasEventDispatcher = static::$container->bound(EventDispatcher::class);
-        $hasScheduleManager = static::$container->bound(ScheduleManager::class);
+        $hasEventDispatcher = static::container()->bound(EventDispatcher::class);
+        $hasScheduleManager = static::container()->bound(ScheduleManager::class);
 
         // Early return if neither hook system is available.
         if (!$hasEventDispatcher && !$hasScheduleManager) {
             return;
         }
 
-        $dispatcher = $hasEventDispatcher ? static::$container->make(EventDispatcher::class) : null;
-        $schedule = $hasScheduleManager ? static::$container->make(ScheduleManager::class)->schedule() : null;
+        $dispatcher = $hasEventDispatcher ? static::container()->make(EventDispatcher::class) : null;
+        $schedule = $hasScheduleManager ? static::container()->make(ScheduleManager::class)->schedule() : null;
 
         // Process all provider instances (eager + deferred).
         foreach ($eager as $provider) {

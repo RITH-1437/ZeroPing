@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Banner;
@@ -402,7 +404,7 @@ class InstallCommand extends Command
         $result = [];
         $content = (string) file_get_contents($path);
 
-        foreach (preg_split('/\r\n|\r|\n/', $content) as $line) {
+        foreach (preg_split('/\r\n|\r|\n/', $content) ?: [] as $line) {
             $line = trim($line);
             if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
                 continue;
@@ -417,14 +419,18 @@ class InstallCommand extends Command
     private function writeEnv(): void
     {
         $path = $this->path('.env');
-        $content = (string) file_get_contents($path);
+        $content = file_get_contents($path);
+
+        if (!is_string($content)) {
+            $content = '';
+        }
 
         foreach ($this->env as $key => $value) {
             $line = $key . '=' . $value;
-            if (preg_match('/^' . preg_quote($key, '/') . '=.*$/m', $content)) {
-                $content = preg_replace('/^' . preg_quote($key, '/') . '=.*$/m', $line, $content);
+            if (preg_match('/^' . preg_quote($key, '/') . '=.*$/m', (string) $content)) {
+                $content = (string) preg_replace('/^' . preg_quote($key, '/') . '=.*$/m', $line, (string) $content);
             } else {
-                $content = rtrim($content) . "\n" . $line . "\n";
+                $content = rtrim((string) $content) . "\n" . $line . "\n";
             }
         }
 

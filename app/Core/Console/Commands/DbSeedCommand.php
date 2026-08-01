@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -23,7 +25,7 @@ class DbSeedCommand extends Command
 
         $specific = $this->option('class');
 
-        if ($specific !== null) {
+        if ($specific !== null && is_string($specific)) {
             $seeders = $this->resolveSeeder($directory, $specific);
 
             if ($seeders === []) {
@@ -50,8 +52,8 @@ class DbSeedCommand extends Command
 
         $this->progress(count($seeders), function (int $index, int $total) use ($seeders) {
             $class = $seeders[$index];
-            $this->line("  <fg=gray>›</> <fg=white>{$class}</>");
-            (new $class())->run();
+            $seeder = new $class();
+            $seeder->run();
         }, 'Seeding');
 
         $this->success('Database seeded successfully (' . count($seeders) . ' seeder(s)).');

@@ -67,6 +67,10 @@ class TestRequest
             $kernel->handle();
             $content = ob_get_clean();
 
+            if ($content === false) {
+                $content = '';
+            }
+
             $sent = Response::lastSent();
 
             return new TestResponse(

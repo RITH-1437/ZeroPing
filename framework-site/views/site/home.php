@@ -107,31 +107,65 @@
 <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24" data-animate>
   <div class="text-center">
     <h2 class="font-display text-4xl sm:text-5xl font-bold text-zp-ink tracking-tight">Ecosystem</h2>
-    <p class="mt-4 text-lg text-zp-desc max-w-2xl mx-auto">A growing ecosystem of tools and resources around ZeroPing.</p>
+    <p class="mt-4 text-lg text-zp-desc max-w-2xl mx-auto">A growing ecosystem of tools, products, and resources around ZeroPing.</p>
   </div>
 
-  <div class="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Available products -->
+  <div class="mt-10 mb-3">
+    <span class="text-xs font-semibold uppercase tracking-widest text-zp-muted">Available now</span>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <?php
-    $ecosystem = [
+    $available = [
       ['title' => 'ZeroPing Framework', 'desc' => 'Core framework with MVC, ORM, CLI, and all batteries included.', 'icon' => 'package.png', 'href' => '/'],
-      ['title' => 'ZeroPing Arena', 'desc' => 'Performance benchmarking and optimization playground.', 'icon' => 'core.png', 'href' => '/arena'],
-      ['title' => 'CLI Tooling', 'desc' => 'Scaffolding, migrations, testing, and maintenance from the terminal.', 'icon' => 'cli.png', 'href' => '/docs/cli'],
-      ['title' => 'Packages', 'desc' => 'Modular packages extending ZeroPing with queues, mail, and more.', 'icon' => 'container.png', 'href' => '/packages'],
-      ['title' => 'Documentation', 'desc' => 'Comprehensive docs with search, examples, and guided navigation.', 'icon' => 'documentation.png', 'href' => '/docs/introduction'],
-      ['title' => 'Community', 'desc' => 'GitHub discussions, issues, and contributions from the community.', 'icon' => 'community.png', 'href' => 'https://github.com/RITH-1437/ZeroPing/discussions'],
+      ['title' => 'ZeroPing Arena', 'desc' => 'Benchmarking dashboard, framework comparison, performance charts, and interactive playground.', 'icon' => 'core.png', 'href' => '/arena'],
+      ['title' => 'Zero CLI', 'desc' => '73-command CLI: scaffolding, migrations, testing, queues, and deployment from one tool.', 'icon' => 'cli.png', 'href' => '/docs/cli'],
+      ['title' => 'ZeroPing Packages', 'desc' => 'First-party composable extensions: Queue, Support, Starter Templates.', 'icon' => 'container.png', 'href' => '/packages'],
+      ['title' => 'Documentation', 'desc' => 'Comprehensive searchable docs with examples, CLI reference, and API guide.', 'icon' => 'documentation.png', 'href' => '/docs/introduction'],
+      ['title' => 'Community', 'desc' => 'GitHub Discussions, issues, contributors, and the growing ZeroPing community.', 'icon' => 'community.png', 'href' => '/community'],
+      ['title' => 'Showcase', 'desc' => 'Real projects and applications built by developers around the world.', 'icon' => 'authentication.png', 'href' => '/examples'],
+      ['title' => 'Sponsors', 'desc' => 'Help keep ZeroPing free, maintained, and always improving.', 'icon' => 'version.png', 'href' => '/sponsors'],
+      ['title' => 'Roadmap', 'desc' => 'See what is planned next — upcoming features, milestones, and long-term direction.', 'icon' => 'time.png', 'href' => '/roadmap'],
     ];
-    foreach ($ecosystem as $item): ?>
-    <a href="<?= !empty($item['disabled']) ? '#' : $item['href'] ?>" class="group relative rounded-2xl border border-zp-border bg-zp-surface/30 p-5 hover:bg-zp-surface hover:border-cyan-500/20 transition-all duration-300 <?= !empty($item['disabled']) ? 'opacity-40 pointer-events-none' : '' ?>">
+    foreach ($available as $item): ?>
+    <a href="<?= htmlspecialchars($item['href'], ENT_QUOTES) ?>" class="group relative rounded-2xl border border-zp-border bg-zp-surface/30 p-5 hover:bg-zp-surface hover:border-cyan-500/20 transition-all duration-300">
       <div class="flex items-center gap-3">
-        <div class="flex items-center justify-center h-9 w-9 rounded-lg bg-zp-surface border border-zp-border text-zp-muted group-hover:text-zp-link group-hover:border-cyan-500/30 transition-all">
-          <img src="/assets/images/<?= $item['icon'] ?>" alt="<?= $item['title'] ?>" class="h-5 w-5 object-contain" loading="lazy">
+        <div class="flex items-center justify-center h-9 w-9 rounded-lg bg-zp-surface border border-zp-border text-zp-muted group-hover:text-zp-link group-hover:border-cyan-500/30 transition-all shrink-0">
+          <img src="/assets/images/<?= htmlspecialchars($item['icon'], ENT_QUOTES) ?>" alt="<?= htmlspecialchars($item['title'], ENT_QUOTES) ?>" class="h-5 w-5 object-contain" loading="lazy">
         </div>
         <div>
-          <h3 class="text-sm font-semibold text-zp-ink"><?= $item['title'] ?></h3>
-          <p class="text-xs text-zp-desc mt-0.5"><?= $item['desc'] ?></p>
+          <h3 class="text-sm font-semibold text-zp-ink"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></h3>
+          <p class="text-xs text-zp-desc mt-0.5"><?= htmlspecialchars($item['desc'], ENT_QUOTES) ?></p>
         </div>
       </div>
     </a>
+    <?php endforeach; ?>
+  </div>
+
+  <!-- Coming soon products -->
+  <div class="mt-8 mb-3">
+    <span class="text-xs font-semibold uppercase tracking-widest text-zp-muted">Coming soon</span>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <?php
+    $coming = [
+      ['title' => 'ZeroPing Cloud', 'desc' => 'Managed hosting, zero-downtime deployments, auto-scaling.'],
+      ['title' => 'ZeroPing Forge', 'desc' => 'Server provisioning, site management, process monitoring.'],
+      ['title' => 'ZeroPing Deploy', 'desc' => 'One-command deployment pipelines and release automation.'],
+      ['title' => 'ZeroPing Studio', 'desc' => 'Visual admin dashboard — models, queues, schedules, logs.'],
+    ];
+    foreach ($coming as $item): ?>
+    <div class="relative rounded-2xl border border-zp-border/50 bg-zp-surface/20 p-5 opacity-60 cursor-default">
+      <div class="flex items-start gap-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <h3 class="text-sm font-semibold text-zp-muted"><?= htmlspecialchars($item['title'], ENT_QUOTES) ?></h3>
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase border border-zp-border/50 text-zp-muted">Soon</span>
+          </div>
+          <p class="text-xs text-zp-muted/70"><?= htmlspecialchars($item['desc'], ENT_QUOTES) ?></p>
+        </div>
+      </div>
+    </div>
     <?php endforeach; ?>
   </div>
 </section>

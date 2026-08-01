@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -51,7 +53,13 @@ class VendorPublishCommand extends Command
         foreach ($groups as $g) {
             $this->section('Group: ' . $g);
 
-            foreach ($all[$g] as $from => $to) {
+            /** @var string $g */
+            $g = (string) $g;
+            /** @var string $g */
+            $g = (string) $g;
+            /** @var array<string, string> $groupFiles */
+            $groupFiles = $all[$g];
+            foreach ($groupFiles as $from => $to) {
                 $copied += $this->publishFile($from, $to);
             }
         }

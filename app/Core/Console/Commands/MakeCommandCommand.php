@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -21,7 +23,7 @@ class MakeCommandCommand extends Command
             $name .= 'Command';
         }
 
-        $signature = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', str_replace('Command', '', $name)));
+        $signature = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', str_replace('Command', '', $name)) ?? '');
 
         $content = $this->replace(
             $this->stub('command.stub'),

@@ -7,6 +7,10 @@ namespace App\Core\Database;
 use App\Core\ORM\Collection;
 use App\Core\ORM\Exceptions\ModelNotFoundException;
 use App\Core\ORM\Pagination\Paginator;
+use App\Core\ORM\Relations\BelongsTo;
+use App\Core\ORM\Relations\BelongsToMany;
+use App\Core\ORM\Relations\HasMany;
+use App\Core\ORM\Relations\HasOne;
 use PDO;
 use PDOStatement;
 
@@ -61,6 +65,15 @@ class QueryBuilder
     /** @var class-string|null Model class to hydrate results into. */
     protected ?string $modelClass = null;
 
+    /** @var list<string> Relation names to eager-load when get() is called. */
+    protected array $eagerLoad = [];
+
+    /** Seconds to cache the query result; null means no caching. */
+    protected ?int $cacheSeconds = null;
+
+    /** Explicit cache key; auto-generated from SQL+bindings when empty. */
+    protected string $cacheKey = '';
+
     /**
      * @param  PDO     $db     Active PDO connection.
      * @param  string  $table  Raw table name (will be validated).
@@ -80,6 +93,43 @@ class QueryBuilder
     public function setModelClass(string $modelClass): static
     {
         $this->modelClass = $modelClass;
+
+        return $this;
+    }
+
+    /**
+     * Specify relations to eager-load when get() is called.
+     *
+     * Accepts a single relation name or an array of names.
+     *
+     * @param  string|list<string>  $relations
+     * @return $this
+     */
+    public function with(string|array $relations): static
+    {
+        $relations = is_array($relations) ? $relations : [$relations];
+
+        foreach ($relations as $relation) {
+            $this->eagerLoad[] = $relation;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Cache the results of the next get() call for the given number of seconds.
+     *
+     * If no explicit key is provided, one is derived from the compiled SQL and
+     * bound parameters so that identical queries share the same cache entry.
+     *
+     * @param  int     $seconds  TTL in seconds.
+     * @param  string  $key      Optional explicit cache key.
+     * @return $this
+     */
+    public function remember(int $seconds, string $key = ''): static
+    {
+        $this->cacheSeconds = $seconds;
+        $this->cacheKey     = $key;
 
         return $this;
     }
@@ -385,17 +435,52 @@ class QueryBuilder
      *
      * When a model class is set, rows are hydrated into model instances
      * using forceFill() to bypass mass-assignment guards.
+     *
+     * If remember() was called the result set is read from / written to the
+     * application cache.  If the cache helper is unavailable the query runs
+     * normally without caching.
+     *
+     * If with() was called the named relations are eager-loaded in a single
+     * additional query per relation.
      */
     public function get(): Collection
     {
+        // ---- cache read ------------------------------------------------
+        $cacheSeconds = $this->cacheSeconds;
+        $cacheKey     = $this->cacheKey;
+
+        if ($cacheSeconds !== null) {
+            if ($cacheKey === '') {
+                $cacheKey = md5('qb:' . $this->toSql() . serialize($this->bindings));
+            }
+
+            try {
+                $cached = cache()->get($cacheKey);
+
+                if ($cached instanceof Collection) {
+                    $this->reset();
+
+                    return $cached;
+                }
+            } catch (\Throwable) {
+                // Cache helper unavailable – fall through to live query.
+                $cacheSeconds = null;
+            }
+        }
+
+        // ---- execute query ---------------------------------------------
         $stmt = $this->db->prepare($this->toSql());
         $stmt->execute($this->bindings);
         $rows = $stmt->fetchAll();
+
+        // Snapshot eager-load list before reset() clears it.
+        $eagerLoad = $this->eagerLoad;
         $this->reset();
 
         if ($this->modelClass !== null) {
             $modelClass = $this->modelClass;
             $rows = array_map(static function (array $attributes) use ($modelClass): object {
+                /** @var \App\Core\Database\Model $model */
                 $model = new $modelClass();
                 $model->forceFill($attributes);
 
@@ -403,7 +488,23 @@ class QueryBuilder
             }, $rows);
         }
 
-        return new Collection($rows);
+        $collection = new Collection($rows);
+
+        // ---- eager loading ---------------------------------------------
+        if ($eagerLoad !== [] && $this->modelClass !== null) {
+            $collection = $this->eagerLoadRelations($collection, $eagerLoad);
+        }
+
+        // ---- cache write -----------------------------------------------
+        if ($cacheSeconds !== null) {
+            try {
+                cache()->put($cacheKey, $collection, $cacheSeconds);
+            } catch (\Throwable) {
+                // Silently ignore cache write failures.
+            }
+        }
+
+        return $collection;
     }
 
     /**
@@ -442,28 +543,28 @@ class QueryBuilder
         return $result;
     }
 
-    /**
-     * Find a record by its primary key.
-     *
-     * @param  mixed               $id       Primary key value.
-     * @param  string|list<string> $columns  Columns to select.
-     */
+/**
+      * Find a record by its primary key.
+      *
+      * @param  mixed        $id       Primary key value.
+      * @param  list<string> $columns  Columns to select.
+      */
     public function find(mixed $id, string|array $columns = ['*']): mixed
     {
-        return $this->where('id', $id)->first($columns);
+        return $this->where('id', $id)->first((array) $columns);
     }
 
-    /**
-     * Find a record by primary key or throw.
-     *
-     * @param mixed                 $id
-     * @param string|array<int, string> $columns
-     *
-     * @throws ModelNotFoundException
-     */
+/**
+      * Find a record by primary key or throw.
+      *
+      * @param mixed        $id
+      * @param list<string> $columns
+      *
+      * @throws ModelNotFoundException
+      */
     public function findOrFail(mixed $id, string|array $columns = ['*']): mixed
     {
-        $result = $this->find($id, $columns);
+        $result = $this->find($id, (array) $columns);
 
         if ($result === null) {
             throw new ModelNotFoundException();
@@ -792,6 +893,9 @@ class QueryBuilder
         $this->limit = null;
         $this->offset = null;
         $this->softDeletes = false;
+        $this->eagerLoad = [];
+        $this->cacheSeconds = null;
+        $this->cacheKey = '';
 
         return $this;
     }
@@ -799,6 +903,268 @@ class QueryBuilder
     // -------------------------------------------------------------------------
     // Internal Helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Public entry-point for eager-loading relations onto an existing Collection.
+     *
+     * Used by {@see \App\Core\Database\Model::load()} to eager-load relations
+     * on already-hydrated model instances without executing a new SELECT.
+     *
+     * @param  Collection  $models
+     * @return Collection
+     */
+    public function eagerLoadRelationsPublic(Collection $models): Collection
+    {
+        if ($this->eagerLoad === []) {
+            return $models;
+        }
+
+        return $this->eagerLoadRelations($models, $this->eagerLoad);
+    }
+
+    /**
+     * Eager-load a set of named relations onto a Collection of parent models.
+     *
+     * Fires one extra query per relation (N+1 → 1+1).
+     *
+     * @param  Collection        $models
+     * @param  list<string>      $relations
+     * @return Collection
+     */
+    protected function eagerLoadRelations(Collection $models, array $relations): Collection
+    {
+        foreach ($relations as $name) {
+            $models = $this->eagerLoadRelation($models, $name);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Eager-load a single named relation onto the collection.
+     *
+     * @param  Collection  $models
+     * @param  string      $name
+     * @return Collection
+     */
+    protected function eagerLoadRelation(Collection $models, string $name): Collection
+    {
+        if ($models->isEmpty()) {
+            return $models;
+        }
+
+        /** @var \App\Core\Database\Model $firstModel */
+        $firstModel = $models->first();
+
+        if (!method_exists($firstModel, $name)) {
+            return $models;
+        }
+
+        $relation = $firstModel->{$name}();
+
+        if ($relation instanceof HasMany) {
+            return $this->eagerLoadHasMany($models, $name, $relation);
+        }
+
+        if ($relation instanceof HasOne) {
+            return $this->eagerLoadHasOne($models, $name, $relation);
+        }
+
+        if ($relation instanceof BelongsTo) {
+            return $this->eagerLoadBelongsTo($models, $name, $relation);
+        }
+
+        if ($relation instanceof BelongsToMany) {
+            return $this->eagerLoadBelongsToMany($models, $name, $relation);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Eager-load a HasMany relation.
+     *
+     * Runs: SELECT * FROM related WHERE foreign_key IN (parent_ids)
+     * Then groups results by the foreign key and assigns Collections.
+     *
+     * @param  Collection  $models
+     * @param  string      $name
+     * @param  HasMany     $relation
+     * @return Collection
+     */
+    protected function eagerLoadHasMany(Collection $models, string $name, HasMany $relation): Collection
+    {
+        $foreignKey = $relation->getForeignKey();
+        $localKey   = $relation->getLocalKey();
+        $related    = $relation->getRelated();
+
+        $parentKeys = array_values(array_unique(array_map(
+            static fn(object $m): mixed => $m->{$localKey}, // @phpstan-ignore-line
+            $models->all()
+        )));
+
+        $results = $related->newQuery()->whereIn($foreignKey, $parentKeys)->get();
+
+        // Group related models by parent key.
+        $grouped = [];
+        foreach ($results->all() as $item) {
+            /** @var \App\Core\Database\Model $item */
+            $key = $item->{$foreignKey};
+            $grouped[(string) $key][] = $item;
+        }
+
+        foreach ($models->all() as $model) {
+            /** @var \App\Core\Database\Model $model */
+            $key     = (string) $model->{$localKey};
+            $related = new Collection($grouped[$key] ?? []);
+            $model->setRelation($name, $related);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Eager-load a HasOne relation.
+     *
+     * Runs: SELECT * FROM related WHERE foreign_key IN (parent_ids)
+     * Then maps the first matching related model to each parent.
+     *
+     * @param  Collection  $models
+     * @param  string      $name
+     * @param  HasOne      $relation
+     * @return Collection
+     */
+    protected function eagerLoadHasOne(Collection $models, string $name, HasOne $relation): Collection
+    {
+        $foreignKey = $relation->getForeignKey();
+        $localKey   = $relation->getLocalKey();
+        $related    = $relation->getRelated();
+
+        $parentKeys = array_values(array_unique(array_map(
+            static fn(object $m): mixed => $m->{$localKey}, // @phpstan-ignore-line
+            $models->all()
+        )));
+
+        $results = $related->newQuery()->whereIn($foreignKey, $parentKeys)->get();
+
+        // Index by foreign key – first match wins.
+        $indexed = [];
+        foreach ($results->all() as $item) {
+            /** @var \App\Core\Database\Model $item */
+            $key = (string) $item->{$foreignKey};
+            if (!isset($indexed[$key])) {
+                $indexed[$key] = $item;
+            }
+        }
+
+        foreach ($models->all() as $model) {
+            /** @var \App\Core\Database\Model $model */
+            $key = (string) $model->{$localKey};
+            $model->setRelation($name, $indexed[$key] ?? null);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Eager-load a BelongsTo relation.
+     *
+     * Runs: SELECT * FROM related WHERE owner_key IN (foreign_key_values)
+     * Then maps each related model back to the parent(s) that reference it.
+     *
+     * @param  Collection  $models
+     * @param  string      $name
+     * @param  BelongsTo   $relation
+     * @return Collection
+     */
+    protected function eagerLoadBelongsTo(Collection $models, string $name, BelongsTo $relation): Collection
+    {
+        $foreignKey = $relation->getForeignKey();
+        $ownerKey   = $relation->getOwnerKey();
+        $related    = $relation->getRelated();
+
+        $foreignKeys = array_values(array_unique(array_map(
+            static fn(object $m): mixed => $m->{$foreignKey}, // @phpstan-ignore-line
+            $models->all()
+        )));
+
+        $results = $related->newQuery()->whereIn($ownerKey, $foreignKeys)->get();
+
+        // Index related models by owner key.
+        $indexed = [];
+        foreach ($results->all() as $item) {
+            /** @var \App\Core\Database\Model $item */
+            $indexed[(string) $item->{$ownerKey}] = $item;
+        }
+
+        foreach ($models->all() as $model) {
+            /** @var \App\Core\Database\Model $model */
+            $key = (string) $model->{$foreignKey};
+            $model->setRelation($name, $indexed[$key] ?? null);
+        }
+
+        return $models;
+    }
+
+    /**
+     * Eager-load a BelongsToMany relation.
+     *
+     * Runs one query joining the pivot table and selects the foreign pivot key
+     * so that results can be grouped by parent id.
+     *
+     * SELECT related.*, pivot.foreign_pivot_key
+     * FROM   related
+     * JOIN   pivot ON related.id = pivot.related_pivot_key
+     * WHERE  pivot.foreign_pivot_key IN (parent_ids)
+     *
+     * @param  Collection      $models
+     * @param  string          $name
+     * @param  BelongsToMany   $relation
+     * @return Collection
+     */
+    protected function eagerLoadBelongsToMany(Collection $models, string $name, BelongsToMany $relation): Collection
+    {
+        $pivotTable      = $relation->getPivotTable();
+        $foreignPivotKey = $relation->getForeignPivotKey();
+        $relatedPivotKey = $relation->getRelatedPivotKey();
+        $relatedInstance = $relation->getRelated();
+        $relatedTable    = $relatedInstance->getTable();
+
+        $parentKeys = array_values(array_unique(array_map(
+            static fn(object $m): mixed => $m->id, // @phpstan-ignore-line
+            $models->all()
+        )));
+
+        // Build: SELECT related.*, pivot.foreign_pivot_key FROM related
+        //        JOIN pivot ON related.id = pivot.related_pivot_key
+        //        WHERE pivot.foreign_pivot_key IN (...)
+        $results = $relatedInstance->newQuery()
+            ->select($relatedTable . '.*', $pivotTable . '.' . $foreignPivotKey)
+            ->join(
+                $pivotTable,
+                $relatedTable . '.id',
+                '=',
+                $pivotTable . '.' . $relatedPivotKey
+            )
+            ->whereIn($pivotTable . '.' . $foreignPivotKey, $parentKeys)
+            ->get();
+
+        // Group by the foreign pivot key column.
+        $grouped = [];
+        foreach ($results->all() as $item) {
+            /** @var \App\Core\Database\Model $item */
+            $key = (string) $item->{$foreignPivotKey};
+            $grouped[$key][] = $item;
+        }
+
+        foreach ($models->all() as $model) {
+            /** @var \App\Core\Database\Model $model */
+            $key = (string) $model->id;
+            $model->setRelation($name, new Collection($grouped[$key] ?? []));
+        }
+
+        return $models;
+    }
 
     /**
      * Compile the WHERE clause from current conditions.

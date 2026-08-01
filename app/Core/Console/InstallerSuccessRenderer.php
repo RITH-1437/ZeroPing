@@ -73,6 +73,14 @@ class InstallerSuccessRenderer
         $parts[] = '';
         $parts[] = $this->section('Project', $this->slugify($this->projectName));
         $parts[] = '';
+        $parts[] = $this->section('Template', $this->starterType);
+        $parts[] = '';
+        $parts[] = $this->section('Framework', $this->frameworkVersion);
+        $parts[] = '';
+        $parts[] = $this->section('PHP', $this->phpVersion);
+        $parts[] = '';
+        $parts[] = $this->section('Path', $this->projectPath);
+        $parts[] = '';
         $parts[] = $this->section('Next steps', null, $this->nextSteps());
         $parts[] = '';
         $parts[] = $this->section('Application', self::APP_URL);
@@ -104,7 +112,7 @@ class InstallerSuccessRenderer
 
         $bannerWidth = 0;
         foreach ($glyphRows as $line) {
-            $len = mb_strlen(preg_replace('/\e\[[0-9;]*m/', '', $line));
+            $len = mb_strlen((string) preg_replace('/\e\[[0-9;]*m/', '', $line));
             $bannerWidth = max($bannerWidth, $len);
         }
 
@@ -172,7 +180,7 @@ class InstallerSuccessRenderer
 
     private function slugify(string $name): string
     {
-        return strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-'));
+        return strtolower(trim((string) preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-'));
     }
 
     private static function detectWidth(): int
@@ -214,8 +222,8 @@ class InstallerSuccessRenderer
 
         if (PHP_OS_FAMILY === 'Windows') {
             return getenv('ANSICON') !== false
-                || str_contains(getenv('TERM_PROGRAM') ?: '', 'vscode')
-                || (getenv('TERM') !== false && str_contains(getenv('TERM'), 'xterm'))
+                || str_contains((string) getenv('TERM_PROGRAM'), 'vscode')
+                || (getenv('TERM') !== false && str_contains((string) getenv('TERM'), 'xterm'))
                 || (getenv('ConEmuANSI') === 'ON');
         }
 

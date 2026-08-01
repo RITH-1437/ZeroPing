@@ -23,6 +23,11 @@ Router::get('/community', [WebsiteController::class, 'community']);
 Router::get('/sponsors', [WebsiteController::class, 'sponsors']);
 Router::get('/search', [SearchController::class, 'search']);
 
+Router::get('/showcase', [WebsiteController::class, 'showcase']);
+Router::get('/deploy', [WebsiteController::class, 'deploy']);
+Router::get('/studio', [WebsiteController::class, 'studio']);
+Router::get('/cloud', [WebsiteController::class, 'cloud']);
+Router::get('/forge', [WebsiteController::class, 'forge']);
 Router::get('/up', static function () {
     return response()->json(['status' => 'ok', 'timestamp' => time()])->send();
 });

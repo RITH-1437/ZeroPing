@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -43,7 +45,7 @@ class MakeMigrationCommand extends Command
     private function snake(string $value): string
     {
         return strtolower(
-            preg_replace('/(?<!^)[A-Z]/', '_$0', $value)
+            preg_replace('/(?<!^)[A-Z]/', '_$0', (string) $value) ?? ''
         );
     }
 

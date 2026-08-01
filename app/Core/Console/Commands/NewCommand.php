@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Banner;
@@ -34,14 +36,6 @@ class NewCommand
         'api'       => 'RESTful API with authentication boilerplate',
     ];
 
-    private array $templates = [
-        'starter'   => 'Clean starter app with sample controller, model and routes',
-        'empty'     => 'Minimal project skeleton with a single welcome page',
-        'mvc'       => 'Full MVC CRUD scaffold with user management',
-        'blog'      => 'Blog with posts, categories and pagination',
-        'api'       => 'RESTful API with authentication boilerplate',
-    ];
-
     /**
      * Default template chosen by the wizard / when no --type is passed.
      */
@@ -69,13 +63,6 @@ class NewCommand
     /** Whether a network connection is available. */
     private bool $internetOk = true;
 
-    /**
-     * Files/dirs created inside the target during scaffolding. Used to roll
-     * back a partially-created project if a step throws.
-     *
-     * @var array<int,string>
-     */
-    private array $createdItems = [];
 
     public function __construct()
     {
@@ -170,7 +157,7 @@ class NewCommand
     {
         $output = @shell_exec(escapeshellcmd($this->composerBin()) . ' --version 2>&1');
 
-        if ($output === null || trim($output) === '' || stripos($output, 'composer') === false) {
+        if ($output === false || $output === null || trim($output) === '' || stripos($output, 'composer') === false) {
             $this->style->writeln('<fg=yellow>⚠ Composer was not detected on your PATH.</>');
             $this->style->writeln('<fg=gray>Dependencies will be skipped — run `composer install` inside the project once available.</>');
             $this->composerAvailable = false;
@@ -319,10 +306,8 @@ class NewCommand
     {
         // Always use BASE_PATH as the framework source, not getcwd(), so the
         // command works correctly regardless of where the user runs it from.
-        $frameworkDir = (defined('BASE_PATH') ? BASE_PATH : getcwd());
+        $frameworkDir = (defined('BASE_PATH') ? BASE_PATH : (string) getcwd());
         $targetDir = $this->resolveTarget((string) $a['location']);
-
-        $this->createdItems = [];
 
         // Friendly guards before touching the filesystem.
         if (is_dir($targetDir)) {
@@ -469,27 +454,6 @@ class NewCommand
         $this->copyDirectory($sourceDir, $target);
     }
 
-    /**
-     * Whether the framework repository (not a generated app) is being run.
-     * Detected by the presence of the top-level framework-site/ directory,
-     * which is excluded from every generated project.
-     */
-    private function isFrameworkRepo(): bool
-    {
-        return is_dir(BASE_PATH . '/framework-site');
-    }
-
-    private function ensureParent(string $target): void
-    {
-        $parent = dirname($target);
-        if (!is_dir($parent)) {
-            mkdir($parent, 0755, true);
-        }
-        if (!is_dir($parent) || !is_writable($parent)) {
-            throw new \RuntimeException("Cannot write to: {$parent}");
-        }
-    }
-
     private function copyFramework(string $source, string $target): void
     {
         $items = new \RecursiveIteratorIterator(
@@ -514,7 +478,6 @@ class NewCommand
             if ($item->isDir()) {
                 if (!is_dir($dest)) {
                     mkdir($dest, 0755, true);
-                    $this->createdItems[] = $dest;
                 }
             } else {
                 if (!is_dir(dirname($dest))) {
@@ -522,8 +485,6 @@ class NewCommand
                 }
                 if (!@copy($sourcePath, $dest)) {
                     $this->style->writeln("  <fg=yellow>skipped</> <fg=gray>{$relative}</>");
-                } else {
-                    $this->createdItems[] = $dest;
                 }
             }
         }
@@ -636,7 +597,6 @@ class NewCommand
             if ($item->isDir()) {
                 if (!is_dir($target)) {
                     mkdir($target, 0755, true);
-                    $this->createdItems[] = $target;
                 }
             } else {
                 if (!is_dir(dirname($target))) {
@@ -644,7 +604,6 @@ class NewCommand
                 }
 
                 copy($item->getRealPath(), $target);
-                $this->createdItems[] = $target;
             }
         }
     }
@@ -699,7 +658,7 @@ class NewCommand
         $appName = preg_match('/\s/', $projectName) ? '"' . $projectName . '"' : $projectName;
 
         if (preg_match('/^APP_NAME=/m', $env)) {
-            $env = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME=' . $appName, $env);
+            $env = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME=' . $appName, $env) ?? '';
         } else {
             $env = "APP_NAME={$appName}\n" . $env;
         }
@@ -741,7 +700,7 @@ class NewCommand
         $driver = (string) $a['driver'];
         $port = self::DRIVER_PORTS[$driver] ?? '';
 
-        $env = preg_replace('/^DB_CONNECTION=.*$/m', 'DB_CONNECTION=' . $driver, $env);
+        $env = preg_replace('/^DB_CONNECTION=.*$/m', 'DB_CONNECTION=' . $driver, $env) ?? '';
 
         if ($driver !== 'sqlite') {
             $replacements = [
@@ -753,7 +712,7 @@ class NewCommand
             ];
             foreach ($replacements as $key => $value) {
                 if (preg_match('/^' . $key . '=/m', $env)) {
-                    $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
+                    $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env) ?? '';
                 } else {
                     $env .= "\n{$key}={$value}";
                 }
@@ -768,42 +727,13 @@ class NewCommand
         ];
         foreach ($flags as $key => $value) {
             if (preg_match('/^' . $key . '=/m', $env)) {
-                $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env);
+                $env = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $env) ?? '';
             } else {
                 $env .= "\n{$key}={$value}";
             }
         }
 
         file_put_contents($envPath, $env);
-    }
-
-    private function installStarterFiles(string $dir, array $a): void
-    {
-        if (!$a['tailwind']) {
-            return;
-        }
-
-        $layout = $dir . '/views/layouts/app.php';
-        if (!file_exists($layout)) {
-            return;
-        }
-
-        $content = (string) file_get_contents($layout);
-        $snippet = '<script src="https://cdn.tailwindcss.com"></script>';
-
-        if (stripos($content, 'tailwindcss.com') !== false) {
-            return;
-        }
-
-        if (stripos($content, '</head>') !== false) {
-            $content = str_ireplace('</head>', $snippet . "\n</head>", $content);
-        } elseif (stripos($content, '<body') !== false) {
-            $content = preg_replace('/<body[^>]*>/', "$0\n    " . $snippet, $content, 1);
-        } else {
-            $content = $snippet . "\n" . $content;
-        }
-
-        file_put_contents($layout, $content);
     }
 
     private function ensureStorage(string $dir): void
@@ -944,6 +874,6 @@ class NewCommand
 
     private function slugify(string $name): string
     {
-        return strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-'));
+        return strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name) ?? '', '-'));
     }
 }

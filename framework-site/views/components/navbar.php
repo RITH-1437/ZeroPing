@@ -27,6 +27,7 @@ $isCurrent = static fn (array $paths): bool => in_array($currentPath, $paths, tr
                     <a href="/packages"><strong>Packages</strong><span>Extend the framework</span></a>
                     <a href="/examples"><strong>Examples</strong><span>Learn from working patterns</span></a>
                     <a href="/changelog"><strong>Changelog</strong><span>Track framework releases</span></a>
+                    <a href="/showcase"><strong>Showcase</strong><span>See what developers have built</span></a>
                 </div>
             </details>
             <details class="nav-menu" data-nav-dropdown>
@@ -36,6 +37,11 @@ $isCurrent = static fn (array $paths): bool => in_array($currentPath, $paths, tr
                     <a href="/community"><strong>Community</strong><span>Contribute and get support</span></a>
                     <a href="/sponsors"><strong>Sponsors</strong><span>Support sustainable maintenance</span></a>
                     <a href="/blog"><strong>Blog <em>Coming soon</em></strong><span>Engineering notes and release stories</span></a>
+                    <hr style="border-color:var(--zp-border,#1e2940);margin:4px 0;">
+                    <a href="/deploy"><strong>Deploy <em>Coming soon</em></strong><span>One-command deployment pipelines</span></a>
+                    <a href="/studio"><strong>Studio <em>Coming soon</em></strong><span>Visual admin dashboard</span></a>
+                    <a href="/cloud"><strong>Cloud <em>Coming soon</em></strong><span>Managed ZeroPing hosting</span></a>
+                    <a href="/forge"><strong>Forge <em>Coming soon</em></strong><span>Server provisioning and management</span></a>
                 </div>
             </details>
         </div>

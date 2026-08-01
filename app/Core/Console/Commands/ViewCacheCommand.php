@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -33,6 +35,7 @@ class ViewCacheCommand extends Command
 
             $relative = str_replace([$viewsDir . '/', $viewsDir . '\\'], '', $file->getPathname());
             $viewName = str_replace('.php', '', $relative);
+            /** @var string $viewName */
             $viewName = str_replace(['\\', '/'], '.', $viewName);
 
             $skip = false;

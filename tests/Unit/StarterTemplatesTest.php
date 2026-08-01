@@ -11,18 +11,15 @@ class StarterTemplatesTest extends TestCase
 {
     public function testEveryListedTemplateHasADirectory(): void
     {
-        $command = new NewCommand();
+        $reflection = new \ReflectionClass(NewCommand::class);
+        $constant   = $reflection->getConstant('TEMPLATES');
 
-        $reflection = new \ReflectionClass($command);
-        $property = $reflection->getProperty('templates');
-
-        $templates = $property->getValue($command);
-
-        $this->assertNotEmpty($templates, 'NewCommand should declare at least one template.');
+        $this->assertIsArray($constant, 'NewCommand::TEMPLATES should be an array.');
+        $this->assertNotEmpty($constant, 'NewCommand should declare at least one template.');
 
         $base = dirname(__DIR__, 2) . '/templates';
 
-        foreach (array_keys($templates) as $type) {
+        foreach (array_keys($constant) as $type) {
             $dir = $base . '/' . $type;
             $this->assertDirectoryExists($dir, "Template directory missing for '{$type}'.");
         }

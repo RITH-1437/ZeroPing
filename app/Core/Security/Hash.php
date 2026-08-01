@@ -104,7 +104,7 @@ class Hash
      * Get information about a hashed value.
      *
      * @param string $hashedValue The hash to inspect.
-     * @return array{algo: int|string, algoName: string, options: array<string, mixed>} Hash info.
+     * @return array<string, mixed> Hash info.
      */
     public static function info(string $hashedValue): array
     {

@@ -51,6 +51,7 @@ class Expect
 
     public function toBeInstanceOf(string $class): void
     {
+        /** @var class-string $class */
         Assert::assertInstanceOf($class, $this->value);
     }
 }

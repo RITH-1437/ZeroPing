@@ -241,11 +241,11 @@ class Container
      * Resolve a class from the container.
      *
      * @param class-string|string $abstract The abstract type or class name.
-     * @return object The resolved instance.
-     *
-     * @throws Exception When the class cannot be resolved or built.
-     */
-    public function make(string $abstract): object
+* @return mixed The resolved instance.
+      *
+      * @throws Exception When the class cannot be resolved or built.
+      */
+     public function make(string $abstract): mixed
     {
         // Hot path: cached singleton — inline check avoids method call overhead.
         if (isset($this->instances[$abstract])) {
@@ -267,11 +267,11 @@ class Container
      * (e.g. Foo\BarInterface → Foo\Bar).
      *
      * @param class-string|string $abstract The abstract type or class name.
-     * @return object The resolved instance.
-     *
-     * @throws Exception When the class cannot be resolved or built.
-     */
-    public function resolve(string $abstract): object
+* @return mixed The resolved instance.
+      *
+      * @throws Exception When the class cannot be resolved or built.
+      */
+     public function resolve(string $abstract): mixed
     {
         // 1. Return a cached singleton instance (fastest path).
         if (isset($this->instances[$abstract])) {
@@ -311,6 +311,14 @@ class Container
         }
 
         // 4. Build the concrete class directly.
+        if (!class_exists($abstract)) {
+            throw new Exception(
+                "Container: Cannot resolve [{$abstract}] — class does not exist. "
+                . 'Check the namespace and ensure the class is autoloadable.'
+            );
+        }
+
+        /** @var class-string $abstract */
         $object = $this->build($abstract);
         if ($this->hasResolvingCallbacks) {
             $this->fireResolving($abstract, $object);
@@ -322,11 +330,11 @@ class Container
      * Resolve an unbound interface via convention-based discovery.
      *
      * @param string $abstract The interface name.
-     * @return object The resolved instance.
-     *
-     * @throws Exception When no implementation can be discovered.
-     */
-    protected function resolveInterface(string $abstract): object
+* @return mixed The resolved instance.
+      *
+      * @throws Exception When no implementation can be discovered.
+      */
+     protected function resolveInterface(string $abstract): mixed
     {
         $discovered = $this->discoverImplementation($abstract);
 
@@ -373,15 +381,15 @@ class Container
     //  Building
     // -------------------------------------------------------------------------
 
-    /**
-     * Build a class using reflection and auto-wire its dependencies.
-     *
-     * @param class-string $class The fully-qualified class name.
-     * @return object The constructed instance.
-     *
-     * @throws Exception When the class does not exist or cannot be instantiated.
-     */
-    protected function build(string $class): object
+/**
+      * Build a class using reflection and auto-wire its dependencies.
+      *
+      * @param  string  $class The fully-qualified class name.
+      * @return mixed The constructed instance.
+      *
+      * @throws Exception When the class does not exist or cannot be instantiated.
+      */
+      protected function build(string $class): mixed
     {
         if (!class_exists($class)) {
             throw new Exception(

@@ -162,16 +162,19 @@ class FilesystemManager
         };
     }
 
-    /**
-     * Create a local filesystem driver instance.
-     *
-     * @param array{root: string, permissions?: array} $config Driver configuration.
-     *
-     * @return FilesystemRepository The repository wrapping the local driver.
-     */
+/**
+      * Create a local filesystem driver instance.
+      *
+      * @param array{root: string, permissions?: array{dir?: int, public?: int, private?: int}} $config Driver configuration.
+      *
+      * @return FilesystemRepository The repository wrapping the local driver.
+      */
     protected function createLocalDriver(array $config): FilesystemRepository
     {
-        return new FilesystemRepository(new LocalDriver($config));
+        /** @var array{root: string, permissions?: array{dir?: int, public?: int, private?: int}} $config */
+        /** @var array{root: string, permissions?: array{dir?: int, public?: int, private?: int}} $typedConfig */
+        $typedConfig = $config;
+        return new FilesystemRepository(new LocalDriver($typedConfig));
     }
 
     /**

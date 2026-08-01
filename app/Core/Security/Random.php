@@ -29,7 +29,7 @@ class Random
 
         // Each byte produces 2 hex characters
         $bytes = (int) ceil($length / 2);
-        $hex = bin2hex(random_bytes($bytes));
+        $hex = bin2hex(random_bytes(max(1, $bytes)));
 
         // Trim to exact length in case of odd request
         return substr($hex, 0, $length);
@@ -110,6 +110,6 @@ class Random
      */
     public static function bytes(int $length): string
     {
-        return random_bytes($length);
+        return random_bytes(max(1, $length));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Banner;
@@ -71,9 +73,9 @@ class AboutCommand extends Command
 
     private function composerVersion(): string
     {
-        $raw = @shell_exec('composer --version 2>&1') ?? '';
+        $raw = @shell_exec('composer --version 2>&1') ?: '';
 
-        if (preg_match('/(\d+\.\d+\.\d+)/', $raw, $m)) {
+        if ($raw !== '' && preg_match('/(\d+\.\d+\.\d+)/', $raw, $m)) {
             return $m[1];
         }
 

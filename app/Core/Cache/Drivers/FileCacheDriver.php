@@ -230,7 +230,7 @@ class FileCacheDriver implements CacheDriver
         $newValue = (int) $data['value'] + $value;
         $remainingTtl = max(0, $data['expire'] - time());
 
-        $this->put($key, $newValue, $remainingTtl);
+        $this->put($key, $newValue, (int) $remainingTtl);
 
         return $newValue;
     }

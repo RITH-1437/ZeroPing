@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -106,7 +108,7 @@ class OrmTestCommand extends Command
 
         $user->delete();
 
-        $this->assert(User::find($id) === null, 'delete');
+        $this->assert($id !== null && User::find($id) === null, 'delete');
     }
 
     protected function testFind(): void
@@ -119,9 +121,9 @@ class OrmTestCommand extends Command
             'password'   => password_hash('password', PASSWORD_DEFAULT),
         ]);
 
-        $foundUser = User::find($user->id);
+        $foundUser = User::find((int) $user->id);
 
-        $this->assert($foundUser->id === $user->id, 'find');
+        $this->assert($foundUser !== null && $foundUser->id === $user->id, 'find');
     }
 
     protected function testAll(): void
@@ -199,7 +201,7 @@ class OrmTestCommand extends Command
         $id = $user->id;
         $user->delete();
 
-        $this->assert(User::find($id) === null, 'soft deletes (deleted_at set)');
+        $this->assert($id !== null && User::find($id) === null, 'soft deletes (deleted_at set)');
         $this->assert(User::withTrashed()->find($id) !== null, 'soft deletes with trashed');
     }
 

@@ -134,9 +134,9 @@ class Docs
     protected function inline(string $text): string
     {
         $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-        $text = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text);
-        $text = preg_replace('/`(.+?)`/', '<code>$1</code>', $text);
-        $text = preg_replace('/\[(.+?)\]\((.+?)\)/', '<a href="$2">$1</a>', $text);
+        $text = (string) (preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text) ?? $text);
+        $text = (string) (preg_replace('/`(.+?)`/', '<code>$1</code>', $text) ?? $text);
+        $text = (string) (preg_replace('/\[(.+?)\]\((.+?)\)/', '<a href="$2">$1</a>', $text) ?? $text);
 
         return $text;
     }
@@ -145,6 +145,6 @@ class Docs
     {
         $normalized = preg_replace('/[^a-zA-Z0-9_.\/-]/', '', str_replace('\\', '/', $page));
 
-        return $normalized === '' ? 'index' : ltrim($normalized, '/');
+        return $normalized === '' ? 'index' : ltrim((string) $normalized, '/');
     }
 }

@@ -30,7 +30,7 @@ abstract class Generator extends Command
      */
     protected function tableName(string $model): string
     {
-        $base = preg_replace('/Model$/', '', $model);
+        $base = (string) preg_replace('/Model$/', '', $model);
 
         return strtolower($base) . 's';
     }

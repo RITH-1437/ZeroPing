@@ -47,7 +47,8 @@ class Scheduler
      */
     public function __construct(?Mutex $mutex = null)
     {
-        $this->schedule = App::container()->make(ScheduleManager::class)->schedule();
+        $scheduleManager = App::container()->make(ScheduleManager::class);
+        $this->schedule = $scheduleManager->schedule();
         $this->mutex = $mutex;
     }
 
@@ -141,7 +142,9 @@ class Scheduler
             return $this->mutex->exists($event);
         }
 
-        return App::container()->make(CacheRepository::class)->has(
+        $cache = App::container()->make(CacheRepository::class);
+
+        return $cache->has(
             $this->mutexName($event)
         );
     }
@@ -159,7 +162,9 @@ class Scheduler
             return;
         }
 
-        App::container()->make(CacheRepository::class)->put(
+        $cache = App::container()->make(CacheRepository::class);
+
+        $cache->put(
             $this->mutexName($event),
             true,
             $event->expiresAt * 60 // Convert minutes to seconds
@@ -179,7 +184,9 @@ class Scheduler
             return;
         }
 
-        App::container()->make(CacheRepository::class)->forget(
+        $cache = App::container()->make(CacheRepository::class);
+
+        $cache->forget(
             $this->mutexName($event)
         );
     }

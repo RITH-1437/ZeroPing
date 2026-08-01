@@ -95,6 +95,10 @@ abstract class FormRequest
     {
         $this->runValidation();
 
+        if ($this->validationResult === null) {
+            return [];
+        }
+
         if ($this->validationResult->fails()) {
             throw new ValidationException($this->validationResult->errors());
         }
@@ -117,6 +121,11 @@ abstract class FormRequest
     public function validate(): ValidationResult
     {
         $this->runValidation();
+
+        if ($this->validationResult === null) {
+            $this->validationResult = new ValidationResult();
+        }
+
         return $this->validationResult;
     }
 

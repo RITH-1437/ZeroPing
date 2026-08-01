@@ -105,7 +105,7 @@ abstract class Mailable
     {
         $contents = Storage::get($path);
 
-        return $this->attachData($contents, $name, $options);
+        return $this->attachData($contents, $name ?? '', $options);
     }
 
     public function attachData(string $data, string $name, array $options = []): self

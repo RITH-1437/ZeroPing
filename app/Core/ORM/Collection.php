@@ -181,13 +181,13 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         return $default;
     }
 
-    /**
-     * Get the values of a given key.
-     *
-     * @param  string|array  $value
-     * @param  string|null  $key
-     * @return static
-     */
+/**
+      * Get the values of a given key.
+      *
+      * @param  string|array  $value
+      * @param  string|null  $key
+      * @return static
+      */
     public function pluck($value, $key = null): static
     {
         return new static(array_column($this->items, $value, $key));
@@ -351,15 +351,15 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         }, $this->items);
     }
 
-    /**
-     * Get the collection of items as JSON.
-     *
-     * @param  int  $options
-     * @return string
-     */
+/**
+      * Get the collection of items as JSON.
+      *
+      * @param  int  $options
+      * @return string
+      */
     public function toJson($options = 0): string
     {
-        return json_encode($this->jsonSerialize(), $options);
+        return (string) json_encode($this->jsonSerialize(), $options);
     }
 
     /**

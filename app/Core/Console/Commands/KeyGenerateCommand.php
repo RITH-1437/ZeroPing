@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Command;
@@ -37,7 +39,7 @@ class KeyGenerateCommand extends Command
 
     protected function updateEnvFile(string $key): void
     {
-        $env = file_get_contents('.env');
+        $env = file_get_contents('.env') ?: '';
 
         if (preg_match('/^APP_KEY=.*$/m', $env)) {
             $env = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $env);
@@ -48,7 +50,7 @@ class KeyGenerateCommand extends Command
         file_put_contents('.env', $env);
 
         // Clear cached env so subsequent commands pick up the change
-        foreach (glob(BASE_PATH . '/bootstrap/cache/env_*.php') as $cache) {
+        foreach (glob(BASE_PATH . '/bootstrap/cache/env_*.php') ?: [] as $cache) {
             @unlink($cache);
         }
     }

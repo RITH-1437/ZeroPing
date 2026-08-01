@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Console\Commands;
 
 use App\Core\Console\Banner;
@@ -215,10 +217,10 @@ class DoctorCommand extends Command
         }
 
         $required = ['app.php'];
-        $missing = array_values(array_filter(
+        $missing = array_filter(
             $required,
             fn ($f) => !file_exists($configDir . '/' . $f)
-        ));
+        );
 
         if ($missing !== []) {
             $this->fail('Configuration', 'missing: ' . implode(', ', $missing));
@@ -226,7 +228,8 @@ class DoctorCommand extends Command
             return;
         }
 
-        $this->pass('Configuration', count(glob($configDir . '/*.php')) . ' file(s) loaded');
+        $configFiles = glob($configDir . '/*.php');
+        $this->pass('Configuration', count($configFiles ?: []) . ' file(s) loaded');
     }
 
     // ── Filesystem checks ─────────────────────────────────────────────────────
@@ -402,7 +405,8 @@ class DoctorCommand extends Command
                 . 'batch INTEGER NOT NULL, '
                 . 'created_at TIMESTAMP)'
             );
-            $count = (int) $pdo->query('SELECT COUNT(*) FROM migrations')->fetchColumn();
+            $statement = $pdo->query('SELECT COUNT(*) FROM migrations');
+            $count = $statement !== false ? (int) $statement->fetchColumn() : 0;
         } catch (\Throwable $e) {
             $this->warnCheck('Migrations', 'status unknown');
             $this->warnings[] = 'Could not read the migrations table: ' . $e->getMessage();
